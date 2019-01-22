@@ -1,31 +1,12 @@
 sudo: required
 services:
-  - docker
-
+- docker
 before_install:
-  - docker build -t sg/slack-agent -f ./Dockerfile.dev .
-
+- docker build -t sg/slack-agent -f ./Dockerfile.dev .
 script:
-  - docker run sg/slack-agent npm run test -- --coverage
-
-#deploy:
-#  deploy:
-#  provider: lambda
-#  function_name: "lambda-test"
-#  region: "us-east-1"
-#  role: "arn:aws:iam::0123456789012:role/lambda_basic_execution"
-#  runtime: "nodejs4.3"
-#  handler_name: "handler"
-#  on:
-#    branch: master
-#  access_key_id: $AWS_ACCESS_KEY
-#  secret_access_key:
-#    secure: "$AWS_SECRET_KEY"
-
+- docker run sg/slack-agent npm run test -- --coverage
 notifications:
-  slack: 
+  slack:
     rooms:
-      - wiprodigital:4p6yOQBrCWcTQOQqrOH8ONlP
-    on_success: change # default: always
-    on_failure: always # default: always
-    on_pull_requests: true # default: true
+      - secure: "NNq2oEssZ76bCQMHrgas4UwDmHXgula25DpA4a7vnqcRQZutESq03hln+uVr867XpUjF94ips8LRq9KADBwI1XTbwvlSKNHqEQ4h4U5eSwyQ3AYDAJtnRRFs2LZchgB5VHdtDlRiZJfVuFoT8wbVvbqj2Za2kVucp+idWyUS5UzUHlLDqoBd5jaWbIK8xYp58gSOGRrMyWoUtq/p3Pj3wdsfsXW2+1/yRg/o+xMXTgjyBtCVeTRD1YdIxgp294doT86VSHPsueB1U91vydV9+ZRHKwfzWm9Qxuad/nBxLuPckfuetCSpWH7HJHGg1x66qCMu8ccsWrjhaEniNsUQzy2KB63RdDh6GUCSvpmpvKDYIyun7zLdW/cHqcbQ7Fdj/da9jHPZ0xDXDBdtbku257wnvEaDOEfB2OL2Trx0QVAZetgWeJuuf3yAAHLZnSU0f6XX676erHnypg08q7I0utyKGgfG3DKqzlcckCTPdui/jF5ZQqk0lGCiu8OGRlFADLx+hG3uty/X8WaTeUVRSBVofFZkCiXlNE77QB0hYtTIYYCEScjoubhnbLvLRY7DvJgvk7fFH7L2xb/wdtCDQ26z9BfSp8hKL5SExRZyboE3rw3qCtNTtRLGp3FbgHBAReBR5k2RnpD+KvJWPNroZn4A+PSNMzGIeaHMKaztoEU="
+    
