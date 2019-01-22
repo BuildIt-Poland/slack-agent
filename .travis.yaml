@@ -25,7 +25,7 @@ script:
 notifications:
   slack: 
     rooms:
-      - wiprodigital:4p6yOQBrCWcTQOQqrOH8ONlP
+      - wiprodigital:$SLACK_TOKEN
     on_success: change # default: always
     on_failure: always # default: always
     on_pull_requests: true # default: true
