@@ -1,0 +1,31 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t sg/slack-agent -f ./Dockerfile.dev .
+
+script:
+  - docker run sg/slack-agent npm run test -- --coverage
+
+#deploy:
+#  deploy:
+#  provider: lambda
+#  function_name: "lambda-test"
+#  region: "us-east-1"
+#  role: "arn:aws:iam::0123456789012:role/lambda_basic_execution"
+#  runtime: "nodejs4.3"
+#  handler_name: "handler"
+#  on:
+#    branch: master
+#  access_key_id: $AWS_ACCESS_KEY
+#  secret_access_key:
+#    secure: "$AWS_SECRET_KEY"
+
+notifications:
+  slack: 
+    rooms:
+      - wiprodigital:$SLACK_TOKEN
+    on_success: change # default: always
+    on_failure: always # default: always
+    on_pull_requests: true # default: true
