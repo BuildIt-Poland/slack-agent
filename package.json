@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "axios": "^0.18.0",
+    "query-string": "^6.2.0",
+    "tsscmp": "^1.0.6"
   }
 }

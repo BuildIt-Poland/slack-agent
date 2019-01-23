@@ -5,6 +5,8 @@ provider:
   environment:
     SLACK_CLIENT_ID: '525399495920.526137174018'
     SLACK_CLIENT_SECRET: '7191fea58634df547eb10a5d63734f65'
+    SLACK_SIGNING_SECRET: '85c51f2e87bf29a6b1976386c542887f'
+    SLACK_CLIENT_SCOPES: 'incoming-webhook,commands,bot'
   iamRoleStatements:    
     - Effect: Allow
       Resource: "*"
@@ -16,7 +18,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-region: us-east-2
+region: us-east-1
 functions:
   authorization:
     handler: handler.authorization

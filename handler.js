@@ -1,34 +1,34 @@
 'use strict';
 
-const authorizer = require('./authorizer');
+const authorization = require('./authorization.js');
 const dynamoDb = require('./dynamo-db.js');
 
-module.exports.authorization = (event, context) => {
-  const code = event.queryStringParameters.code;
-  return authorizer(code).then((res) => {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Authorization was called',
-        input: event,
-      }),
-    };
-  })
-  .catch((error) => {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: error,
-        input: event,
-      }),
-    };
-  });
+module.exports.authorization = async (event) => {
+  const params = {
+    code: null,
+    ...event.queryStringParameters
+  }
+  if (!params.code) return await authorization.oAuthRedirectUrl(event);
+  await authorization.authorize(params);
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Authorized',
+      input: event,
+    })
+  }
 };
 
-module.exports.placeReservation = (event, context) => {
-  dynamoDb.saveReservation().then(cos => {
-    console.log(cos);
-  })
+module.exports.placeReservation = async (event) => {
+  const isValid = await authorization.isVerified(event);
+  if (!isValid) return {
+    statusCode: 401,
+    body: JSON.stringify({
+      message: 'Unauthorized',
+      input: event,
+    }),
+  }
+  await dynamoDb.saveReservation();
   return {
     statusCode: 200,
     body: JSON.stringify({
