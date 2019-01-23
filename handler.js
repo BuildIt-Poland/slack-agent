@@ -20,8 +20,8 @@ module.exports.authorization = async (event) => {
 };
 
 module.exports.placeReservation = async (event) => {
-  const isValid = await authorization.isVerified(event);
-  if (!isValid) return {
+  const isValid = await authorization.isVerified(event);  
+  if(!isValid) return {
     statusCode: 401,
     body: JSON.stringify({
       message: 'Unauthorized',
