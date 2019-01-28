@@ -1,10 +1,26 @@
-sudo: required
-services:
-- docker
+dist: trusty
+language: node_js
+node_js:
+- node
+cache:
+  directories:
+    - node_modules
+env:
+  - NODE_VERSION="8.10.0"
 before_install:
-- docker build -t sg/slack-agent -f ./Dockerfile.dev .
+  - nvm install $NODE_VERSION
+  - node --version
+  - npm --version
+install:
+  - npm install -g serverless
 script:
-- docker run sg/slack-agent npm run test -- --coverage
+  - npm test
+deploy:
+  provider: script
+  script: "sls deploy"
+  on:
+    branch: master
+# notify slack-agent channel, note that possible complaints on "secure" wrong type are not relevant.
 notifications:
   slack:
     secure: vU2gbICTg9SSi2V1hrq/j6V3oHWkG5ZdD0DC/ND+vBAGi71RMTEyFcRtLjQlA+kz8zLIfZYKPcXkzBoQnn0cwavca3YaZW+p06euD9LJPPArGx/qoh84VF2NEd0kvkEYDONo7ujR+Jk/j8spJJGz4iruwUPkkoCR1mPcU0oYkMDia40KoqnrHnWjDbA9VIWWODlcmn9bJWmueP+xGfD6v/lE1RuEyqBk64EJjSYbLP62XfzafcjScpWHI2IwtFF7YBvp1YO/3gCJl3vzpPryQ6WKUPdsOaOir5YDwWUY73AU+Gs87axiw/RriPRHW5yvDbKmpVzpW83ByvRHN190zRrSfBqdqFGA37DevSVMQXLh/qz2ZG70sByFcQQJ78YwXWyYLK2UEURxSCir776Nti36CvHSu5yeiynxp8h5T7fbUZKZg7fBYe4f8dpoK/GktCfQcnDcKUeuWTXQ+sWCT0eL7+Sj/WWhZMXIIKybDNJ9rCvn58R1JwYTXacgqJ7/KdZiH5tMLnHdF50vwEkcfGAJOXzTSmXXFDREdH3/UVRSxdmGMH/iSSrnkCKSPHH0hd9uZBDwLkoWYYn4LtAZo/P8sjSZlWBAnVmdBNxVYOCF+4GSEC5PJlI9z2Rn05DOiqfaKWahzMNrKFU0y/sqO2zcjYQTQBCxMyBxvEIubIg=
