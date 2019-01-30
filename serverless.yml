@@ -7,6 +7,7 @@ provider:
     SLACK_CLIENT_SECRET: '7191fea58634df547eb10a5d63734f65'
     SLACK_SIGNING_SECRET: '85c51f2e87bf29a6b1976386c542887f'
     SLACK_CLIENT_SCOPES: 'incoming-webhook,commands,bot'
+    TABLE_NAME: 'parking'
   iamRoleStatements:    
     - Effect: Allow
       Resource: "*"
@@ -26,23 +27,29 @@ functions:
       - http:
           path: slack/authorization
           method: get
-  placeReservation:
-    handler: handler.placeReservation
+  parkingPlace:
+    handler: handler.parkingPlace
     events:
       - http:
-          path: slack/placeReservation
+          path: slack/parkingPlace
+          method: post
+  parkingPlaceList:
+    handler: handler.parkingPlaceList
+    events:
+      - http:
+          path: slack/parkingPlaceList
           method: post
 resources:
   Resources:
     dynamodb:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: reservation
+        TableName: parking
         AttributeDefinitions:
-          - AttributeName: reservation_id
+          - AttributeName: Id
             AttributeType: S
         KeySchema:
-          - AttributeName: reservation_id
+          - AttributeName: Id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
