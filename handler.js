@@ -2,6 +2,7 @@
 
 const auth = require('./authorization.js');
 const parkingPlace = require('./parkingPlace.js');
+const slackMessages = require('./slackMessages.js');
 
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET,
   CLIENT_ID = process.env.SLACK_CLIENT_ID,
@@ -44,7 +45,7 @@ module.exports.parkingPlace = async (event) => {
   const result = await parkingPlace.saveParkingPlace(place, TABLE_NAME);
   return result ? {
     statusCode: 200,
-    body: JSON.stringify(parkingPlace.convertParkingPlaceToSlackMessage(place))
+    body: slackMessages.parkingPlaceAddedSlackMessage(place)
   } : {
       statusCode: 500
     }
@@ -58,6 +59,6 @@ module.exports.parkingPlaceList = async (event) => {
   const result = await parkingPlace.getParkingPlaces(TABLE_NAME);
   return {
     statusCode: 200,
-    body: JSON.stringify(parkingPlace.convertParkingPlacesToSlackMessage(result.Items))
+    body: slackMessages.listParkingPlaceSlackMessage(result.Items)
   }
 }
