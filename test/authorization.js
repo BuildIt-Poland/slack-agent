@@ -25,7 +25,10 @@ describe("Authorization module tests", function () {
                 })
             });
             let payload = {
-                code: "1111"
+                code: "1111",
+                client_id: "as",
+                client_secret: "as"
+
             };
             let url = await auth.authorize(payload);
             expect(url.config.url).to.equal("https://slack.com/api/oauth.access");
