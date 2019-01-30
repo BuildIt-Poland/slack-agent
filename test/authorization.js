@@ -1,7 +1,7 @@
 'use strict';
-var expect = require("chai").expect;
-var auth = require("../authorization.js");
-var moxios = require('moxios')
+const expect = require("chai").expect;
+const auth = require("../authorization.js");
+const moxios = require('moxios')
 
 describe("Authorization module tests", function () {
     describe("Check authorize() method", function () {

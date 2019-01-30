@@ -4,7 +4,7 @@
   "description": "",
   "main": "authorizer.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "nyc --reporter=text mocha --reporter=nyan"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
-    "moxios": "^0.4.0"
+    "moxios": "^0.4.0",
+    "nyc": "^13.1.0"
   }
 }
