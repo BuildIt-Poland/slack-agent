@@ -1,6 +1,5 @@
 const queryString = require('query-string');
 const dynamo = require('./dynamo.js');
-const smb = require('slack-message-builder');
 
 exports.saveParkingPlace = async (place, tableName) => {
     return await dynamo.save(place, tableName);
@@ -25,32 +24,6 @@ exports.createPlace = async (payload, tableName) => {
         Types: 'parkingPlace',
         ...place
     };
-}
-
-exports.convertParkingPlacesToSlackMessage = (places) => {
-    if (!Array.isArray(places) || !places.length)
-        return smb().text(`Parking places don't exists`).json();
-    const attachments = places.map(place => {
-        return {
-            fields: [{
-                title: place.City,
-                value: place.Place
-            }]
-        }
-    });
-    return smb().text(`Parking Places:`).attachments(attachments).json();
-}
-
-exports.convertParkingPlaceToSlackMessage = (place) => {
-    return smb()
-        .attachment()
-        .pretext(`We've added a parking place`)
-        .field()
-        .title(`City: ${place.City}`)
-        .value(`Place: ${place.Place}`)
-        .end()
-        .end()
-        .json();
 }
 
 const parseSlackTextToPlace = (payload) => {
