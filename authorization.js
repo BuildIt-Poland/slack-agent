@@ -21,8 +21,16 @@ exports.oAuthRedirectUrl = (payload) => {
 }
 
 exports.isVerified = (request, signingSecret) => {
-  const signature = request.headers['X-Slack-Signature'];
-  const timestamp = request.headers['X-Slack-Request-Timestamp'];
+  const signatureProperty = 'X-Slack-Signature';
+  const timestampProperty = 'X-Slack-Request-Timestamp';
+
+  if (!request.hasOwnProperty("headers")) return false;
+  if (!request.headers.hasOwnProperty(signatureProperty) || !request.headers.hasOwnProperty(timestampProperty)) return false;
+  if (typeof signingSecret == "undefined") return false;
+  if (typeof signingSecret != "string") return false;
+
+  const signature = request.headers[signatureProperty];
+  const timestamp = request.headers[timestampProperty];
 
   if (!signature || !timestamp) return false;
 
