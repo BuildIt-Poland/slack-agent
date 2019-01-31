@@ -1,5 +1,5 @@
 const queryString = require('query-string');
-const dynamo = require('./dynamo.js');
+const dynamo = require('../communication/dynamo.js');
 
 exports.saveParkingPlace = async (place, tableName) => {
     return await dynamo.save(place, tableName);

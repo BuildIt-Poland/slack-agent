@@ -1,8 +1,8 @@
 'use strict';
 
-const auth = require('./authorization.js');
-const parkingPlace = require('./parkingPlace.js');
-const slackMessages = require('./slackMessages.js');
+const auth = require('./security/authorization.js');
+const parkingPlace = require('./workers/parkingPlace.js');
+const slackMessages = require('./communication/slackMessages.js');
 
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET,
   CLIENT_ID = process.env.SLACK_CLIENT_ID,
