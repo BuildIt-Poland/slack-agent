@@ -10,6 +10,7 @@ env:
 # we need version 8.10 which is running in AWS Lambda services
 before_install:
   - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
   - node --version
   - npm --version
 # npm install has to be called explicitely for devDependencies
@@ -19,10 +20,21 @@ install:
 script:
   - npm test
 deploy:
-  provider: script
-  script: "sls deploy"
-  on:
-    branch: master
+# serverless-stg-mngr has to be installed explicitely on Travis
+# it's in devDependencies but Travis seems to remove them befor deploy
+  - provider: script
+    script: "sls plugin install --name serverless-stage-manager; sls deploy -s dev"
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH != master
+  - provider: script
+    script: "sls plugin install --name serverless-stage-manager; sls deploy -s stg"
+    on:
+      branch: develop
+  - provider: script
+    script: "sls plugin install --name serverless-stage-manager; sls deploy -s prod"
+    on:
+      branch: master
 # notify slack-agent channel, note that possible complaints on "secure" wrong type are not relevant.
 notifications:
   slack:
