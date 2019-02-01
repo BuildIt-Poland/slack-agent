@@ -41,7 +41,11 @@ module.exports.parkingPlace = async (event) => {
   if (!isValid) return {
     statusCode: 401
   }
-  const place = await parkingPlace.createPlace(event, TABLE_NAME);
+  const placeParams = slackMessages.parseMessageFromSlack(event,{
+    City: null,
+    Date: null
+  });
+  const place = await parkingPlace.createPlace(placeParams, TABLE_NAME);
   if (!place) return {
     statusCode: 400
   }

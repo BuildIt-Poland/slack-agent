@@ -1,4 +1,3 @@
-const queryString = require('query-string');
 const dynamo = require('../communication/dynamo.js');
 
 exports.saveParkingPlace = async (place, tableName) => {
@@ -16,23 +15,13 @@ exports.getParkingPlaces = async (tableName) => {
 	return await dynamo.scan(params);
 };
 
-exports.createPlace = async (payload, tableName) => {
-	const place = parseSlackTextToPlace(payload);
-	if (!place) return null;
-	const isPlaceExist = await placeExistInDynamo(place, tableName);
+exports.createPlace = async (placeParams, tableName) => {
+	if (!placeParams) return null;
+	const isPlaceExist = await placeExistInDynamo(placeParams, tableName);
 	return isPlaceExist ? null : {
 		Types: 'parkingPlace',
-		...place
+		...placeParams
 	};
-};
-
-const parseSlackTextToPlace = (payload) => {
-	const params = queryString.parse(payload.body);
-	const text = params.text.split(' ');
-	return text.length == 2 ? {
-		City: text[0],
-		Place: text[1]
-	} : null;
 };
 
 const placeExistInDynamo = async (place, tableName) => {
