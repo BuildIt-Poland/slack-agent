@@ -28,8 +28,8 @@ describe('Authorization module tests', function () {
 			let payload = {
 				code: '1111',
 				client_id: 'as',
-                client_secret: 'as',
-                stage: 'stg'
+				client_secret: 'as',
+				stage: 'stg'
 
 			};
 			let url = await auth.authorize(payload);
@@ -38,13 +38,13 @@ describe('Authorization module tests', function () {
 			expect(url.config.data.indexOf('code')).not.equal(-1);
 			expect(url.config.data.indexOf('client_id')).not.equal(-1);
 			expect(url.config.data.indexOf('client_secret')).not.equal(-1);
-        });
-        it('returns "no security" for dev stage', async function () {
+		});
+		it('returns "no security" for dev stage', async function () {
 			let payload = {
 				code: '1111',
 				client_id: 'as',
-                client_secret: 'as',
-                stage: 'dev'
+				client_secret: 'as',
+				stage: 'dev'
 
 			};
 			let url = await auth.authorize(payload);
@@ -62,13 +62,12 @@ describe('Authorization module tests', function () {
 			expect(url.headers.Location.indexOf('https://slack.com/oauth/authorize?')).not.equal(-1);
 			expect(url.headers.Location.indexOf('scope')).not.equal(-1);
 			expect(url.headers.Location.indexOf('client_id')).not.equal(-1);
-            
-        });
-        it('returns "no security" for dev stage', async function () {
+		});
+		it('returns "no security" for dev stage', async function () {
 			let payload = {
 				scope: 'test',
 				client_id: '123',
-                stage: 'dev'
+				stage: 'dev'
 			};
 			let url = await auth.oAuthRedirectUrl(payload);
 			expect(typeof url).to.equal('string');
@@ -133,8 +132,8 @@ describe('Authorization module tests', function () {
 			};
 			let verified = await auth.isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 			expect(verified).to.equal(false);
-        });
-        it('returns true for dev stage', async function () {
+		});
+		it('returns true for dev stage', async function () {
 			let verified = await auth.isVerified({}, {}, 'dev');
 			expect(verified).to.equal(true);
 		});
