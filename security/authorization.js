@@ -6,16 +6,16 @@ const crypto = require('crypto');
 const timingSafeCompare = require('tsscmp');
 
 exports.authorize = (payload) => {
-  if(payload.stage == 'dev')
-    return Promise.resolve("Dev environment - no security.");
+	if(payload.stage == 'dev')
+		return Promise.resolve('Dev environment - no security.');
 	return axios.post('https://slack.com/api/oauth.access',
 		queryString.stringify(payload)
 	);
 };
 
 exports.oAuthRedirectUrl = (payload) => {
-  if(payload.stage == 'dev')
-    return Promise.resolve("Dev environment - no security.");
+	if(payload.stage == 'dev')
+		return Promise.resolve('Dev environment - no security.');
 	return Promise.resolve({
 		statusCode: 301,
 		headers: {
@@ -25,8 +25,8 @@ exports.oAuthRedirectUrl = (payload) => {
 };
 
 exports.isVerified = (request, signingSecret, stage) => {
-  if(stage == 'dev')
-    return Promise.resolve(true);
+	if(stage == 'dev')
+		return Promise.resolve(true);
 	const signatureProperty = 'X-Slack-Signature';
 	const timestampProperty = 'X-Slack-Request-Timestamp';
 
