@@ -43,7 +43,7 @@ module.exports.parkingPlace = async (event) => {
   }
   const placeParams = slackMessages.parseMessageFromSlack(event,{
     City: null,
-    Date: null
+    Place: null
   });
   const place = await parkingPlace.createPlace(placeParams, TABLE_NAME);
   if (!place) return {
