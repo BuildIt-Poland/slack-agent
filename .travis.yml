@@ -24,6 +24,8 @@ deploy:
 # it's in devDependencies but Travis seems to remove them befor deploy
   - provider: script
     script: "sls plugin install --name serverless-stage-manager; sls deploy -s dev"
+    on:
+      all_branches: true
   - provider: script
     script: "sls plugin install --name serverless-stage-manager; sls deploy -s stg"
     on:
