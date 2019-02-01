@@ -26,6 +26,7 @@ deploy:
     script: "sls plugin install --name serverless-stage-manager; sls deploy -s dev"
     on:
       all_branches: true
+      condition: $TRAVIS_BRANCH != master
   - provider: script
     script: "sls plugin install --name serverless-stage-manager; sls deploy -s stg"
     on:
