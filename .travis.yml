@@ -19,10 +19,16 @@ install:
 script:
   - npm test
 deploy:
-  provider: script
-  script: "sls deploy"
-  on:
-    branch: master
+  - provider: script
+    script: "sls deploy -s dev"
+  - provider: script
+    script: "sls deploy -s stg"
+    on:
+      branch: develop
+  - provider: script
+    script: "sls deploy -s prod"
+    on:
+      branch: master
 # notify slack-agent channel, note that possible complaints on "secure" wrong type are not relevant.
 notifications:
   slack:

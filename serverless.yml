@@ -1,13 +1,17 @@
 service: slack-agent
+plugins:
+  - serverless-stage-manager
 provider:
   name: aws
   runtime: nodejs8.10
+  stage: ${opt:stage,'dev'}
   environment:
     SLACK_CLIENT_ID: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_CLIENT_SECRET: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_SIGNING_SECRET:  ${ssm:SLACK_AGENT_SIGING_SECRET}
     SLACK_CLIENT_SCOPES: ${ssm:SLACK_AGENT_CLIENT_SCOPE} 
-    TABLE_NAME: ${ssm:SLACK_AGENT_TABLE_NAME}
+    TABLE_NAME: ${self:custom.tableName}
+    ENV_STAGE: ${self:custom.stage}
   iamRoleStatements:    
     - Effect: Allow
       Resource: "*"
@@ -20,6 +24,23 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
 region: us-east-1
+
+custom:
+  stages:
+    - dev
+    - stg
+    - prod
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: ${opt:stage, self:provider.stage}
+  # Set the table name here so we can use it while testing locally
+  tableName: parking-${self:custom.stage}
+  # Set our DynamoDB throughput for prod and all other non-prod stages.
+  tableThroughputs:
+    prod: 5
+    default: 1
+  tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
+
 functions:
   authorization:
     handler: handler.authorization
@@ -39,18 +60,7 @@ functions:
       - http:
           path: slack/parkingPlaceList
           method: post
+# Create our resources with separate CloudFormation templates
 resources:
-  Resources:
-    dynamodb:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: parking
-        AttributeDefinitions:
-          - AttributeName: Id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: Id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+  # DynamoDB
+  - ${file(resources/dynamodb-table.yml)}
