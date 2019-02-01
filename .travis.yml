@@ -17,19 +17,20 @@ before_install:
 install:
   - npm install 
   - npm install -g serverless
+  - sls plugin install --name serverless-stage-manager
 script:
   - npm test
 deploy:
 # serverless-stg-mngr has to be installed explicitely on Travis
 # it's in devDependencies but Travis seems to remove them befor deploy
   - provider: script
-    script: "npm install -g serverless-stage-manager; sls deploy -s dev"
+    script: "sls deploy -s dev"
   - provider: script
-    script: "npm install -g serverless-stage-manager; sls deploy -s stg"
+    script: "sls deploy -s stg"
     on:
       branch: develop
   - provider: script
-    script: "npm install -g serverless-stage-manager; sls deploy -s prod"
+    script: "sls deploy -s prod"
     on:
       branch: master
 # notify slack-agent channel, note that possible complaints on "secure" wrong type are not relevant.
