@@ -3,21 +3,22 @@ const dynamo = require('../communication/dynamo.js');
 
 exports.saveReservation = async (reservation, reservationParams, tableName) => {
 	const places = await findPlacesInCity(reservationParams.City, tableName);
-	/*	return await dynamo.save({
-			Types: 'reservation',
-			Dates: reservationParams.Date,
-			Reservations: [places[0]]
-		}, tableName); */
+	if(!places.length) return null;
+	if(!reservation) return await dynamo.save({
+		Types: 'reservation',
+		ReturnValues: 'ALL_NEW',
+		Dates: reservationParams.Date,
+		Reservations: [places[0]]
+	}, tableName); 
 	const freePlace = findFreePlace(reservation, places);
-	const params = {
+	return freePlace ? await dynamo.update({
 		TableName: tableName,
 		Key: { id: reservation.Id },
+		ReturnValues: 'ALL_NEW',
 		UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
 		ExpressionAttributeNames: {'#reservations': 'Reservations'},
 		ExpressionAttributeValues: { ':place': [freePlace],}
-	};
-	await dynamo.update(params);
-	return null;
+	}) : null;
 };
 
 exports.findReservationByDate = async (date, tableName) => {
