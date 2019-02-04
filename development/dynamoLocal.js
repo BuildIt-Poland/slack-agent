@@ -33,7 +33,9 @@ exports.configure = async () => {
 		}
 	} catch (error) {
 		console.error(error);
+		return false;
 	}
+	return true;
 };
 
 function createTableAsync(awsClient, params) {
