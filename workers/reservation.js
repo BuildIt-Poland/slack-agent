@@ -1,24 +1,18 @@
 'use strict';
 const dynamo = require('../communication/dynamo.js');
 
-exports.saveReservation = async (reservation, reservationParams, tableName) => {
-	const places = await findPlacesInCity(reservationParams.City, tableName);
-	if(!places.length) return null;
-	if(!reservation) return await dynamo.save({
+exports.saveReservation = async (reservation, place, reservationParams, tableName) => {
+	return !reservation ? await dynamo.save({
 		Types: 'reservation',
-		ReturnValues: 'ALL_NEW',
-		Dates: reservationParams.Date,
-		Reservations: [places[0]]
-	}, tableName); 
-	const freePlace = findFreePlace(reservation, places);
-	return freePlace ? await dynamo.update({
+		Dates: reservationParams.Dates,
+		Reservations: [place]
+	}, tableName) : await dynamo.update({
 		TableName: tableName,
 		Key: { id: reservation.Id },
-		ReturnValues: 'ALL_NEW',
 		UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
 		ExpressionAttributeNames: {'#reservations': 'Reservations'},
-		ExpressionAttributeValues: { ':place': [freePlace],}
-	}) : null;
+		ExpressionAttributeValues: { ':place': [place],}
+	}); 
 };
 
 exports.findReservationByDate = async (date, tableName) => {
@@ -47,6 +41,11 @@ const findPlacesInCity = async (city, tableName) => {
 	return result.Items;
 };
 
-const findFreePlace = (reservation, places) => {
-	return places.find((place) => !reservation.Reservations.some((item) => place.Id === item.Id));
+
+exports.findFreePlace = async (reservation, reservationParams, tableName) => {
+	const places = await findPlacesInCity(reservationParams.City, tableName);
+	if(!places.length) return null;
+	if(!reservation) return places[0];
+	const freePlace = places.find((place) => !reservation.Reservations.some((item) => place.Id === item.Id));
+	return freePlace ? freePlace : null;
 };

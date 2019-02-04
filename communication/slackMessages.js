@@ -11,8 +11,8 @@ exports.parseMessageFromSlack = (payload, object) => {
 		({...accumulator, [keys[currentIndex]]: currentValue}), {});
 };
 
-exports.parkingPlaceAddedSlackMessage = (place) => {
-	return `{"text": "You added a parking place.\n *City:* ${place.City}\n *Place:* ${place.Place}"}`;
+exports.slackDefaultMessage = (message) => {
+	return `{"text": ${message}}`;
 };
 
 exports.listParkingPlaceSlackMessage = (places) => {
