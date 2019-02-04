@@ -8,7 +8,7 @@ exports.saveReservation = async (reservation, place, reservationParams, tableNam
 		Reservations: [place]
 	}, tableName) : await dynamo.update({
 		TableName: tableName,
-		Key: { id: reservation.Id },
+		Key: { Id: reservation.Id },
 		UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
 		ExpressionAttributeNames: {'#reservations': 'Reservations'},
 		ExpressionAttributeValues: { ':place': [place],}
