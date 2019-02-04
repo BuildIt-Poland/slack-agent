@@ -37,7 +37,7 @@ module.exports.authorization = async (event) => {
 };
 
 module.exports.parkingPlace = async (event) => {
-  const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
+	const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
 	if (!isValid) return {
 		statusCode: 401
 	};

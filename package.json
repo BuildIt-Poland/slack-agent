@@ -4,6 +4,7 @@
   "description": "",
   "main": "authorizer.js",
   "scripts": {
+    "dev": "node -e 'require(\"./communication/dynamoLocal.js\").configure()'",
     "test": "nyc --reporter=text mocha --reporter=nyan"
   },
   "author": "",
@@ -14,6 +15,7 @@
     "tsscmp": "^1.0.6"
   },
   "devDependencies": {
+    "aws-sdk": "^2.395.0",
     "chai": "^4.2.0",
     "eslint": "^5.12.1",
     "mocha": "^5.2.0",
