@@ -17,3 +17,7 @@ exports.save = (record, tableName) => {
 exports.scan = (params) => {
 	return dynamoClient.scan(params).promise();
 };
+
+exports.update = (params) => {
+	return dynamoClient.update(params).promise();
+};
