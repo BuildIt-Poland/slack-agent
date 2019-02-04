@@ -10,7 +10,7 @@ exports.saveReservation = async (reservation, reservationParams, tableName) => {
 			reservations: [places.first()]
 		}, tableName); 
 	} else{
-		//TOO DO UPDATE
+		//TOO DO
 		return null;
 	}
 };
