@@ -4,13 +4,16 @@
   "description": "",
   "main": "authorizer.js",
   "scripts": {
-    "dev": "node -e 'require(\"./communication/dynamoLocal.js\").configure()'",
+    "dev": "node -e 'require(\"./development/dynamoLocal.js\").configure()'",
     "test": "nyc --reporter=text mocha --reporter=nyan"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
+    "fs": "0.0.1-security",
+    "js-yaml": "^3.12.1",
+    "path": "^0.12.7",
     "query-string": "^6.2.0",
     "tsscmp": "^1.0.6"
   },
