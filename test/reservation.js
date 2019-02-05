@@ -1,34 +1,22 @@
+/* globals describe, beforeEach, afterEach, it */
 'use strict';
-
-/* global describe it  */
+const AWS = require('aws-sdk-mock');
 const expect = require('chai').expect;
+const res = require('../workers/reservation.js');
 
 describe('Reservation module tests',  () => {
 	describe('Check findReservationByDateAsync(date, tableName)', () => {
-		it('returns reservation for specific date', async () => {
+		beforeEach(async () => {
+			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => { 
+				callback(null, { Items: []}); 
+			});
 		});
-		it(`returns undefined when reservations isn't exist in database`, async () => {
+		afterEach(() => {
+			AWS.restore('DynamoDB.DocumentClient');
+		});
+		it('returns reservation for specific date', async () => {
+			const reservation = await res.findReservationByDateAsync('02030232', 'parking-dev');
+			expect(reservation).to.equals(undefined);
 		});
 	});
-
 });
-
-/*
-var updateTableSpy = sinon.spy();
-AWS.mock('DynamoDB', 'updateTable', updateTableSpy);
- 
-// Object under test
-myDynamoManager.scaleDownTable();
- 
-// Assert on your Sinon spy as normal
-assert.isTrue(updateTableSpy.calledOnce, 'should update dynamo table via AWS SDK');
-var expectedParams = {
-  TableName: 'testTableName',
-  ProvisionedThroughput: {
-    ReadCapacityUnits: 1,
-    WriteCapacityUnits: 1
-  }
-};
-assert.isTrue(updateTableSpy.calledWith(expectedParams), 'should pass correct parameters');
-
-*/

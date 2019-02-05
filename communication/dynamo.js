@@ -1,7 +1,9 @@
 const uuid = require('uuid');
 const AWS = require('aws-sdk');
 
-const dynamoClient = new AWS.DynamoDB.DocumentClient();
+const dynamoClient = new AWS.DynamoDB.DocumentClient({
+	region: 'us-east-1'
+});
 
 exports.save = (record, tableName) => {
 	const params = {

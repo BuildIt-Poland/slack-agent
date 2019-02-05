@@ -14,6 +14,8 @@
     "tsscmp": "^1.0.6"
   },
   "devDependencies": {
+    "aws-sdk": "^2.396.0",
+    "aws-sdk-mock": "^4.3.0",
     "chai": "^4.2.0",
     "eslint": "^5.12.1",
     "mocha": "^5.2.0",

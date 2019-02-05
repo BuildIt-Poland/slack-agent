@@ -1,6 +1,5 @@
 'use strict';
 const dynamo = require('../communication/dynamo.js');
-
 exports.saveReservationAsync = async (reservation, place, reservationParams, tableName) => {
 	return !reservation ? await dynamo.save({
 		Types: 'reservation',
@@ -40,7 +39,6 @@ async function findPlacesInCityAsync(city, tableName){
 	const result = await dynamo.scan(params);
 	return result.Items;
 }
-
 
 exports.findFreePlaceAsync = async (reservation, reservationParams, tableName) => {
 	const places = await findPlacesInCityAsync(reservationParams.City, tableName);
