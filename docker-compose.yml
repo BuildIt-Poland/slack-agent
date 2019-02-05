@@ -5,6 +5,7 @@ networks:
 ### for test usage only
 ###############
 services:
+  #GUI: http://localhost:8000/shell/
   dynamodb:
     image: amazon/dynamodb-local
     hostname: dynamodb
@@ -12,6 +13,15 @@ services:
       - 8000:8000
     networks:
       - test_lambda
+  config:
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+    hostname: config
+    networks:
+      - test_lambda
+    depends_on: 
+      - dynamodb
 
   lambda:
     image: 'lambci/lambda:nodejs8.10'
@@ -24,13 +34,13 @@ services:
       - CLIENT_SCOPES=scopes
       - SIGNING_SECRET=123
       - TABLE_NAME=parking-dev
-      - EVENT={"body":{"City":"Waw", "Place":"1"}}
+      - LOCAL_DB=true
     ports:
       - 80:80
       - 8080:8080
-    command: handler.parkingPlace $EVENT
+    command: "handler.parkingPlaceList '{\"body\":{\"test\": \"123\"}}'"
     networks:
       - test_lambda
-    links: 
-      - dynamodb
+    depends_on: 
+      - config
   
