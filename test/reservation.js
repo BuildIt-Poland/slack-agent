@@ -4,7 +4,7 @@
 const expect = require('chai').expect;
 
 describe('Reservation module tests',  () => {
-	describe('Check findReservationByDate(date, tableName)', () => {
+	describe('Check findReservationByDateAsync(date, tableName)', () => {
 		it('returns reservation for specific date', async () => {
 		});
 		it(`returns undefined when reservations isn't exist in database`, async () => {

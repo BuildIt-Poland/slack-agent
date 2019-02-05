@@ -1,7 +1,7 @@
 'use strict';
 const dynamo = require('../communication/dynamo.js');
 
-exports.saveReservation = async (reservation, place, reservationParams, tableName) => {
+exports.saveReservationAsync = async (reservation, place, reservationParams, tableName) => {
 	return !reservation ? await dynamo.save({
 		Types: 'reservation',
 		Dates: reservationParams.Dates,
@@ -15,7 +15,7 @@ exports.saveReservation = async (reservation, place, reservationParams, tableNam
 	}); 
 };
 
-exports.findReservationByDate = async (date, tableName) => {
+exports.findReservationByDateAsync = async (date, tableName) => {
 	const params = {
 		ExpressionAttributeValues: {
 			':types' : 'reservation',
@@ -28,7 +28,7 @@ exports.findReservationByDate = async (date, tableName) => {
 	return result.Items[0];
 };
 
-const findPlacesInCity = async (city, tableName) => {
+async function findPlacesInCityAsync(city, tableName){
 	const params = {
 		ExpressionAttributeValues: {
 			':city' : city,
@@ -39,11 +39,11 @@ const findPlacesInCity = async (city, tableName) => {
 	};
 	const result = await dynamo.scan(params);
 	return result.Items;
-};
+}
 
 
-exports.findFreePlace = async (reservation, reservationParams, tableName) => {
-	const places = await findPlacesInCity(reservationParams.City, tableName);
+exports.findFreePlaceAsync = async (reservation, reservationParams, tableName) => {
+	const places = await findPlacesInCityAsync(reservationParams.City, tableName);
 	if(!places.length) return null;
 	if(!reservation) return places[0];
 	const freePlace = places.find((place) => !reservation.Reservations.some((item) => place.Id === item.Id));
