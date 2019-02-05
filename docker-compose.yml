@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile.dev
       context: .
     hostname: config
+    environment:
+      - LOCAL_DB=true
     networks:
       - test_lambda
     depends_on: 

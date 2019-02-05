@@ -1,27 +1,33 @@
 'use strict';
-/* global describe it beforeEach afterEach */
+/* global describe it before after */
 const expect = require('chai').expect;
 const AWS = require('aws-sdk-mock');
 const dynamoLocal = require('../development/dynamoLocal.js');
 
 describe('DynamoLocal module tests', function () {
 	describe('Check configure() function', function () {
-		beforeEach(function () {
+		before(function () {
 			AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback){
-				if(typeof params.TableName != 'undefined' && params.TableName == 'parking-dev' && typeof params.Item.Types != 'undefined')
-					callback(null, 'successfully put item in database');
+				if(typeof params.TableName == 'undefined')
+					callback({error: 'typeof params.TableName == \'undefined\''}, 'failed to put data in database');
+				else if (params.TableName != 'parking-dev')
+					callback({error: 'params.TableName != \'parking-dev\''}, 'failed to put data in database');
+				else if (typeof params.Item.Types == 'undefined')
+					callback({error: 'typeof params.Item.Types == \'undefined\''}, 'failed to put data in database');
 				else
-					callback({error: 'document big one'}, 'failed to put data in database');
+					callback(null, 'successfully put item in database');
 			});
 			AWS.mock('DynamoDB', 'createTable', function (params, callback){
-				if(typeof params.TableName != 'undefined' && params.TableName == 'parking-dev')
-					callback(null, 'successfully created table in database');
+				if(typeof params.TableName == 'undefined')
+					callback({error: 'typeof params.TableName == \'undefined\''}, 'failed to create table in database');
+				else if(params.TableName != 'parking-dev')
+					callback({error: 'params.TableName != \'parking-dev\''}, 'failed to create table in database');
 				else
-					callback({error: 'table big one'}, 'failed to create table in database');
+					callback(null, 'successfully created table in database');
 			});
 		});
     
-		afterEach(function () {
+		after(function () {
 			AWS.restore('DynamoDB');
 			AWS.restore('DynamoDB.DocumentClient');
 		});
@@ -34,7 +40,7 @@ describe('DynamoLocal module tests', function () {
 });
 describe('DynamoLocal failures module tests', function () {
 	describe('Check configure() function', function () {
-		beforeEach(function () {
+		before(function () {
 			AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback){
 				callback({error: 'document big one'}, 'failed to put data in database');
 			});
@@ -43,7 +49,7 @@ describe('DynamoLocal failures module tests', function () {
 			});
 		});
     
-		afterEach(function () {
+		after(function () {
 			AWS.restore('DynamoDB');
 			AWS.restore('DynamoDB.DocumentClient');
 		});
@@ -56,7 +62,7 @@ describe('DynamoLocal failures module tests', function () {
 });
 describe('DynamoLocal failures module tests', function () {
 	describe('Check configure() function', function () {
-		beforeEach(function () {
+		before(function () {
 			AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback){
 				callback({error: 'document big one'}, 'failed to put data in database');
 			});
@@ -65,7 +71,7 @@ describe('DynamoLocal failures module tests', function () {
 			});
 		});
     
-		afterEach(function () {
+		after(function () {
 			AWS.restore('DynamoDB');
 			AWS.restore('DynamoDB.DocumentClient');
 		});

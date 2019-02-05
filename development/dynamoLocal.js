@@ -3,16 +3,13 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
+const dynamoEnv = require('../communication/dynamoEnv.js');
+
 
 exports.configure = async () => {
 	let docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'docs.json'), 'utf8'));
 	let dbConfig = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, '../resources/dynamodb-table.yml'), 'utf8'));
-	let connParams = {
-		endpoint: 'http://dynamodb:8000',
-		credentials: new AWS.Credentials('123', '123'),
-		region: 'us-east-1'
-	};
-	AWS.config.update(connParams);
+	let connParams = dynamoEnv.awsEnv();
 	let client = new AWS.DynamoDB(connParams);
 	let documentClient = new AWS.DynamoDB.DocumentClient(connParams);
 	let tableName = 'parking-dev';
