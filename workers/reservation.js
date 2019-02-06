@@ -33,6 +33,27 @@ exports.findFreePlaceAsync = async (reservation, city, tableName) => {
 	return freePlace ? freePlace : {};
 };
 
+exports.listReservationsForDay = async (reservation, city, tableName) =>{
+	const places = await findPlacesInCityAsync(city, tableName);
+	if(!places) return null;
+	if(!places.length) return [];
+	if (!Object.keys(reservation).length) 
+		return places.map(place => ({ City: place.City, Place: place.Place, Reservation: 'free'}));
+	const allPlaces = places.map(place => {
+		const res = reservation.Reservations.find((item) => place.Id === item.Id);
+		return res ? {
+			City: res.City,
+			Place: res.Place,
+			Reservation: res.Reservation || null
+		} : {
+			City: place.City,
+			Place: place.Place,
+			Reservation: 'free'
+		};
+	});
+	return allPlaces;
+};
+
 async function putReservation(place, Dates, tableName) {
 	try {
 		await dynamo.save({

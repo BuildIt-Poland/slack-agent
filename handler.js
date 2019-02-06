@@ -60,18 +60,6 @@ module.exports.parkingPlace = async (event) => {
 	};
 };
 
-module.exports.parkingPlaceList = async (event) => {
-	const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
-	if (!isValid) return {
-		statusCode: 401
-	};
-	const result = await parkingPlace.getParkingPlaces(TABLE_NAME);
-	return {
-		statusCode: 200,
-		body: slackMessages.listParkingPlaceSlackMessage(result.Items)
-	};
-};
-
 module.exports.reservation = async (event) => {
 	const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
 	if(!isValid) return {
@@ -98,7 +86,6 @@ module.exports.reservation = async (event) => {
 			.slackDefaultMessage(`No places available on ${reservationParams.Dates} in ${reservationParams.City}`)
 	};
 
-	//const reservationId = reservation ? reservation.Id : null;
 	const result = await res.saveReservationAsync(reservation.Id, place, reservationParams.Dates, TABLE_NAME);
 	return result ? {
 		statusCode: 200,
@@ -106,5 +93,35 @@ module.exports.reservation = async (event) => {
 			.slackDefaultMessage(`You booked a place number ${place.Place} in ${reservationParams.City} on ${reservationParams.Dates}`)
 	} : {
 		statusCode: 500
+	};
+};
+
+module.exports.reservationList = async (event) => {
+	const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
+	if (!isValid) return {
+		statusCode: 401
+	};
+
+	const reservationParams = slackMessages.parseMessageFromSlack(event, {
+		Dates: null,
+		City: null,
+	});
+
+	const reservation = await res.findReservationByDateAsync(reservationParams.Dates, TABLE_NAME);
+	if(!reservation) return {
+		statusCode: 500
+	};
+
+	const allPlaces = await res.listReservationsForDay(reservation, reservationParams.City, TABLE_NAME);
+	if(!allPlaces) return {
+		statusCode: 500
+	};
+	if (!allPlaces.length) return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(`Parking places don't exists`)
+	};
+	return {
+		statusCode: 200,
+		body: slackMessages.listSlackMessage(allPlaces, 'List of reservations with available places:')
 	};
 };

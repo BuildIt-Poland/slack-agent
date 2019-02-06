@@ -143,6 +143,55 @@ describe('Reservation module tests', () => {
 			expect(freePlace).to.be.deep.equal({});
 		});
 	});
+	describe('Check listReservationsForDay(reservation, city, tableName) function', () => {
+		beforeEach(() => {
+			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
+				callback(null, {
+					Items: [{
+						City: 'Gdansk',
+						Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
+						Place: 11,
+						Types: 'parkingPlace'
+					},
+					{
+						City: 'Gdansk',
+						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+						Place: 12,
+						Types: 'parkingPlace'
+					}]
+				});
+			});
+		});
+		afterEach(() => {
+			AWS.restore('DynamoDB.DocumentClient');
+		});
+		it('returns reservations array', async () => {
+			const reservation = {
+				Id: '78b32460-287d-11e9-ae75-1578cdc7c640',
+				Dates: '11022019',
+				Reservations: [
+					{
+						City: 'Gdansk',
+						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+						Place: 12,
+						Types: 'parkingPlace',
+						Reservation: 'mhein'
+					}]
+			};
+			const allReservations = await res.listReservationsForDay(reservation, 'Gdansk', 'parking-dev');
+			expect(allReservations).to.be.a('array');
+			expect(allReservations[0]).have.property('City');
+			expect(allReservations[0]).have.property('Place');
+			expect(allReservations[0]).have.property('Reservation');
+		});
+		it('returns reservations array with empty reservation parameter', async () => {
+			const allReservations = await res.listReservationsForDay({}, 'Gdansk', 'parking-dev');
+			expect(allReservations).to.be.a('array');
+			expect(allReservations[0]).have.property('City');
+			expect(allReservations[0]).have.property('Place');
+			expect(allReservations[0]).have.property('Reservation');
+		});
+	});
 });
 
 describe('Reservation failures module tests', () => {
@@ -203,6 +252,20 @@ describe('Reservation failures module tests', () => {
 		it('returns null', async () => {
 			const freePlace = await res.findFreePlaceAsync({}, 'Gdansk', 'parking-dev');
 			expect(freePlace).equals(null);
+		});
+	});
+	describe('Check listReservationsForDay(reservation, city, tableName) function', () => {
+		beforeEach(() => {
+			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
+				callback({error: 'error'}, null);
+			});
+		});
+		afterEach(() => {
+			AWS.restore('DynamoDB.DocumentClient');
+		});
+		it('returns null', async () => {
+			const allReservations = await res.listReservationsForDay({}, 'Gdansk', 'parking-dev');
+			expect(allReservations).equals(null);
 		});
 	});
 });

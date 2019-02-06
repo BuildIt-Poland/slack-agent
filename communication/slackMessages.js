@@ -15,9 +15,12 @@ exports.slackDefaultMessage = (message) => {
 	return `{"text": ${message}}`;
 };
 
-exports.listParkingPlaceSlackMessage = (places) => {
-	if (!Array.isArray(places) || !places.length)
-		return `{"text": "Parking places don't exists}`;
-	const attachments = places.map(place =>  ({ text: `*City:* ${place.City}\n *Place:* ${place.Place}`}));
-	return `{"text": "List of Parking Places:", "attachments" : ${JSON.stringify(attachments)}}`;
+exports.listSlackMessage = (records, title) => {
+	const attachments = records.map(record => {
+		const textArray = Object.keys(record)
+			.map(key => (record[key] || record[key] != '') 
+				? `*${key}:* ${record[key]}\n` : '');
+		return { text: textArray.join('') };
+	});
+	return `{"text": "${title}", "attachments" : ${JSON.stringify(attachments)}}`;
 };
