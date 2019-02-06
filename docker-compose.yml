@@ -13,6 +13,7 @@ services:
       - 8000:8000
     networks:
       - test_lambda
+
   config:
     build:
       dockerfile: Dockerfile.dev
@@ -25,6 +26,11 @@ services:
     depends_on: 
       - dynamodb
 
+# to test endpoint please modify "command"
+# general syntax:
+# "handler.<func_name> {\"body\":{<event_data>}}'"
+# example:
+# command: "handler.parkingPlaceList '{\"body\":{\"test\": \"123\"}}'"
   lambda:
     image: 'lambci/lambda:nodejs8.10'
     hostname: slack-agent
@@ -37,9 +43,6 @@ services:
       - SIGNING_SECRET=123
       - TABLE_NAME=parking-dev
       - LOCAL_DB=true
-    ports:
-      - 80:80
-      - 8080:8080
     command: "handler.parkingPlaceList '{\"body\":{\"test\": \"123\"}}'"
     networks:
       - test_lambda
