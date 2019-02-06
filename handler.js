@@ -3,6 +3,7 @@
 const auth = require('./security/authorization.js');
 const parkingPlace = require('./workers/parkingPlace.js');
 const slackMessages = require('./communication/slackMessages.js');
+const res = require('./workers/reservation.js');
 
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET,
 	CLIENT_ID = process.env.SLACK_CLIENT_ID,
@@ -52,7 +53,8 @@ module.exports.parkingPlace = async (event) => {
 	const result = await parkingPlace.saveParkingPlace(place, TABLE_NAME);
 	return result ? {
 		statusCode: 200,
-		body: slackMessages.parkingPlaceAddedSlackMessage(place)
+		body: slackMessages
+			.slackDefaultMessage(`"You added a parking place.\n *City:* ${place.City}\n *Place:* ${place.Place}"`)
 	} : {
 		statusCode: 500
 	};
@@ -67,5 +69,42 @@ module.exports.parkingPlaceList = async (event) => {
 	return {
 		statusCode: 200,
 		body: slackMessages.listParkingPlaceSlackMessage(result.Items)
+	};
+};
+
+module.exports.reservation = async (event) => {
+	const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
+	if(!isValid) return {
+		statusCode: 200,
+	};
+
+	const reservationParams = slackMessages.parseMessageFromSlack(event, {
+		Dates: null,
+		City: null,
+	});
+
+	const reservation = await res.findReservationByDateAsync(reservationParams.Dates, TABLE_NAME);
+	if(!reservation) return {
+		statusCode: 500
+	};
+
+	const place = await res.findFreePlaceAsync(reservation,reservationParams.City, TABLE_NAME);
+	if(!place) return{
+		statusCode: 500
+	};
+	if(!Object.keys(place).length) return {
+		statusCode: 200,
+		body: slackMessages
+			.slackDefaultMessage(`No places available on ${reservationParams.Dates} in ${reservationParams.City}`)
+	};
+
+	//const reservationId = reservation ? reservation.Id : null;
+	const result = await res.saveReservationAsync(reservation.Id, place, reservationParams.Dates, TABLE_NAME);
+	return result ? {
+		statusCode: 200,
+		body: slackMessages
+			.slackDefaultMessage(`You booked a place number ${place.Place} in ${reservationParams.City} on ${reservationParams.Dates}`)
+	} : {
+		statusCode: 500
 	};
 };
