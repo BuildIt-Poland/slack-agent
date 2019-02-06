@@ -60,6 +60,12 @@ functions:
       - http:
           path: slack/parkingPlaceList
           method: post
+  reservation:
+    handler: handler.reservation
+    events:
+      - http:
+          path: slack/reservation
+          method: post
 # Create our resources with separate CloudFormation templates
 resources:
   # DynamoDB
