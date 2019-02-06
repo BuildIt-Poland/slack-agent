@@ -18,7 +18,7 @@ describe('Reservation module tests', () => {
 			AWS.restore('DynamoDB.DocumentClient');
 		});
 		it('create new reservation with place reservation', async () => {
-			const reservation = await res.saveReservationAsync(undefined, {
+			const reservation = await res.saveReservationAsync(null, {
 				City: 'Gdansk',
 				Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
 				Place: 11,
