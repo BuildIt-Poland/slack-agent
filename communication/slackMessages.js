@@ -14,7 +14,7 @@ exports.parseMessageFromSlack = (payload, object) => {
 };
 
 exports.slackDefaultMessage = (message) => {
-	return `{"text": ${message}}`;
+	return `{"text": "${message}"}`;
 };
 
 exports.listSlackMessage = (records, title) => {
