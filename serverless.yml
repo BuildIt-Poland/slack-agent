@@ -54,17 +54,17 @@ functions:
       - http:
           path: slack/parkingPlace
           method: post
-  parkingPlaceList:
-    handler: handler.parkingPlaceList
-    events:
-      - http:
-          path: slack/parkingPlaceList
-          method: post
   reservation:
     handler: handler.reservation
     events:
       - http:
           path: slack/reservation
+          method: post
+  reservationList:
+    handler: handler.reservationList
+    events:
+      - http:
+          path: slack/reservationList
           method: post
 # Create our resources with separate CloudFormation templates
 resources:
