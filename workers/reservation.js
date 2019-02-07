@@ -63,7 +63,7 @@ async function putReservation(place, reservationParams, tableName) {
 			Types: 'reservation',
 			Reservations: [{
 				...place,
-				Reservation: reservationParams.userName
+				Reservation: reservationParams.UserName
 			}]
 		}, tableName);
 	}
