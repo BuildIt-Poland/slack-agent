@@ -1,9 +1,9 @@
 'use strict';
 const dynamo = require('../communication/dynamo.js');
 
-exports.saveReservationAsync = async (reservationId, place, dates, tableName) => {
-	return !reservationId ? await putReservation(place, dates, tableName) :
-		await updateReservation(reservationId, place, tableName);
+exports.saveReservationAsync = async (reservationId, place, reservationParams, tableName) => {
+	return !reservationId ? await putReservation(place, reservationParams, tableName) :
+		await updateReservation(reservationId, place, reservationParams, tableName);
 };
 
 exports.findReservationByDateAsync = async (date, tableName) => {
@@ -26,7 +26,6 @@ exports.findReservationByDateAsync = async (date, tableName) => {
 		return null;
 	}
 };
-
 exports.findFreePlaceAsync = async (reservation, city, tableName) => {
 	const places = await findPlacesInCityAsync(city, tableName);
 	if(!places) return null;
@@ -57,12 +56,15 @@ exports.listReservationsForDayAsync = async (reservation, city, tableName) =>{
 	return allPlaces;
 };
 
-async function putReservation(place, dates, tableName) {
+async function putReservation(place, reservationParams, tableName) {
 	try {
 		await dynamo.save({
-			Id: dates,
+			Id: reservationParams.Dates,
 			Types: 'reservation',
-			Reservations: [place]
+			Reservations: [{
+				...place,
+				Reservation: reservationParams.userName
+			}]
 		}, tableName);
 	}
 	catch (error) {
@@ -72,14 +74,17 @@ async function putReservation(place, dates, tableName) {
 	return true;
 }
 
-async function updateReservation(reservationId, place, tableName) {
+async function updateReservation(reservationId, place, userName, tableName) {
 	try {
 		await dynamo.update({
 			TableName: tableName,
-			Key: { Id: reservationId },
+			Key: { Id: reservationId,  Types: 'reservation' },
 			UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
 			ExpressionAttributeNames: { '#reservations': 'Reservations' },
-			ExpressionAttributeValues: { ':place': [place], }
+			ExpressionAttributeValues: { ':place': [{
+				...place,
+				Reservation: userName
+			}], }
 		});
 	}
 	catch (error) {

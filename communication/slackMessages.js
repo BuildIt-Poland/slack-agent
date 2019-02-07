@@ -3,12 +3,14 @@
 const queryString = require('query-string');
 
 exports.parseMessageFromSlack = (payload, object) => {
-	const params = queryString.parse(payload.body).text.split(' ');
+	const params = queryString.parse(payload.body);
+	const text = params.text.split(' ');
 	const keys = Object.keys(object);
-	if(params.length !== keys.length && params.length === 0) 
+	if(text.length !== keys.length && text.length === 0) 
 		return null;
-	return params.reduce((accumulator, currentValue, currentIndex) =>
-		({...accumulator, [keys[currentIndex]]: currentValue}), {});
+	return { ...params.reduce((accumulator, currentValue, currentIndex) =>
+		({...accumulator, [keys[currentIndex]]: currentValue}), {}), 
+	userName: params.user_name};
 };
 
 exports.slackDefaultMessage = (message) => {

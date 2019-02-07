@@ -29,7 +29,11 @@ describe('Reservation module tests', () => {
 				Types: 'parkingPlace',
 				City: 'Gdansk',
 				Place: 11
-			}, '11022019', 'parking-dev');
+			}, {
+				Dates: '11022019',
+				City: 'Gdansk',
+				UserName: 'mhein'
+			}, 'parking-dev');
 			expect(reservation).to.equal(true);
 		});
 		it('returns true', async () => {
@@ -38,7 +42,11 @@ describe('Reservation module tests', () => {
 				Types: 'parkingPlace',
 				City: 'Gdansk',
 				Place: 12
-			}, '11022019', 'parking-dev');
+			}, {
+				Dates: '11022019',
+				City: 'Gdansk',
+				UserName: 'mhein'
+			}, 'parking-dev');
 			expect(reservation).to.equal(true);
 		});
 	});
