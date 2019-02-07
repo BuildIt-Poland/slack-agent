@@ -3,7 +3,7 @@ const dynamo = require('../communication/dynamo.js');
 
 exports.saveReservationAsync = async (reservationId, place, reservationParams, tableName) => {
 	return !reservationId ? await putReservation(place, reservationParams, tableName) :
-		await updateReservation(reservationId, place, reservationParams, tableName);
+		await updateReservation(reservationId, place, reservationParams.UserName, tableName);
 };
 
 exports.findReservationByDateAsync = async (date, tableName) => {
