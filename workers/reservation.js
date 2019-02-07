@@ -8,15 +8,18 @@ exports.saveReservationAsync = async (reservationId, place, dates, tableName) =>
 
 exports.findReservationByDateAsync = async (date, tableName) => {
 	const params = {
-		ExpressionAttributeValues: {
-			':types': 'reservation',
-			':dates': date
+		KeyConditionExpression: '#id = :dates and Types = :types',
+		ExpressionAttributeNames:{
+			'#id': 'Id'
 		},
-		FilterExpression: 'Types = :types and Dates = :dates',
+		ExpressionAttributeValues: {
+			':dates': date,
+			':types': 'reservation',
+		},
 		TableName: tableName
 	};
 	try {
-		const result = await dynamo.scan(params);
+		const result = await dynamo.query(params);
 		return result.Items[0] || {};
 	} catch (error) {
 		console.log(error);
@@ -33,7 +36,7 @@ exports.findFreePlaceAsync = async (reservation, city, tableName) => {
 	return freePlace ? freePlace : {};
 };
 
-exports.listReservationsForDay = async (reservation, city, tableName) =>{
+exports.listReservationsForDayAsync = async (reservation, city, tableName) =>{
 	const places = await findPlacesInCityAsync(city, tableName);
 	if(!places) return null;
 	if(!places.length) return [];
@@ -54,11 +57,11 @@ exports.listReservationsForDay = async (reservation, city, tableName) =>{
 	return allPlaces;
 };
 
-async function putReservation(place, Dates, tableName) {
+async function putReservation(place, dates, tableName) {
 	try {
 		await dynamo.save({
+			Id: dates,
 			Types: 'reservation',
-			Dates: Dates,
 			Reservations: [place]
 		}, tableName);
 	}

@@ -112,7 +112,7 @@ module.exports.reservationList = async (event) => {
 		statusCode: 500
 	};
 
-	const allPlaces = await res.listReservationsForDay(reservation, reservationParams.City, TABLE_NAME);
+	const allPlaces = await res.listReservationsForDayAsync(reservation, reservationParams.City, TABLE_NAME);
 	if(!allPlaces) return {
 		statusCode: 500
 	};

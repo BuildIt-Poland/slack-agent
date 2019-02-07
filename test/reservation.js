@@ -25,30 +25,30 @@ describe('Reservation module tests', () => {
 		});
 		it('returns true', async () => {
 			const reservation = await res.saveReservationAsync(null, {
-				City: 'Gdansk',
 				Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
-				Place: 11,
-				Types: 'parkingPlace'
+				Types: 'parkingPlace',
+				City: 'Gdansk',
+				Place: 11
 			}, '11022019', 'parking-dev');
 			expect(reservation).to.equal(true);
 		});
 		it('returns true', async () => {
-			const reservation = await res.saveReservationAsync('6f89ddc0-287d-11e9-ab74-83664e1af429', {
-				City: 'Gdansk',
+			const reservation = await res.saveReservationAsync('11022019', {
 				Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-				Place: 12,
-				Types: 'parkingPlace'
+				Types: 'parkingPlace',
+				City: 'Gdansk',
+				Place: 12
 			}, '11022019', 'parking-dev');
 			expect(reservation).to.equal(true);
 		});
 	});
 	describe('Check findReservationByDateAsync(date, tableName) function', () => {
 		beforeEach(() => {
-			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
+			AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
 				callback(null, {
 					Items: [{
-						Id: '78b32460-287d-11e9-ae75-1578cdc7c640',
-						Dates: '11022019',
+						Id: '11022019',
+						Types: 'reservation',
 						Reservations: [
 							{
 								City: 'Gdansk',
@@ -65,12 +65,12 @@ describe('Reservation module tests', () => {
 		});
 		it('returns reservation object', async () => {
 			const reservation = await res.findReservationByDateAsync('11022019', 'parking-dev');
-			expect(reservation).to.be.a('object').have.property('Dates', '11022019');
+			expect(reservation).to.be.a('object').have.property('Id', '11022019');
 		});
 	});
 	describe('Check findReservationByDateAsync(date, tableName) function', () => {
 		beforeEach(() => {
-			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
+			AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
 				callback(null, { Items: [] });
 			});
 		});
@@ -87,16 +87,16 @@ describe('Reservation module tests', () => {
 			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
 				callback(null, {
 					Items: [{
-						City: 'Gdansk',
 						Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
-						Place: 11,
-						Types: 'parkingPlace'
+						Types: 'parkingPlace',
+						City: 'Gdansk',
+						Place: 11
 					},
 					{
-						City: 'Gdansk',
 						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+						Types: 'parkingPlace',
+						City: 'Gdansk',
 						Place: 12,
-						Types: 'parkingPlace'
 					}]
 				});
 			});
@@ -106,14 +106,14 @@ describe('Reservation module tests', () => {
 		});
 		it('returns place object', async () => {
 			const reservation = {
-				Id: '78b32460-287d-11e9-ae75-1578cdc7c640',
-				Dates: '11022019',
+				Id: '11022019',
+				Types: 'reservation',
 				Reservations: [
 					{
-						City: 'Gdansk',
 						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+						Types: 'parkingPlace',
+						City: 'Gdansk',
 						Place: 12,
-						Types: 'parkingPlace'
 					}]
 			};
 			const freePlace = await res.findFreePlaceAsync(reservation, 'Gdansk', 'parking-dev');
@@ -123,20 +123,20 @@ describe('Reservation module tests', () => {
 		});
 		it('returns empty object', async () => {
 			const reservation = {
-				Id: '78b32460-287d-11e9-ae75-1578cdc7c640',
-				Dates: '11022019',
+				Id: '11022019',
+				Types: 'reservation',
 				Reservations: [
 					{
-						City: 'Gdansk',
 						Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
+						Types: 'parkingPlace',
+						City: 'Gdansk',
 						Place: 11,
-						Types: 'parkingPlace'
 					},
 					{
-						City: 'Gdansk',
 						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+						Types: 'parkingPlace',
+						City: 'Gdansk',
 						Place: 12,
-						Types: 'parkingPlace'
 					}]
 			};
 			const freePlace = await res.findFreePlaceAsync(reservation, 'Gdansk', 'parking-dev');
@@ -148,16 +148,16 @@ describe('Reservation module tests', () => {
 			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
 				callback(null, {
 					Items: [{
-						City: 'Gdansk',
 						Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
+						Types: 'parkingPlace',
+						City: 'Gdansk',
 						Place: 11,
-						Types: 'parkingPlace'
 					},
 					{
-						City: 'Gdansk',
 						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+						Types: 'parkingPlace',
+						City: 'Gdansk',
 						Place: 12,
-						Types: 'parkingPlace'
 					}]
 				});
 			});
@@ -167,25 +167,25 @@ describe('Reservation module tests', () => {
 		});
 		it('returns reservations array', async () => {
 			const reservation = {
-				Id: '78b32460-287d-11e9-ae75-1578cdc7c640',
-				Dates: '11022019',
+				Id: '11022019',
+				Types: 'reservation',
 				Reservations: [
 					{
-						City: 'Gdansk',
 						Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-						Place: 12,
 						Types: 'parkingPlace',
+						City: 'Gdansk',
+						Place: 12,
 						Reservation: 'mhein'
 					}]
 			};
-			const allReservations = await res.listReservationsForDay(reservation, 'Gdansk', 'parking-dev');
+			const allReservations = await res.listReservationsForDayAsync(reservation, 'Gdansk', 'parking-dev');
 			expect(allReservations).to.be.a('array');
 			expect(allReservations[0]).have.property('City');
 			expect(allReservations[0]).have.property('Place');
 			expect(allReservations[0]).have.property('Reservation');
 		});
 		it('returns reservations array with empty reservation parameter', async () => {
-			const allReservations = await res.listReservationsForDay({}, 'Gdansk', 'parking-dev');
+			const allReservations = await res.listReservationsForDayAsync({}, 'Gdansk', 'parking-dev');
 			expect(allReservations).to.be.a('array');
 			expect(allReservations[0]).have.property('City');
 			expect(allReservations[0]).have.property('Place');
@@ -228,7 +228,7 @@ describe('Reservation failures module tests', () => {
 	});
 	describe('Check findReservationByDateAsync(date, tableName) function', () => {
 		beforeEach(() => {
-			AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
+			AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
 				callback({error: 'error'}, null);
 			});
 		});
@@ -264,7 +264,7 @@ describe('Reservation failures module tests', () => {
 			AWS.restore('DynamoDB.DocumentClient');
 		});
 		it('returns null', async () => {
-			const allReservations = await res.listReservationsForDay({}, 'Gdansk', 'parking-dev');
+			const allReservations = await res.listReservationsForDayAsync({}, 'Gdansk', 'parking-dev');
 			expect(allReservations).equals(null);
 		});
 	});
