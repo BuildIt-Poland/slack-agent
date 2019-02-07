@@ -10,10 +10,6 @@ npm --version
 echo "______________ instal dependecies ______________ "
 npm install
 sls plugin install --name serverless-stage-manager
-echo "______________ list root directory ______________ "
-ls -la
-echo "______________ list node_modules directory ______________ "
-ls -la ./node_modules
 echo "______________ deploy ______________ "
 sls deploy -s $1
 

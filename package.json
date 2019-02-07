@@ -5,7 +5,7 @@
   "main": "authorizer.js",
   "scripts": {
     "dev": "node -e 'require(\"./development/dynamoLocal.js\").configure()'",
-    "test": "nyc --reporter=text mocha --reporter=nyan"
+    "test": "nyc --all --check-coverage --statements 50 --lines 50 --functions 50 --branches 50 --reporter=text mocha --reporter=spec"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +25,7 @@
     "chai": "^4.2.0",
     "eslint": "^5.12.1",
     "mocha": "^5.2.0",
+    "mocha-sinon": "^2.1.0",
     "moxios": "^0.4.0",
     "nyc": "^13.1.0",
     "serverless-stage-manager": "^1.0.5"

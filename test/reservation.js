@@ -3,6 +3,8 @@
 const expect = require('chai').expect;
 const AWS = require('aws-sdk-mock');
 var res = require('../workers/reservation.js');
+const log = require('npmlog');
+require('mocha-sinon');
 
 describe('Reservation module tests', () => {
 	describe('Check saveReservationAsync(reservationId, place, Dates, tableName) function', () => {
@@ -203,6 +205,14 @@ describe('Reservation module tests', () => {
 });
 
 describe('Reservation failures module tests', () => {
+	beforeEach(function() {
+		this.sinon.stub(log, 'log');
+	});
+    
+	afterEach(function() {
+		this.sinon.restore();
+	});
+
 	describe('Check saveReservationAsync(reservationId, place, Dates, tableName) function', () => {
 		beforeEach(() => {
 			AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {

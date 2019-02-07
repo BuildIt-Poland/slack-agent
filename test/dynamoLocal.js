@@ -1,8 +1,10 @@
 'use strict';
-/* global describe it before after */
+/* global describe it before after beforeEach afterEach */
 const expect = require('chai').expect;
 const AWS = require('aws-sdk-mock');
 const dynamoLocal = require('../development/dynamoLocal.js');
+const log = require('npmlog');
+require('mocha-sinon');
 
 describe('DynamoLocal module tests', function () {
 	describe('Check configure() function', function () {
@@ -39,6 +41,14 @@ describe('DynamoLocal module tests', function () {
 	});
 });
 describe('DynamoLocal failures module tests', function () {
+	beforeEach(function() {
+		this.sinon.stub(log, 'log');
+	});
+    
+	afterEach(function() {
+		this.sinon.restore();
+	});
+
 	describe('Check configure() function', function () {
 		before(function () {
 			AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback){
@@ -61,6 +71,14 @@ describe('DynamoLocal failures module tests', function () {
 	});
 });
 describe('DynamoLocal failures module tests', function () {
+	beforeEach(function() {
+		this.sinon.stub(log, 'log');
+	});
+    
+	afterEach(function() {
+		this.sinon.restore();
+	});
+
 	describe('Check configure() function', function () {
 		before(function () {
 			AWS.mock('DynamoDB.DocumentClient', 'put', function (params, callback){
