@@ -86,7 +86,7 @@ module.exports.reservation = async (event) => {
 			.slackDefaultMessage(`No places available on ${reservationParams.Dates} in ${reservationParams.City}`)
 	};
 
-	const result = await res.saveReservationAsync(reservation.Id, place, reservationParams.Dates, TABLE_NAME);
+	const result = await res.saveReservationAsync(reservation.Id, place, reservationParams, TABLE_NAME);
 	return result ? {
 		statusCode: 200,
 		body: slackMessages
@@ -112,7 +112,7 @@ module.exports.reservationList = async (event) => {
 		statusCode: 500
 	};
 
-	const allPlaces = await res.listReservationsForDay(reservation, reservationParams.City, TABLE_NAME);
+	const allPlaces = await res.listReservationsForDayAsync(reservation, reservationParams.City, TABLE_NAME);
 	if(!allPlaces) return {
 		statusCode: 500
 	};

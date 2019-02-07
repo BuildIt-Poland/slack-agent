@@ -1,29 +1,31 @@
 'use strict';
 const dynamo = require('../communication/dynamo.js');
 
-exports.saveReservationAsync = async (reservationId, place, dates, tableName) => {
-	return !reservationId ? await putReservation(place, dates, tableName) :
-		await updateReservation(reservationId, place, tableName);
+exports.saveReservationAsync = async (reservationId, place, reservationParams, tableName) => {
+	return !reservationId ? await putReservation(place, reservationParams, tableName) :
+		await updateReservation(reservationId, place, reservationParams.UserName, tableName);
 };
 
 exports.findReservationByDateAsync = async (date, tableName) => {
 	const params = {
-		ExpressionAttributeValues: {
-			':types': 'reservation',
-			':dates': date
+		KeyConditionExpression: '#id = :dates and Types = :types',
+		ExpressionAttributeNames:{
+			'#id': 'Id'
 		},
-		FilterExpression: 'Types = :types and Dates = :dates',
+		ExpressionAttributeValues: {
+			':dates': date,
+			':types': 'reservation',
+		},
 		TableName: tableName
 	};
 	try {
-		const result = await dynamo.scan(params);
+		const result = await dynamo.query(params);
 		return result.Items[0] || {};
 	} catch (error) {
 		console.log(error);
 		return null;
 	}
 };
-
 exports.findFreePlaceAsync = async (reservation, city, tableName) => {
 	const places = await findPlacesInCityAsync(city, tableName);
 	if(!places) return null;
@@ -33,7 +35,7 @@ exports.findFreePlaceAsync = async (reservation, city, tableName) => {
 	return freePlace ? freePlace : {};
 };
 
-exports.listReservationsForDay = async (reservation, city, tableName) =>{
+exports.listReservationsForDayAsync = async (reservation, city, tableName) =>{
 	const places = await findPlacesInCityAsync(city, tableName);
 	if(!places) return null;
 	if(!places.length) return [];
@@ -54,12 +56,15 @@ exports.listReservationsForDay = async (reservation, city, tableName) =>{
 	return allPlaces;
 };
 
-async function putReservation(place, Dates, tableName) {
+async function putReservation(place, reservationParams, tableName) {
 	try {
 		await dynamo.save({
+			Id: reservationParams.Dates,
 			Types: 'reservation',
-			Dates: Dates,
-			Reservations: [place]
+			Reservations: [{
+				...place,
+				Reservation: reservationParams.UserName
+			}]
 		}, tableName);
 	}
 	catch (error) {
@@ -69,14 +74,17 @@ async function putReservation(place, Dates, tableName) {
 	return true;
 }
 
-async function updateReservation(reservationId, place, tableName) {
+async function updateReservation(reservationId, place, userName, tableName) {
 	try {
 		await dynamo.update({
 			TableName: tableName,
-			Key: { Id: reservationId },
+			Key: { Id: reservationId,  Types: 'reservation' },
 			UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
 			ExpressionAttributeNames: { '#reservations': 'Reservations' },
-			ExpressionAttributeValues: { ':place': [place], }
+			ExpressionAttributeValues: { ':place': [{
+				...place,
+				Reservation: userName
+			}], }
 		});
 	}
 	catch (error) {

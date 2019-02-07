@@ -1,5 +1,4 @@
 'use strict';
-const uuid = require('uuid');
 const AWS = require('aws-sdk');
 const dynamoEnv = require('./dynamoEnv.js');
 const configParams = dynamoEnv.awsEnv();
@@ -8,7 +7,6 @@ exports.save = async (record, tableName) => {
 	const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
 	const params = {
 		Item: {
-			Id: uuid.v1(),
 			...record
 		},
 		TableName: tableName
@@ -19,6 +17,11 @@ exports.save = async (record, tableName) => {
 exports.scan = (params) => {
 	const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
 	return documentClient.scan(params).promise();
+};
+
+exports.query = (params) => {
+	const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
+	return documentClient.query(params).promise();
 };
 
 exports.update = (params) => {
