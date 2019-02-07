@@ -3,21 +3,26 @@
 const queryString = require('query-string');
 
 exports.parseMessageFromSlack = (payload, object) => {
-	const params = queryString.parse(payload.body).text.split(' ');
+	const params = queryString.parse(payload.body);
+	const text = params.text.split(' ');
 	const keys = Object.keys(object);
-	if(params.length !== keys.length && params.length === 0) 
+	if(text.length !== keys.length && text.length === 0) 
 		return null;
-	return params.reduce((accumulator, currentValue, currentIndex) =>
-		({...accumulator, [keys[currentIndex]]: currentValue}), {});
+	return { ...params.reduce((accumulator, currentValue, currentIndex) =>
+		({...accumulator, [keys[currentIndex]]: currentValue}), {}), 
+	userName: params.user_name};
 };
 
-exports.parkingPlaceAddedSlackMessage = (place) => {
-	return `{"text": "You added a parking place.\n *City:* ${place.City}\n *Place:* ${place.Place}"}`;
+exports.slackDefaultMessage = (message) => {
+	return `{"text": ${message}}`;
 };
 
-exports.listParkingPlaceSlackMessage = (places) => {
-	if (!Array.isArray(places) || !places.length)
-		return `{"text": "Parking places don't exists}`;
-	const attachments = places.map(place =>  ({ text: `*City:* ${place.City}\n *Place:* ${place.Place}`}));
-	return `{"text": "List of Parking Places:", "attachments" : ${JSON.stringify(attachments)}}`;
+exports.listSlackMessage = (records, title) => {
+	const attachments = records.map(record => {
+		const textArray = Object.keys(record)
+			.map(key => (record[key] || record[key] != '') 
+				? `*${key}:* ${record[key]}\n` : '');
+		return { text: textArray.join('') };
+	});
+	return `{"text": "${title}", "attachments" : ${JSON.stringify(attachments)}}`;
 };

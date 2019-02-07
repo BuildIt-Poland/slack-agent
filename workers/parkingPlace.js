@@ -1,24 +1,15 @@
 const dynamo = require('../communication/dynamo.js');
+const uuid = require('uuid');
 
 exports.saveParkingPlace = async (place, tableName) => {
 	return await dynamo.save(place, tableName);
-};
-
-exports.getParkingPlaces = async (tableName) => {
-	const params = {
-		ExpressionAttributeValues: {
-			':types': 'parkingPlace'
-		},
-		FilterExpression: 'Types = :types',
-		TableName: tableName
-	};
-	return await dynamo.scan(params);
 };
 
 exports.createPlace = async (placeParams, tableName) => {
 	if (!placeParams) return null;
 	const isPlaceExist = await placeExistInDynamo(placeParams, tableName);
 	return isPlaceExist ? null : {
+		Id: uuid.v4(),
 		Types: 'parkingPlace',
 		...placeParams
 	};
