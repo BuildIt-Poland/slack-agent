@@ -8,7 +8,7 @@ exports.parseMessageFromSlack = (payload, object) => {
 	const keys = Object.keys(object);
 	if(text.length !== keys.length && text.length === 0) 
 		return null;
-	return { ...params.reduce((accumulator, currentValue, currentIndex) =>
+	return { ...text.reduce((accumulator, currentValue, currentIndex) =>
 		({...accumulator, [keys[currentIndex]]: currentValue}), {}), 
 	userName: params.user_name};
 };
