@@ -4,6 +4,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 const dynamoEnv = require('../communication/dynamoEnv.js');
+const log = require('../communication/logger.js');
 
 
 exports.configure = async () => {
@@ -30,7 +31,7 @@ exports.configure = async () => {
 			await addItemAsync(documentClient, item);
 		}
 	} catch (error) {
-		console.error(error);
+		log.error('dynamoLocal.configure', error);
 		return false;
 	}
 	return true;

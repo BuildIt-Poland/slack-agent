@@ -1,5 +1,6 @@
 'use strict';
 const dynamo = require('../communication/dynamo.js');
+const log = require('../communication/logger.js');
 
 exports.saveReservationAsync = async (reservationId, place, reservationParams, tableName) => {
 	return !reservationId ? await putReservation(place, reservationParams, tableName) :
@@ -22,7 +23,7 @@ exports.findReservationByDateAsync = async (date, tableName) => {
 		const result = await dynamo.query(params);
 		return result.Items[0] || {};
 	} catch (error) {
-		console.log(error);
+		log.error('reservation.findReservationByDateAsync', error);
 		return null;
 	}
 };
@@ -68,7 +69,7 @@ async function putReservation(place, reservationParams, tableName) {
 		}, tableName);
 	}
 	catch (error) {
-		console.error(error);
+		log.error('reservation.putReservation', error);
 		return false;
 	}
 	return true;
@@ -88,7 +89,7 @@ async function updateReservation(reservationId, place, userName, tableName) {
 		});
 	}
 	catch (error) {
-		console.log(error);
+		log.error('reservation.updateReservation', error);
 		return false;
 	}
 	return true;
@@ -108,7 +109,7 @@ async function findPlacesInCityAsync(city, tableName) {
 		return result.Items;
 	}
 	catch(error){
-		console.log(error);
+		log.error('reservation.findPlacesInCityAsync', error);
 		return null;
 	}
 }
