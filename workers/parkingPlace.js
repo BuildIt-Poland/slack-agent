@@ -11,7 +11,8 @@ exports.createPlace = async (placeParams, tableName) => {
 	return isPlaceExist ? null : {
 		Id: uuid.v4(),
 		Types: 'parkingPlace',
-		...placeParams
+		City: placeParams.City,
+		Place: placeParams.Place
 	};
 };
 
