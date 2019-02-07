@@ -4,7 +4,7 @@ const log = require('../communication/logger.js');
 
 exports.saveReservationAsync = async (reservationId, place, reservationParams, tableName) => {
 	return !reservationId ? await putReservation(place, reservationParams, tableName) :
-		await updateReservation(reservationId, place, reservationParams.UserName, tableName);
+		await updateReservation(reservationId, place, reservationParams.userName, tableName);
 };
 
 exports.findReservationByDateAsync = async (date, tableName) => {
@@ -64,7 +64,7 @@ async function putReservation(place, reservationParams, tableName) {
 			Types: 'reservation',
 			Reservations: [{
 				...place,
-				Reservation: reservationParams.UserName
+				Reservation: reservationParams.userName
 			}]
 		}, tableName);
 	}
