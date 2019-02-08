@@ -30,13 +30,12 @@ describe('handler methods positive paths', async function() {
 	});
 
 	it('authorization() returns 200 if code is filled in event', async function() {
-		let obj = await handler.authorization({queryStringParameters: '?test=123', code: 234});
-		console.log(obj);
+		let obj = await handler.authorization({queryStringParameters: {code: 234}});
 		expect(obj.statusCode).to.equal(200);
 	});
 
 	it('authorization() returns expected json if code is filled in event', async function() {
-		let obj = await handler.authorization({queryStringParameters: '?test=123', code: 234});
+		let obj = await handler.authorization({queryStringParameters: {code: 234}});
 		expect(typeof obj.body).not.equal('undefined');
 		expect(obj.body.indexOf('Authorized')).not.equal(-1);
 		expect(obj.body.indexOf('code')).not.equal(-1);
@@ -49,7 +48,6 @@ describe('handler methods positive paths', async function() {
     
 	it('authorization() returns returns expected json if code is missing in event', async function() {
 		let obj = await handler.authorization({queryStringParameters: '?dummy=field'});
-		console.log(obj);
 		expect(typeof obj.headers.Location).not.equal('undefined');
 		expect(obj.headers.Location.indexOf('https://slack.com/oauth/authorize')).not.equal(-1);
 		expect(obj.headers.Location.indexOf('field')).not.equal(-1);
