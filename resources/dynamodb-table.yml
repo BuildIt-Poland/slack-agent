@@ -6,12 +6,12 @@
         AttributeDefinitions:
           - AttributeName: Id
             AttributeType: S
-          - AttributeName: Types
+          - AttributeName: City
             AttributeType: S
         KeySchema:
           - AttributeName: Id
             KeyType: HASH
-          - AttributeName: Types
+          - AttributeName: City
             KeyType: RANGE
         ProvisionedThroughput:
             ReadCapacityUnits: 1
