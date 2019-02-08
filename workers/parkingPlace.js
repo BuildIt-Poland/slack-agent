@@ -9,18 +9,17 @@ exports.createPlace = async (placeParams, tableName) => {
 	if (!placeParams) return null;
 	const isPlaceExist = await placeExistInDynamo(placeParams, tableName);
 	return isPlaceExist ? null : {
+		...placeParams,
 		Id: uuid.v4(),
-		Types: 'parkingPlace',
-		City: placeParams.City,
-		Place: placeParams.Place
+		Types: 'parkingPlace'
 	};
 };
 
 const placeExistInDynamo = async (place, tableName) => {
 	const params = {
 		ExpressionAttributeValues: {
-			':place': `${place.Place}`,
-			':city': `${place.City}`
+			':place': `${place.place}`,
+			':city': `${place.city}`
 		},
 		FilterExpression: 'Place = :place and City = :city',
 		TableName: tableName

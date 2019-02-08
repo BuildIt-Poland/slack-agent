@@ -42,11 +42,15 @@ module.exports.parkingPlace = async (event) => {
 	if (!isValid) return {
 		statusCode: 401
 	};
-	const placeParams = slackMessages.parseMessageFromSlack(event,{
-		City: null,
-		Place: null
+	const { message, isValidCommand } = slackMessages.slackMessageValidate(event,{
+		city: null,
+		place: null
 	});
-	const place = await parkingPlace.createPlace(placeParams, TABLE_NAME);
+	if(!isValidCommand)return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(message)
+	};
+	const place = await parkingPlace.createPlace(message, TABLE_NAME);
 	if (!place) return {
 		statusCode: 400
 	};
@@ -66,31 +70,36 @@ module.exports.reservation = async (event) => {
 		statusCode: 200,
 	};
 
-	const reservationParams = slackMessages.parseMessageFromSlack(event, {
-		Dates: null,
-		City: null,
+	const {message, isValidCommand} = slackMessages.slackMessageValidate(event, {
+		dates: null,
+		city: null,
+		userName: null,
 	});
+	if(!isValidCommand) return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(message)
+	};
 
-	const reservation = await res.findReservationByDateAsync(reservationParams.Dates, TABLE_NAME);
+	const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
 	if(!reservation) return {
 		statusCode: 500
 	};
 
-	const place = await res.findFreePlaceAsync(reservation,reservationParams.City, TABLE_NAME);
+	const place = await res.findFreePlaceAsync(reservation,message.city, TABLE_NAME);
 	if(!place) return{
 		statusCode: 500
 	};
 	if(!Object.keys(place).length) return {
 		statusCode: 200,
 		body: slackMessages
-			.slackDefaultMessage(`No places available on ${reservationParams.Dates} in ${reservationParams.City}`)
+			.slackDefaultMessage(`No places available on ${message.dates} in ${message.city}`)
 	};
 
-	const result = await res.saveReservationAsync(reservation.Id, place, reservationParams, TABLE_NAME);
+	const result = await res.saveReservationAsync(reservation.Id, place, message, TABLE_NAME);
 	return result ? {
 		statusCode: 200,
 		body: slackMessages
-			.slackDefaultMessage(`You booked a place number ${place.Place} in ${reservationParams.City} on ${reservationParams.Dates}`)
+			.slackDefaultMessage(`You booked a place number ${place.place} in ${message.city} on ${message.dates}`)
 	} : {
 		statusCode: 500
 	};
@@ -102,17 +111,24 @@ module.exports.reservationList = async (event) => {
 		statusCode: 401
 	};
 
-	const reservationParams = slackMessages.parseMessageFromSlack(event, {
-		Dates: null,
-		City: null,
+	const {message, isValidCommand} = slackMessages.slackMessageValidate(event, {
+		dates: null,
+		city: null,
+		userName: null
 	});
+	if(!isValidCommand) return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(message)
+	};
+	
 
-	const reservation = await res.findReservationByDateAsync(reservationParams.Dates, TABLE_NAME);
+
+	const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
 	if(!reservation) return {
 		statusCode: 500
 	};
 
-	const allPlaces = await res.listReservationsForDayAsync(reservation, reservationParams.City, TABLE_NAME);
+	const allPlaces = await res.listReservationsForDayAsync(reservation, message.city, TABLE_NAME);
 	if(!allPlaces) return {
 		statusCode: 500
 	};
