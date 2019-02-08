@@ -99,7 +99,7 @@ module.exports.reservation = async (event) => {
 	return result ? {
 		statusCode: 200,
 		body: slackMessages
-			.slackDefaultMessage(`You booked a place number ${place.place} in ${message.city} on ${message.dates}`)
+			.slackDefaultMessage(`You booked a place number ${place.Place} in ${message.city} on ${message.dates}`)
 	} : {
 		statusCode: 500
 	};

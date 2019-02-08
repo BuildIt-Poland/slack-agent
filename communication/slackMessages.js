@@ -7,10 +7,10 @@ exports.slackMessageValidate = (payload, object) => {
 	const isValid = !Object.keys(parsedObject).some(key => 
 		(parsedObject[key] === undefined || parsedObject[key] === ''));	
 	return isValid ? {
-		isValid: isValid,
+		isValidCommand: isValid,
 		message: parsedObject
 	} : {
-		isValid: isValid,
+		isValidCommand: isValid,
 		message: 'Invalid command'
 	};
 };
