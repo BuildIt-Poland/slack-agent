@@ -60,7 +60,7 @@ exports.listReservationsForDayAsync = async (reservation, city, tableName) =>{
 async function putReservation(place, reservationParams, tableName) {
 	try {
 		await dynamo.save({
-			Id: reservationParams.Dates,
+			Id: reservationParams.dates,
 			Types: 'reservation',
 			Reservations: [{
 				...place,

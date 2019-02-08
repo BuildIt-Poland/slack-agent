@@ -5,7 +5,7 @@
   "main": "authorizer.js",
   "scripts": {
     "dev": "node -e 'require(\"./development/dynamoLocal.js\").configure()'",
-    "test": "nyc --all --check-coverage --statements 50 --lines 50 --functions 50 --branches 50 --reporter=text mocha --reporter=spec"
+    "test": "nyc --all --check-coverage --statements 50 --lines 50 --functions 50 --branches 45 --reporter=text mocha --reporter=spec"
   },
   "author": "",
   "license": "ISC",
