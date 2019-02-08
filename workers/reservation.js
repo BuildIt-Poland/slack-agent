@@ -9,13 +9,13 @@ exports.saveReservationAsync = async (reservationId, place, reservationParams, t
 
 exports.findReservationByDateAsync = async (date, tableName) => {
 	const params = {
-		KeyConditionExpression: '#id = :dates and Types = :types',
+		KeyConditionExpression: '#id = :dates and City = :city',
 		ExpressionAttributeNames:{
 			'#id': 'Id'
 		},
 		ExpressionAttributeValues: {
 			':dates': date,
-			':types': 'reservation',
+			':city': 'multiple',
 		},
 		TableName: tableName
 	};
@@ -61,7 +61,7 @@ async function putReservation(place, reservationParams, tableName) {
 	try {
 		await dynamo.save({
 			Id: reservationParams.dates,
-			Types: 'reservation',
+			City: 'multiple',
 			Reservations: [{
 				...place,
 				Reservation: reservationParams.userName
@@ -79,7 +79,7 @@ async function updateReservation(reservationId, place, userName, tableName) {
 	try {
 		await dynamo.update({
 			TableName: tableName,
-			Key: { Id: reservationId,  Types: 'reservation' },
+			Key: { Id: reservationId,  City: 'multiple' },
 			UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
 			ExpressionAttributeNames: { '#reservations': 'Reservations' },
 			ExpressionAttributeValues: { ':place': [{
@@ -97,15 +97,14 @@ async function updateReservation(reservationId, place, userName, tableName) {
 
 async function findPlacesInCityAsync(city, tableName) {
 	const params = {
+		KeyConditionExpression: 'City = :city',
 		ExpressionAttributeValues: {
 			':city': city,
-			':types': 'parkingPlace'
 		},
-		FilterExpression: 'City = :city and Types = :types',
 		TableName: tableName
 	};
 	try {
-		const result = await dynamo.scan(params);
+		const result = await dynamo.query(params);
 		return result.Items;
 	}
 	catch(error){
