@@ -15,4 +15,13 @@
             KeyType: RANGE
         ProvisionedThroughput:
             ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            WriteCapacityUnits: 1   
+        LocalSecondaryIndexes:
+        - IndexName: city-index
+          KeySchema:
+          - AttributeName: City
+            KeyType: HASH
+          Projection:
+            NonKeyAttributes:
+            - City
+            ProjectionType: INCLUDE

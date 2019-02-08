@@ -57,6 +57,27 @@ exports.listReservationsForDayAsync = async (reservation, city, tableName) =>{
 	return allPlaces;
 };
 
+exports.deleteReservationPlace = async (reservation, reservationParams, tableName) => {
+	const place = findPlaceReservation(reservation, reservationParams);
+	try {
+		await dynamo.update({
+			TableName: tableName,
+			Key: { Id: reservation.Id,  City: 'multiple' },
+			UpdateExpression: `REMOVE List[${place}]`,
+		});
+	} catch (error) {
+		log.error('reservation.deleteReservation', error);
+		return false;
+	}
+	return true;
+};
+
+function findPlaceReservation(reservation, reservationParams) {
+	const place = reservation.Reservations
+		.find((place) => place.Reservation === reservationParams.userName && place.City === reservationParams.City);
+	return place;
+}
+
 async function putReservation(place, reservationParams, tableName) {
 	try {
 		await dynamo.save({
@@ -99,9 +120,10 @@ async function findPlacesInCityAsync(city, tableName) {
 	const params = {
 		KeyConditionExpression: 'City = :city',
 		ExpressionAttributeValues: {
-			':city': city,
+			':city': 'Gdansk',
 		},
-		TableName: tableName
+		TableName: tableName,
+		IndexName: 'city-index'
 	};
 	try {
 		const result = await dynamo.query(params);
