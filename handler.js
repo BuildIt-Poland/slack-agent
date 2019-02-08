@@ -58,7 +58,7 @@ module.exports.parkingPlace = async (event) => {
 	return result ? {
 		statusCode: 200,
 		body: slackMessages
-			.slackDefaultMessage(`"You added a parking place.\n *City:* ${place.City}\n *Place:* ${place.Place}"`)
+			.slackDefaultMessage(`You added a parking place.\n *City:* ${place.City}\n *Place:* ${place.Place}`)
 	} : {
 		statusCode: 500
 	};

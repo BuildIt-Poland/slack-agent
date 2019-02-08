@@ -120,7 +120,7 @@ async function findPlacesInCityAsync(city, tableName) {
 	const params = {
 		KeyConditionExpression: 'City = :city',
 		ExpressionAttributeValues: {
-			':city': 'Gdansk',
+			':city': city,
 		},
 		TableName: tableName,
 		IndexName: 'city-index'
