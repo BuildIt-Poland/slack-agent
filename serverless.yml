@@ -65,6 +65,12 @@ functions:
     events:
       - http:
           path: slack/reservationList
+          method: get
+            reservationList:
+    handler: handler.deleteReservation
+    events:
+      - http:
+          path: slack/deleteReservation
           method: post
 # Create our resources with separate CloudFormation templates
 resources:

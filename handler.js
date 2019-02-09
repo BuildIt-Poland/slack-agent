@@ -120,8 +120,6 @@ module.exports.reservationList = async (event) => {
 		statusCode: 200,
 		body: slackMessages.slackDefaultMessage(message)
 	};
-	
-
 
 	const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
 	if(!reservation) return {
@@ -139,5 +137,38 @@ module.exports.reservationList = async (event) => {
 	return {
 		statusCode: 200,
 		body: slackMessages.listSlackMessage(allPlaces, 'List of reservations with available places:')
+	};
+};
+
+module.exports.deleteReservation = async (event) => {
+	const isValid = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
+	if (!isValid) return {
+		statusCode: 401
+	};
+
+	const {message, isValidCommand} = slackMessages.slackMessageValidate(event, {
+		dates: null,
+		city: null,
+		userName: null
+	});
+
+	if(!isValidCommand) return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(message)
+	};
+
+	const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
+	if(!reservation) return {
+		statusCode: 500
+	};
+
+	const placeDeleted = await res.deleteReservationPlace(reservation, message, TABLE_NAME);
+	if(placeDeleted) return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(`You don't have reservation`)
+	};
+	return {
+		statusCode: 200,
+		body: slackMessages.slackDefaultMessage(`Reservation deleted`)
 	};
 };

@@ -72,6 +72,27 @@ exports.deleteReservationPlace = async (reservation, reservationParams, tableNam
 	return true;
 };
 
+exports.deleteReservationPlace = async (reservation, reservationParams, tableName) => {
+	const placeIndex = findIndexPlaceReservation(reservation, reservationParams);
+	try {
+		await dynamo.update({
+			TableName: tableName,
+			Key: { Id: reservation.Id,  City: 'multiple' },
+			UpdateExpression : `REMOVE Reservations[${placeIndex}]`
+		});
+	} catch (error) {
+		log.error('reservation.deleteReservation', error);
+		return false;
+	}
+	return true;
+};
+
+function findIndexPlaceReservation(reservation, reservationParams) {
+	const place = reservation.Reservations
+		.findIndex((place) => place.Reservation === reservationParams.userName && place.City === reservationParams.city);
+	return place;
+}
+
 function findPlaceReservation(reservation, reservationParams) {
 	const place = reservation.Reservations
 		.find((place) => place.Reservation === reservationParams.userName && place.City === reservationParams.City);
