@@ -9,8 +9,9 @@ exports.createPlace = async (placeParams, tableName) => {
 	if (!placeParams) return null;
 	const isPlaceExist = await placeExistInDynamo(placeParams, tableName);
 	return isPlaceExist ? null : {
-		...placeParams,
 		Id: uuid.v4(),
+		City: placeParams.city,
+		Place: placeParams.place,
 	};
 };
 

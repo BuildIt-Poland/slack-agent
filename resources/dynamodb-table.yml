@@ -4,15 +4,28 @@
       Properties:
         TableName: ${self:custom.tableName}
         AttributeDefinitions:
-          - AttributeName: Id
-            AttributeType: S
-          - AttributeName: City
-            AttributeType: S
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: City
+          AttributeType: S
         KeySchema:
-          - AttributeName: Id
-            KeyType: HASH
-          - AttributeName: City
-            KeyType: RANGE
+        - AttributeName: Id
+          KeyType: HASH
+        - AttributeName: City
+          KeyType: RANGE
         ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1   
+        GlobalSecondaryIndexes:
+        - IndexName: city-index
+          KeySchema:
+          - AttributeName: City
+            KeyType: HASH
+          Projection:
+            NonKeyAttributes:
+            - City
+            - Place
+            ProjectionType: INCLUDE
+          ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
