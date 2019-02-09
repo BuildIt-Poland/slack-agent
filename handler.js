@@ -163,7 +163,7 @@ module.exports.deleteReservation = async (event) => {
 	};
 
 	const placeDeleted = await res.deleteReservationPlace(reservation, message, TABLE_NAME);
-	if(placeDeleted) return {
+	if(!placeDeleted) return {
 		statusCode: 200,
 		body: slackMessages.slackDefaultMessage(`You don't have reservation`)
 	};

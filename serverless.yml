@@ -66,9 +66,9 @@ functions:
       - http:
           path: slack/reservationList
           method: get
-    deleteReservation:
-      handler: handler.deleteReservation
-      events:
+  deleteReservation:
+    handler: handler.deleteReservation
+    events:
       - http:
           path: slack/deleteReservation
           method: post
