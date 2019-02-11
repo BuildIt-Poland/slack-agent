@@ -13,6 +13,9 @@ require('mocha-sinon');
 describe('handler methods positive paths', async function() {
 	let stubAuth;
 	let stubVerified;
+	let stubCreatePlace;
+	let stubSsaveParkingPlace;
+
 	beforeEach(function() {
 		stubAuth = this.sinon.stub(auth, 'authorize');
 		stubAuth.returns({
@@ -22,11 +25,25 @@ describe('handler methods positive paths', async function() {
 		});
 		stubVerified = this.sinon.stub(auth, 'isVerified');
 		stubVerified.returns(true);
+        
+		stubCreatePlace = this.sinon.stub(parkingPlace, 'createPlace');
+		stubCreatePlace.returns({
+			Id: '123',
+		    Types: 'parkingPlace',
+		    City: 'Gdansk',
+		    Place: '02102019'
+		});
+
+		stubSsaveParkingPlace = this.sinon.stub(parkingPlace, 'saveParkingPlace');
+		stubSsaveParkingPlace.returns(true);
+        
 	});
     
 	afterEach(function() {
 		stubAuth.restore();
 		stubVerified.restore();
+		stubCreatePlace.restore();
+		stubSsaveParkingPlace.restore();
 	});
 
 	it('authorization() returns 200 if code is filled in event', async function() {
@@ -51,6 +68,12 @@ describe('handler methods positive paths', async function() {
 		expect(typeof obj.headers.Location).not.equal('undefined');
 		expect(obj.headers.Location.indexOf('https://slack.com/oauth/authorize')).not.equal(-1);
 		expect(obj.headers.Location.indexOf('field')).not.equal(-1);
+	});
+    
+	it('parkingPlace() positive path', async function() {
+		let obj = await handler.parkingPlace({body: 'user_name=maciej.hein&text=Gdansk+02102019'});
+		expect(obj.statusCode).to.equal(200);
+		expect(obj.body).to.equal('{"text": ""You added a parking place.\n *City:* Gdansk\n *Place:* 02102019""}');
 	});
     
 
