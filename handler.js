@@ -50,17 +50,17 @@ module.exports.parkingPlace = async (event) => {
 		statusCode: 200,
 		body: slackMessages.slackDefaultMessage(message)
 	};
-	const place = await parkingPlace.createPlace(message, TABLE_NAME);
-	if (!place) return {
-		statusCode: 400
-	};
-	const result = await parkingPlace.saveParkingPlace(place, TABLE_NAME);
+
+	const result = await parkingPlace.saveParkingPlace(message, TABLE_NAME);
+	
 	return result ? {
 		statusCode: 200,
 		body: slackMessages
-			.slackDefaultMessage(`You added a parking place.\n *City:* ${place.City}\n *Place:* ${place.Place}`)
+			.slackDefaultMessage(`You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.place}`)
 	} : {
-		statusCode: 500
+		statusCode: 200,
+		body: slackMessages
+			.slackDefaultMessage(`You can't add parking place`)
 	};
 };
 

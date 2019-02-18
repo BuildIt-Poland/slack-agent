@@ -1,21 +1,27 @@
 const dynamo = require('../communication/dynamo.js');
 const uuid = require('uuid');
+const log = require('../communication/logger.js');
 
-exports.saveParkingPlace = async (place, tableName) => {
-	return await dynamo.save(place, tableName);
+exports.saveParkingPlace = async (placeParams, tableName) => {
+	const isPlaceExist = await isParkingPlaceExists(placeParams, tableName);
+	if(isPlaceExist){
+		return false;
+	}
+	try {
+		await dynamo.save({
+			Id: uuid.v4(),
+			City: placeParams.city,
+			Place: placeParams.place,
+		}, tableName);
+	}
+	catch (error) {
+		log.error('reservation.saveParkingPlace', error);
+		return false;
+	}
+	return true;
 };
 
-exports.createPlace = async (placeParams, tableName) => {
-	if (!placeParams) return null;
-	const isPlaceExist = await placeExistInDynamo(placeParams, tableName);
-	return isPlaceExist ? null : {
-		Id: uuid.v4(),
-		City: placeParams.city,
-		Place: placeParams.place,
-	};
-};
-
-const placeExistInDynamo = async (place, tableName) => {
+async function isParkingPlaceExists(place, tableName) {
 	const params = {
 		ExpressionAttributeValues: {
 			':place': `${place.place}`,
@@ -24,6 +30,12 @@ const placeExistInDynamo = async (place, tableName) => {
 		FilterExpression: 'Place = :place and City = :city',
 		TableName: tableName
 	};
-	const result = await dynamo.scan(params);
-	return !(result.Items.length === 0);
-};
+	try {
+		const result = await dynamo.scan(params);
+		return !(result.Items.length === 0);
+	}
+	catch(error){
+		log.error('reservation.isParkingPlaceExists', error);
+		return true;
+	}
+}
