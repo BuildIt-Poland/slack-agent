@@ -4,6 +4,7 @@ const auth = require('./security/authorization.js');
 const parkingPlace = require('./workers/parkingPlace.js');
 const slackMessages = require('./communication/slackMessages.js');
 const res = require('./workers/reservation.js');
+const validations = require('./communication/validations.js');
 
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET,
 	CLIENT_ID = process.env.SLACK_CLIENT_ID,
@@ -43,9 +44,15 @@ module.exports.parkingPlace = async (event) => {
 		statusCode: 401
 	};
 	const { message, isValidCommand } = slackMessages.slackMessageValidate(event,{
-		city: null,
-		place: null
+		city: {
+			required: (city) => validations.isRequired(city),
+			pattern: (city) => validations.cityPattern(city)
+		},
+		place: {
+			required: (date) =>  validations.isRequired(date)
+		}
 	});
+	
 	if(!isValidCommand)return {
 		statusCode: 200,
 		body: slackMessages.slackDefaultMessage(message)
@@ -71,9 +78,16 @@ module.exports.reservation = async (event) => {
 	};
 
 	const {message, isValidCommand} = slackMessages.slackMessageValidate(event, {
-		dates: null,
-		city: null,
-		userName: null,
+		dates: {
+			customValidation: (date) => validations.dateMoreThanCurrent(date),
+			required: (date) =>  validations.isRequired(date)
+		},
+		city: {
+			pattern: (city) => validations.cityPattern(city),
+			required: (date) =>  validations.isRequired(date)
+		},
+		userName: {
+		},
 	});
 	if(!isValidCommand) return {
 		statusCode: 200,
@@ -112,9 +126,16 @@ module.exports.reservationList = async (event) => {
 	};
 
 	const {message, isValidCommand} = slackMessages.slackMessageValidate(event, {
-		dates: null,
-		city: null,
-		userName: null
+		dates: {
+			customValidation: (date) => validations.dateMoreThanCurrent(date),
+			required: (date) =>  validations.isRequired(date)
+		},
+		city: {
+			pattern: (city) => validations.cityPattern(city),
+			required: (date) =>  validations.isRequired(date)
+		},
+		userName: {
+		}
 	});
 	if(!isValidCommand) return {
 		statusCode: 200,
@@ -147,9 +168,16 @@ module.exports.deleteReservation = async (event) => {
 	};
 
 	const {message, isValidCommand} = slackMessages.slackMessageValidate(event, {
-		dates: null,
-		city: null,
-		userName: null
+		dates: {
+			customValidation: (date) => validations.dateMoreThanCurrent(date),
+			required: (date) =>  validations.isRequired(date)
+		},
+		city: {
+			pattern: (city) => validations.cityPattern(city),
+			required: (date) =>  validations.isRequired(date)
+		},
+		userName: {
+		}
 	});
 
 	if(!isValidCommand) return {
