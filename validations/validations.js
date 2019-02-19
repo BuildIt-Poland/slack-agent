@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-exports.isRequired = (object) => object != undefined && object != '';
+exports.isRequired = (object) => object !== undefined && object !== '';
 
 exports.dateMoreThanCurrent = (date) => (moment(date).isSame(moment(), 'date') || moment(date).isAfter(moment(), 'date'));
 
