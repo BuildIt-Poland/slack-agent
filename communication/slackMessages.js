@@ -1,5 +1,3 @@
-'use strict';
-
 const queryString = require('query-string');
 
 exports.slackMessageValidate = (payload, object) => {
@@ -17,10 +15,10 @@ exports.slackMessageValidate = (payload, object) => {
 function parseMessageFromSlack(payload, object) {
 	const bodyParams = queryString.parse(payload.body);
 	const params = bodyParams.text.split(' ');
-	const parsedTextMessage = Object.keys(object).reduce((acc, key, index) => 
-		({...acc, [key]: {value: params[index], 
+	const parsedTextMessage = Object.keys(object).reduce((acc, key, index) =>
+		({...acc, [key]: {value: params[index],
 			isValid: paramsValidation(object[key], params, index)} }),{});
-	return object.hasOwnProperty('userName') ? 
+	return object.hasOwnProperty('userName') ?
 		{
 			...parsedTextMessage,
 			userName: {value: bodyParams.user_name, isValid: true}
@@ -31,10 +29,12 @@ exports.slackDefaultMessage = (message) => {
 	return `{"text": "${message}"}`;
 };
 
+exports.slackDefaultMessage = message => `{"text": "${message}"}`;
+
 exports.listSlackMessage = (records, title) => {
 	const attachments = records.map(record => {
 		const textArray = Object.keys(record)
-			.map(key => (record[key] || record[key] != '') 
+			.map(key => (record[key] || record[key] != '')
 				? `*${key}:* ${record[key]}\n` : '');
 		return { text: textArray.join('') };
 	});
@@ -50,6 +50,6 @@ function isObjectValid(object){
 }
 
 function createValidatedObject(object){
-	return Object.keys(object).reduce((acc,key) => 
+	return Object.keys(object).reduce((acc,key) =>
 		({...acc, [key]: object[key].value}), {});
 }
