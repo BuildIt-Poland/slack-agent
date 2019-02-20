@@ -23,7 +23,7 @@ services:
       - LOCAL_DB=true
     networks:
       - test_lambda
-    depends_on: 
+    depends_on:
       - dynamodb
 
 # to test endpoint please modify "command"
@@ -46,6 +46,5 @@ services:
     command: "handler.parkingPlace '{\"body\": \"text=Gdansk+70\"}'"
     networks:
       - test_lambda
-    depends_on: 
+    depends_on:
       - config
-  
