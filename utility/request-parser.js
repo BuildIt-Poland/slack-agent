@@ -14,7 +14,7 @@ exports.parseBodyToObject = (body, objectFormatParse) => {
   const textArray = _.split(parsedBody.text, ' ');
   const textObject = _.reduce(_.keys(objectFormatParse), (acc, key, index) => 
     ({...acc, [key]: textArray[index]}), 
-    _.has(objectFormatParse, 'userName') ? {} : { userName: parsedBody.user_name });
+    _.has(objectFormatParse, 'userName') ? { userName: parsedBody.user_name } : {});
   const isTextObjectValid = isObjectTextValid(textObject, objectFormatParse);
   return isTextObjectValid ? {
     isValid: isTextObjectValid,
