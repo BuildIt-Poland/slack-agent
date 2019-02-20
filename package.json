@@ -5,7 +5,7 @@
   "main": "authorizer.js",
   "scripts": {
     "dev": "node -e 'require(\"./development/dynamoLocal.js\").configure()'",
-    "test": "nyc --all --check-coverage --statements 50 --lines 50 --functions 50 --branches 45 --reporter=text mocha --reporter=spec",
+    "test": "nyc --all --check-coverage --statements 30 --lines 30 --functions 30 --branches 30 --reporter=text mocha --reporter=spec",
     "eslint": "./node_modules/.bin/eslint ."
   },
   "author": "",

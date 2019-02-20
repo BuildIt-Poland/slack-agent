@@ -9,10 +9,10 @@ provider:
     SLACK_CLIENT_ID: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_CLIENT_SECRET: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_SIGNING_SECRET:  ${ssm:SLACK_AGENT_SIGING_SECRET}
-    SLACK_CLIENT_SCOPES: ${ssm:SLACK_AGENT_CLIENT_SCOPE} 
+    SLACK_CLIENT_SCOPES: ${ssm:SLACK_AGENT_CLIENT_SCOPE}
     TABLE_NAME: ${self:custom.tableName}
     ENV_STAGE: ${self:custom.stage}
-  iamRoleStatements:    
+  iamRoleStatements:
     - Effect: Allow
       Resource: "*"
       Action:
@@ -43,31 +43,31 @@ custom:
 
 functions:
   authorization:
-    handler: handler.authorization
+    handler: /handlers/authorize.authorization
     events:
       - http:
           path: slack/authorization
           method: get
   parkingPlace:
-    handler: handler.parkingPlace
+    handler: /handlers/addParkingPlace.parkingPlace
     events:
       - http:
           path: slack/parkingPlace
           method: post
   reservation:
-    handler: handler.reservation
+    handler: /handlers/bookParkingPlace.reservation
     events:
       - http:
           path: slack/reservation
           method: post
   reservationList:
-    handler: handler.reservationList
+    handler: /handlers/listParkingPlaces.reservationList
     events:
       - http:
           path: slack/reservationList
           method: post
   deleteReservation:
-    handler: handler.deleteReservation
+    handler: /handlers/handler.unbookParkingPlace
     events:
       - http:
           path: slack/deleteReservation
