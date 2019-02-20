@@ -6,18 +6,26 @@ const log = require('npmlog');
 const dynamoLocal = require('../development/dynamoLocal.js');
 require('mocha-sinon');
 
+function initLogStub() {
+  this.sinon.stub(log, 'log');
+}
+
+function restoreLogStub() {
+  this.sinon.restore();
+}
+
 describe('DynamoLocal module tests', () => {
   describe('Check configure() function', () => {
     before(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         if (typeof params.TableName === 'undefined') callback({ error: 'typeof params.TableName == \'undefined\'' }, 'failed to put data in database');
-        else if (params.TableName != 'parking-dev') callback({ error: 'params.TableName != \'parking-dev\'' }, 'failed to put data in database');
+        else if (params.TableName !== 'parking-dev') callback({ error: 'params.TableName != \'parking-dev\'' }, 'failed to put data in database');
         else if (typeof params.Item.Types === 'undefined') callback({ error: 'typeof params.Item.Types == \'undefined\'' }, 'failed to put data in database');
         else callback(null, 'successfully put item in database');
       });
       AWS.mock('DynamoDB', 'createTable', (params, callback) => {
         if (typeof params.TableName === 'undefined') callback({ error: 'typeof params.TableName == \'undefined\'' }, 'failed to create table in database');
-        else if (params.TableName != 'parking-dev') callback({ error: 'params.TableName != \'parking-dev\'' }, 'failed to create table in database');
+        else if (params.TableName !== 'parking-dev') callback({ error: 'params.TableName != \'parking-dev\'' }, 'failed to create table in database');
         else callback(null, 'successfully created table in database');
       });
     });
@@ -34,13 +42,9 @@ describe('DynamoLocal module tests', () => {
   });
 });
 describe('DynamoLocal failures module tests', () => {
-  beforeEach(function () {
-    this.sinon.stub(log, 'log');
-  });
+  beforeEach(initLogStub);
 
-  afterEach(function () {
-    this.sinon.restore();
-  });
+  afterEach(restoreLogStub);
 
   describe('Check configure() function', () => {
     before(() => {
@@ -64,13 +68,9 @@ describe('DynamoLocal failures module tests', () => {
   });
 });
 describe('DynamoLocal failures module tests', () => {
-  beforeEach(function () {
-    this.sinon.stub(log, 'log');
-  });
+  beforeEach(initLogStub);
 
-  afterEach(function () {
-    this.sinon.restore();
-  });
+  afterEach(restoreLogStub);
 
   describe('Check configure() function', () => {
     before(() => {

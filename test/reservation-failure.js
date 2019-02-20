@@ -1,18 +1,21 @@
-
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
 const res = require('../workers/reservation.js');
 
-describe('Reservation failures module tests', () => {
-  beforeEach(function () {
-    this.sinon.stub(log, 'log');
-  });
+function initLogStub() {
+  this.sinon.stub(log, 'log');
+}
 
-  afterEach(function () {
-    this.sinon.restore();
-  });
+function restoreLogStub() {
+  this.sinon.restore();
+}
+
+describe('Reservation failures module tests', () => {
+  beforeEach(initLogStub);
+
+  afterEach(restoreLogStub);
 
   describe('Check saveReservationAsync(reservationId, place, Dates, tableName) function', () => {
     beforeEach(() => {
@@ -27,19 +30,29 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns false due to put error', async () => {
-      const reservation = await res.saveReservationAsync(null, {
-        City: 'Gdansk',
-        Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
-        Place: 11,
-      }, '11022019', 'parking-dev');
+      const reservation = await res.saveReservationAsync(
+        null,
+        {
+          City: 'Gdansk',
+          Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
+          Place: 11,
+        },
+        '11022019',
+        'parking-dev',
+      );
       expect(reservation).to.equal(false);
     });
     it('returns false due to put error', async () => {
-      const reservation = await res.saveReservationAsync('6f89ddc0-287d-11e9-ab74-83664e1af429', {
-        City: 'Gdansk',
-        Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-        Place: 12,
-      }, '11022019', 'parking-dev');
+      const reservation = await res.saveReservationAsync(
+        '6f89ddc0-287d-11e9-ab74-83664e1af429',
+        {
+          City: 'Gdansk',
+          Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+          Place: 12,
+        },
+        '11022019',
+        'parking-dev',
+      );
       expect(reservation).to.equal(false);
     });
   });
@@ -103,12 +116,14 @@ describe('Reservation failures module tests', () => {
       const reservation = {
         Id: '11022019',
         City: 'multiple',
-        Reservations: [{
-          City: 'Gdansk',
-          Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-          Place: 12,
-          Reservation: 'maciej.hein',
-        }],
+        Reservations: [
+          {
+            City: 'Gdansk',
+            Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
+            Place: 12,
+            Reservation: 'maciej.hein',
+          },
+        ],
       };
       const deleted = await res.deleteReservationPlace(reservation, params, 'parking-dev');
       expect(deleted).equals(false);

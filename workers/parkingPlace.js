@@ -2,24 +2,6 @@ const uuid = require('uuid');
 const dynamo = require('../communication/dynamo.js');
 const log = require('../communication/logger.js');
 
-exports.saveParkingPlace = async (placeParams, tableName) => {
-  const isPlaceExist = await isParkingPlaceExists(placeParams, tableName);
-  if (isPlaceExist) {
-    return false;
-  }
-  try {
-    await dynamo.save({
-      Id: uuid.v4(),
-      City: placeParams.city,
-      Place: placeParams.place,
-    }, tableName);
-  } catch (error) {
-    log.error('reservation.saveParkingPlace', error);
-    return false;
-  }
-  return true;
-};
-
 async function isParkingPlaceExists(place, tableName) {
   const params = {
     ExpressionAttributeValues: {
@@ -37,3 +19,24 @@ async function isParkingPlaceExists(place, tableName) {
     return true;
   }
 }
+
+exports.saveParkingPlace = async (placeParams, tableName) => {
+  const isPlaceExist = await isParkingPlaceExists(placeParams, tableName);
+  if (isPlaceExist) {
+    return false;
+  }
+  try {
+    await dynamo.save(
+      {
+        Id: uuid.v4(),
+        City: placeParams.city,
+        Place: placeParams.place,
+      },
+      tableName,
+    );
+  } catch (error) {
+    log.error('reservation.saveParkingPlace', error);
+    return false;
+  }
+  return true;
+};

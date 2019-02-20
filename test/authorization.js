@@ -121,7 +121,7 @@ describe('Authorization module tests', () => {
       expect(verified).to.equal(false);
     });
     it('returns false when timestamp is fresh, but signature doesn\'t match expected value', async () => {
-      const time = ~~(Date.now() / 1000) - (60 * 2);
+      const time = (Date.now() / 1000) - (60 * 2);
       const request = {
         headers: {
           'X-Slack-Signature': 'v0=39fda9a061aeb91f8ab8d44476baef9d2a8accab1e03bdc8dc573c8f8eef16ef',

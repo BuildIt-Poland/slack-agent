@@ -1,15 +1,27 @@
-
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
 const parkingPlace = require('../workers/parkingPlace.js');
 
+function initLogStub() {
+  this.sinon.stub(log, 'log');
+}
+
+function restoreLogStub() {
+  this.sinon.restore();
+}
+
 describe('ParkingPlace module tests', () => {
   describe('Check saveParkingPlace(placeParams, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        if (typeof params.TableName !== 'undefined' && params.TableName == 'parking-dev' && typeof params.Item.City !== 'undefined') callback(null, true);
+        if (
+          typeof params.TableName !== 'undefined' &&
+          params.TableName === 'parking-dev' &&
+          typeof params.Item.City !== 'undefined'
+        )
+          callback(null, true);
         else callback({ error: 'error' }, false);
       });
       AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
@@ -20,10 +32,13 @@ describe('ParkingPlace module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns true', async () => {
-      const place = await parkingPlace.saveParkingPlace({
-        city: 'Gdansk',
-        place: '11',
-      }, 'parking-dev');
+      const place = await parkingPlace.saveParkingPlace(
+        {
+          city: 'Gdansk',
+          place: '11',
+        },
+        'parking-dev',
+      );
       expect(place).to.equal(true);
     });
     it('returns false', async () => {
@@ -34,7 +49,12 @@ describe('ParkingPlace module tests', () => {
   describe('Check saveParkingPlace(placeParams, tableName) function when place exists', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        if (typeof params.TableName !== 'undefined' && params.TableName == 'parking-dev' && typeof params.Item.City !== 'undefined') callback(null, true);
+        if (
+          typeof params.TableName !== 'undefined' &&
+          params.TableName === 'parking-dev' &&
+          typeof params.Item.City !== 'undefined'
+        )
+          callback(null, true);
         else callback({ error: 'error' }, false);
       });
       AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
@@ -53,23 +73,23 @@ describe('ParkingPlace module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns true', async () => {
-      const place = await parkingPlace.saveParkingPlace({
-        city: 'Gdansk',
-        place: '11',
-      }, 'parking-dev');
+      const place = await parkingPlace.saveParkingPlace(
+        {
+          city: 'Gdansk',
+          place: '11',
+        },
+        'parking-dev',
+      );
       expect(place).to.equal(false);
     });
   });
 });
 
 describe('ParkingPlace failures module tests', () => {
-  beforeEach(function () {
-    this.sinon.stub(log, 'log');
-  });
+  beforeEach(initLogStub);
 
-  afterEach(function () {
-    this.sinon.restore();
-  });
+  afterEach(restoreLogStub);
+
   describe('Check saveParkingPlace(placeParams, tableName) function when scan failures', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
@@ -83,10 +103,13 @@ describe('ParkingPlace failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns false', async () => {
-      const place = await parkingPlace.saveParkingPlace({
-        city: 'Gdansk',
-        place: '11',
-      }, 'parking-dev');
+      const place = await parkingPlace.saveParkingPlace(
+        {
+          city: 'Gdansk',
+          place: '11',
+        },
+        'parking-dev',
+      );
       expect(place).to.equal(false);
     });
   });
@@ -103,10 +126,13 @@ describe('ParkingPlace failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns false', async () => {
-      const place = await parkingPlace.saveParkingPlace({
-        city: 'Gdansk',
-        place: '11',
-      }, 'parking-dev');
+      const place = await parkingPlace.saveParkingPlace(
+        {
+          city: 'Gdansk',
+          place: '11',
+        },
+        'parking-dev',
+      );
       expect(place).to.equal(false);
     });
   });

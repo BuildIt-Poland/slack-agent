@@ -12,5 +12,8 @@
   "parserOptions": {
     "ecmaVersion": 2018
   },
-  "rules": {}
+  "rules": {},
+  "settings": {
+    "import/core-modules": ["aws-sdk", "uuid", "js-yaml"]
+  }
 }
