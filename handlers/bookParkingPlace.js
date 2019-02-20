@@ -20,7 +20,7 @@ module.exports.reservation = async event => {
     },
     city: {
       pattern: city => cityPattern(city),
-      required: date => śisRequired(date),
+      required: date => isRequired(date),
     },
     userName: {},
   });
