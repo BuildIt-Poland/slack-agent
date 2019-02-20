@@ -43,7 +43,7 @@ services:
       - SIGNING_SECRET=123
       - TABLE_NAME=parking-dev
       - LOCAL_DB=true
-    command: "handler.parkingPlaceList '{\"body\":{\"test\": \"123\"}}'"
+    command: "handler.parkingPlace '{\"body\": \"text=Gdansk+70\"}'"
     networks:
       - test_lambda
     depends_on: 
