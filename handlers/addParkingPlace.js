@@ -1,7 +1,7 @@
 const auth = require('../security/authorization.js');
-const { isRequired, cityPattern } = require('../utility/request-parser-validations.js');
-const { parseBodyToObject } = require('../utility/request-parser.js');
-const { responseBody } = require('../utility/response.js');
+const { isCity } = require('../utility/requestValidator.js');
+const { parseBodyToObject } = require('../utility/requestParser.js');
+const { generateResponseBody } = require('../utility/responseBody.js');
 const parkingPlace = require('../workers/parkingPlace.js');
 
 const { SIGNING_SECRET, ENV_STAGE, TABLE_NAME } = require('../config/all.js');
@@ -14,18 +14,18 @@ module.exports.parkingPlace = async event => {
     };
   const { message, isValidCommand } = parseBodyToObject(event, {
     city: {
-      required: city => isRequired(city),
-      pattern: city => cityPattern(city),
+      required: city => !!city,
+      pattern: city => isCity(city),
     },
     place: {
-      required: date => isRequired(date),
+      required: date => !!date
     },
   });
 
   if (!isValidCommand)
     return {
       statusCode: 200,
-      body: responseBody(message),
+      body: generateResponseBody(message),
     };
 
   const result = await parkingPlace.saveParkingPlace(message, TABLE_NAME);
@@ -33,12 +33,12 @@ module.exports.parkingPlace = async event => {
   return result
     ? {
         statusCode: 200,
-        body: responseBody(
+        body: generateResponseBody(
           `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.place}`,
         ),
       }
     : {
         statusCode: 200,
-        body: responseBody(`You can't add parking place`),
+        body: generateResponseBody(`You can't add parking place`),
       };
 };

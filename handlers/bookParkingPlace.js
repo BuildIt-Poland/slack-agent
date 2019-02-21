@@ -1,7 +1,7 @@
 const auth = require('../security/authorization.js');
-const { isRequired, cityPattern, dateMoreThanCurrent } = require('../utility/request-parser-validations.js');
-const { parseBodyToObject } = require('../utility/request-parser.js');
-const { responseBody } = require('../utility/response.js');
+const { isCity, isFeatureDate } = require('../utility/requestValidator.js');
+const { parseBodyToObject } = require('../utility/requestParser.js');
+const { generateResponseBody } = require('../utility/responseBody.js');
 const res = require('../workers/reservation.js');
 
 const { ENV_STAGE, SIGNING_SECRET, TABLE_NAME } = require('../config/all.js');
@@ -15,19 +15,19 @@ module.exports.reservation = async event => {
 
   const { message, isValidCommand } = parseBodyToObject(event, {
     dates: {
-      customValidation: date => dateMoreThanCurrent(date),
-      required: date => isRequired(date),
+      isFeatureDate: date => isFeatureDate(date),
+      required: date => !!date,
     },
     city: {
-      pattern: city => cityPattern(city),
-      required: date => isRequired(date),
+      pattern: city => isCity(city),
+      required: date => !!date,
     },
     userName: {},
   });
   if (!isValidCommand)
     return {
       statusCode: 200,
-      body: responseBody(message),
+      body: generateResponseBody(message),
     };
 
   const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
@@ -44,7 +44,7 @@ module.exports.reservation = async event => {
   if (!Object.keys(place).length)
     return {
       statusCode: 200,
-      body: responseBody(
+      body: generateResponseBody(
         `No places available on ${message.dates} in ${message.city}`,
       ),
     };
@@ -53,7 +53,7 @@ module.exports.reservation = async event => {
   return result
     ? {
         statusCode: 200,
-        body: responseBody(
+        body: generateResponseBody(
           `You booked a place number ${place.Place} in ${message.city} on ${message.dates}`,
         ),
       }

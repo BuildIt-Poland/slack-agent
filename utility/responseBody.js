@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-exports.responseBody = (text) => {
+exports.generateResponseBody = (text) => {
     return `{"text": "${text}"}`;
 };
   
