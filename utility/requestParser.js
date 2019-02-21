@@ -1,13 +1,13 @@
 const _ = require('lodash');
 const queryString = require('query-string');
 
-const isTextPropertyValid = (validationForProperty, textProperty) => {
-  return _.every(_.values(validationForProperty), validation => validation(textProperty));
+const isTextPropertyValid = (textProperty, validationForProperty) => {
+  return  _.every(_.values(validationForProperty), validation => validation(textProperty));
 }
 
 const isTextValid = (text, validations) => {
   return _.reduce(text, (isObjectValid, userInputProperty, propertyKey) => 
-     (isTextPropertyValid(userInputProperty, validations[propertyKey]) && isObjectValid), true);
+    (isTextPropertyValid(userInputProperty, validations[propertyKey]) && isObjectValid), true);
 }
 
 exports.parseBodyToObject = (body, textFormat) => {
