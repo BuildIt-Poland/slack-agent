@@ -1,7 +1,8 @@
 const auth = require('../security/authorization.js');
-const slackMessages = require('../communication/slackMessages.js');
+const { isCity, isFutureDate } = require('../utility/requestValidator.js');
+const { parseBodyToObject } = require('../utility/requestParser.js');
+const { generateResponseBody } = require('../utility/responseBody.js');
 const res = require('../workers/reservation.js');
-const validations = require('../validations/validations.js');
 
 const { ENV_STAGE, SIGNING_SECRET, TABLE_NAME } = require('../config/all.js');
 
@@ -12,21 +13,21 @@ module.exports.reservation = async event => {
       statusCode: 200,
     };
 
-  const { message, isValidCommand } = slackMessages.slackMessageValidate(event, {
+  const { message, isValidCommand } = parseBodyToObject(event, {
     dates: {
-      customValidation: date => validations.dateMoreThanCurrent(date),
-      required: date => validations.isRequired(date),
+      isFeatureDate: date => isFutureDate(date),
+      required: date => !!date,
     },
     city: {
-      pattern: city => validations.cityPattern(city),
-      required: date => validations.isRequired(date),
+      pattern: city => isCity(city),
+      required: date => !!date,
     },
     userName: {},
   });
   if (!isValidCommand)
     return {
       statusCode: 200,
-      body: slackMessages.slackDefaultMessage(message),
+      body: generateResponseBody(message),
     };
 
   const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
@@ -43,7 +44,7 @@ module.exports.reservation = async event => {
   if (!Object.keys(place).length)
     return {
       statusCode: 200,
-      body: slackMessages.slackDefaultMessage(
+      body: generateResponseBody(
         `No places available on ${message.dates} in ${message.city}`,
       ),
     };
@@ -52,7 +53,7 @@ module.exports.reservation = async event => {
   return result
     ? {
         statusCode: 200,
-        body: slackMessages.slackDefaultMessage(
+        body: generateResponseBody(
           `You booked a place number ${place.Place} in ${message.city} on ${message.dates}`,
         ),
       }

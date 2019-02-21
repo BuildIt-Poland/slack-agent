@@ -1,7 +1,8 @@
 const auth = require('../security/authorization.js');
-const slackMessages = require('../communication/slackMessages.js');
+const { isCity, isFutureDate } = require('../utility/requestValidator.js');
+const { parseBodyToObject } = require('../utility/requestParser.js');
+const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utility/responseBody.js');
 const res = require('../workers/reservation.js');
-const validations = require('../validations/validations.js');
 
 const { ENV_STAGE, SIGNING_SECRET, TABLE_NAME } = require('../config/all.js');
 
@@ -12,21 +13,21 @@ module.exports.reservationList = async event => {
       statusCode: 401,
     };
 
-  const { message, isValidCommand } = slackMessages.slackMessageValidate(event, {
+  const { message, isValidCommand } = parseBodyToObject(event, {
     dates: {
-      customValidation: date => validations.dateMoreThanCurrent(date),
-      required: date => validations.isRequired(date),
+      isFutureDate: date => isFutureDate(date),
+      required: date => !!date,
     },
     city: {
-      pattern: city => validations.cityPattern(city),
-      required: date => validations.isRequired(date),
+      pattern: city => isCity(city),
+      required: date => !!date,
     },
     userName: {},
   });
   if (!isValidCommand)
     return {
       statusCode: 200,
-      body: slackMessages.slackDefaultMessage(message),
+      body: generateResponseBody(message),
     };
 
   const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
@@ -43,10 +44,10 @@ module.exports.reservationList = async event => {
   if (!allPlaces.length)
     return {
       statusCode: 200,
-      body: slackMessages.slackDefaultMessage(`Parking places don't exists`),
+      body: generateResponseBody(`Parking places don't exists`),
     };
   return {
     statusCode: 200,
-    body: slackMessages.listSlackMessage(allPlaces, 'List of reservations with available places:'),
+    body: generateResponseBodyWithAttachments('List of reservations with available places:', allPlaces),
   };
 };

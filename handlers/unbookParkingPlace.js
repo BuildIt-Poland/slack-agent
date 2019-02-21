@@ -1,7 +1,8 @@
 const auth = require('../security/authorization.js');
-const slackMessages = require('../communication/slackMessages.js');
+const { isCity, isFutureDate } = require('../utility/requestValidator.js');
+const { parseBodyToObject } = require('../utility/requestParser.js');
+const { generateResponseBody } = require('../utility/responseBody.js');
 const res = require('../workers/reservation.js');
-const validations = require('../validations/validations.js');
 
 const { SIGNING_SECRET, ENV_STAGE, TABLE_NAME } = require('../config/all.js');
 
@@ -12,14 +13,14 @@ module.exports.deleteReservation = async event => {
       statusCode: 401,
     };
 
-  const { message, isValidCommand } = slackMessages.slackMessageValidate(event, {
+  const { message, isValidCommand } = parseBodyToObject(event, {
     dates: {
-      customValidation: date => validations.dateMoreThanCurrent(date),
-      required: date => validations.isRequired(date),
+      isFutureDates: date => isFutureDate(date),
+      required: date => !!date,
     },
     city: {
-      pattern: city => validations.cityPattern(city),
-      required: date => validations.isRequired(date),
+      pattern: city => isCity(city),
+      required: date => !!date,
     },
     userName: {},
   });
@@ -27,7 +28,7 @@ module.exports.deleteReservation = async event => {
   if (!isValidCommand)
     return {
       statusCode: 200,
-      body: slackMessages.slackDefaultMessage(message),
+      body: generateResponseBody(message),
     };
 
   const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
@@ -40,10 +41,10 @@ module.exports.deleteReservation = async event => {
   if (!placeDeleted)
     return {
       statusCode: 200,
-      body: slackMessages.slackDefaultMessage(`You don't have reservation`),
+      body: generateResponseBody(`You don't have reservation`),
     };
   return {
     statusCode: 200,
-    body: slackMessages.slackDefaultMessage(`Reservation deleted`),
+    body: generateResponseBody(`Reservation deleted`),
   };
 };
