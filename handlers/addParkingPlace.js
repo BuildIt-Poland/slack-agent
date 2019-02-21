@@ -29,8 +29,6 @@ module.exports.parkingPlace = async event => {
 
   const result = await parkingPlace.saveParkingPlace(message, TABLE_NAME);
 
-  console.log('asdasohdaiushdkhjgasioudahidoas');
-
   if(result) {
     return success(generateResponseBody(
       `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.place}`,
