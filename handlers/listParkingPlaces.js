@@ -1,5 +1,5 @@
 const auth = require('../security/authorization.js');
-const { isCity, isFeatureDate } = require('../utility/requestValidator.js');
+const { isCity, isFutureDate } = require('../utility/requestValidator.js');
 const { parseBodyToObject } = require('../utility/requestParser.js');
 const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utility/responseBody.js');
 const res = require('../workers/reservation.js');
@@ -15,7 +15,7 @@ module.exports.reservationList = async event => {
 
   const { message, isValidCommand } = parseBodyToObject(event, {
     dates: {
-      isFeatureDate: date => isFeatureDate(date),
+      isFutureDate: date => isFutureDate(date),
       required: date => !!date,
     },
     city: {
