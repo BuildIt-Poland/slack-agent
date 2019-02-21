@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const queryString = require('query-string');
 
-const isTextPropertyValid = (textProperty, validationForProperty) => {;
+const isTextPropertyValid = (textProperty, validationForProperty) => {
   return  _.every(_.values(validationForProperty), validation => validation(textProperty));
 }
 
