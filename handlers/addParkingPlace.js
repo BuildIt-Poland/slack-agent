@@ -13,7 +13,7 @@ module.exports.parkingPlace = async event => {
     return unauthorized();
   }
 
-  const { message, isValidCommand } = parseBodyToObject(event, {
+  const { message, isValid } = parseBodyToObject(event.body, {
     city: {
       required: city => !!city,
       pattern: isCity,
@@ -23,11 +23,13 @@ module.exports.parkingPlace = async event => {
     },
   });
 
-  if (!isValidCommand){
+  if (!isValid){
     return success(generateResponseBody(message));
   }
 
   const result = await parkingPlace.saveParkingPlace(message, TABLE_NAME);
+
+  console.log('asdasohdaiushdkhjgasioudahidoas');
 
   if(result) {
     return success(generateResponseBody(

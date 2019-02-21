@@ -14,7 +14,7 @@ module.exports.reservation = async event => {
     return unauthorized();
   }
 
-  const { message, isValidCommand } = parseBodyToObject(event, {
+  const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
       isFutureDate,
       required: date => !!date,
@@ -26,7 +26,7 @@ module.exports.reservation = async event => {
     userName: {},
   });
 
-  if (!isValidCommand) {
+  if (!isValid) {
     return success(generateResponseBody(message));
   }
 
