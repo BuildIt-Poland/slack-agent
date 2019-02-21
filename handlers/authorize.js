@@ -1,4 +1,5 @@
 const auth = require('../security/authorization.js');
+const { success } = require('../utility/reponseBuilder.js');
 
 const { CLIENT_ID, CLIENT_SECRET, CLIENT_SCOPES, ENV_STAGE } = require('../config/all.js');
 
@@ -10,6 +11,7 @@ module.exports.authorization = async event => {
     client_secret: CLIENT_SECRET,
     stage: ENV_STAGE,
   };
+
   if (!params.code) {
     return auth.oAuthRedirectUrl({
       ...event,
@@ -18,12 +20,10 @@ module.exports.authorization = async event => {
       stage: ENV_STAGE,
     });
   }
+
   await auth.authorize(params);
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Authorized',
-      input: event,
-    }),
-  };
+  return success(JSON.stringify({
+    message: 'Authorized',
+    input: event,
+  }));
 };
