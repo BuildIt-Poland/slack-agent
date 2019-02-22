@@ -8,7 +8,7 @@ const { generateResponseBody } = require('../utility/responseBody.js');
 
 const { ENV_STAGE, SIGNING_SECRET, TABLE_NAME } = require('../config/all.js');
 
-module.exports.reservation = async event => {
+module.exports.book = async event => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
   if (!isVerified) {
     return unauthorized();
@@ -35,18 +35,18 @@ module.exports.reservation = async event => {
     return internalServerError();
   }
 
-  const place = await res.findFreePlaceAsync(reservation, message.city, TABLE_NAME);
-  if (!place) {
+  const availablePlace = await res.findFreePlaceAsync(reservation, message.city, TABLE_NAME);
+  if (!availablePlace) {
     return internalServerError();
   }
 
-  if (!_.isEmpty(place)) {
+  if (_.isEmpty(availablePlace)) {
     const body = generateResponseBody(`No places available on ${message.dates} in ${message.city}`);
     return internalServerError(body);
   }
 
-  const result = await res.saveReservationAsync(reservation.Id, place, message, TABLE_NAME);
+  const result = await res.saveReservationAsync(reservation.Id, availablePlace, message, TABLE_NAME);
   return result ? success(generateResponseBody(
-    `You booked a place number ${place.Place} in ${message.city} on ${message.dates}`,
+    `You booked a place number ${availablePlace.Place} in ${message.city} on ${message.dates}`,
   )) : internalServerError();
 };

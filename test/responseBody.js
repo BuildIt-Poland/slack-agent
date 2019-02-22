@@ -1,4 +1,3 @@
-
 /* global describe it */
 const { expect } = require('chai');
 const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utility/responseBody.js');
@@ -12,7 +11,7 @@ describe('responseBody module tests', () => {
     });
   });
   describe('Check generateResponseBodyWithAttachments(title, attachments) function', () => {
-    it('return body with title and attachments', () => {
+    it('returns body with title and attachments', () => {
         const body = generateResponseBodyWithAttachments('Places:', [
             {
                 city: 'Gdansk',

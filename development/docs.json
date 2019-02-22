@@ -10,5 +10,11 @@
         "City": "Warszawa",
         "Place": "34",
         "Types": "parkingPlace"
-    }
+    },
+    {
+      "Id": "3",
+      "City": "Gdansk",
+      "Place": "1b",
+      "Types": "parkingPlace"
+  }
 ]
