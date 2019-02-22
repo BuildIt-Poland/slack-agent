@@ -11,6 +11,7 @@ function initAuthorizeStub() {
 		body: 'Authorized'
 	});
 }
+
 function restoreAuthorizeStub() {
 	this.sinon.restore();
 }
