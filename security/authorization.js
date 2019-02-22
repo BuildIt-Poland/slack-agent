@@ -9,15 +9,9 @@ exports.authorize = payload => {
   return axios.post('https://slack.com/api/oauth.access', queryString.stringify(payload));
 };
 
-exports.oAuthRedirectUrl = payload => {
-  if (payload.stage === 'dev') return Promise.resolve('Dev environment - no security.');
-  return Promise.resolve({
-    statusCode: 301,
-    headers: {
-      Location: `https://slack.com/oauth/authorize?${queryString.stringify(payload)}`,
-    },
-  });
-};
+exports.oAuthRedirectUrl = authParams => {
+  return `https://slack.com/oauth/authorize?${queryString.stringify(authParams)}`;
+}
 
 exports.isVerified = (request, signingSecret, stage) => {
   if (stage === 'dev') return Promise.resolve(true);

@@ -2,7 +2,7 @@
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
 const moxios = require('moxios');
-const auth = require('../security/authorization.js');
+const {oAuthRedirectUrl, authorize, isVerified} = require('../security/authorization.js');
 
 describe('Authorization module tests', () => {
   describe('Check authorize() function', () => {
@@ -30,7 +30,7 @@ describe('Authorization module tests', () => {
         stage: 'stg',
 
       };
-      const url = await auth.authorize(payload);
+      const url = await authorize(payload);
       expect(url.config.url).to.equal('https://slack.com/api/oauth.access');
       expect(url.config.data.indexOf('1111')).not.equal(-1);
       expect(url.config.data.indexOf('code')).not.equal(-1);
@@ -45,39 +45,29 @@ describe('Authorization module tests', () => {
         stage: 'dev',
 
       };
-      const url = await auth.authorize(payload);
+      const url = await authorize(payload);
       expect(typeof url).to.equal('string');
     });
   });
-  describe('Check oAuthRedirectUrl() function', () => {
-    it('Promise is resolved to expected object', async () => {
-      const payload = {
+  describe('Check oAuthRedirectUrl(authParams) function', () => {
+    it('returns valid slack oauth redirect url', () => {
+      const authParams = {
         scope: 'test',
         client_id: '123',
       };
-      const url = await auth.oAuthRedirectUrl(payload);
-      expect(url.statusCode).to.equal(301);
-      expect(url.headers.Location.indexOf('https://slack.com/oauth/authorize?')).not.equal(-1);
-      expect(url.headers.Location.indexOf('scope')).not.equal(-1);
-      expect(url.headers.Location.indexOf('client_id')).not.equal(-1);
-    });
-    it('returns "no security" for dev stage', async () => {
-      const payload = {
-        scope: 'test',
-        client_id: '123',
-        stage: 'dev',
-      };
-      const url = await auth.oAuthRedirectUrl(payload);
-      expect(typeof url).to.equal('string');
+      const url = oAuthRedirectUrl(authParams);
+      expect(url.indexOf('https://slack.com/oauth/authorize?')).not.equal(-1);
+      expect(url.indexOf('scope')).not.equal(-1);
+      expect(url.indexOf('client_id')).not.equal(-1);
     });
   });
   describe('Check isVerified() function', () => {
     it('returns false when missing headers properties in request', () => {
-      const verified = auth.isVerified({}, {});
+      const verified = isVerified({}, {});
       expect(verified).to.equal(false);
     });
     it('returns false when missing X-Slack-Signature and X-Slack-Request-Timestamp properties', () => {
-      const verified = auth.isVerified({ headers: {} }, {});
+      const verified = isVerified({ headers: {} }, {});
       expect(verified).to.equal(false);
     });
     it('returns false if properties are not defined properly is undefined', () => {
@@ -87,7 +77,7 @@ describe('Authorization module tests', () => {
           'X-Slack-Request-Timestamp': false,
         },
       };
-      const verified = auth.isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
       expect(verified).to.equal(false);
     });
     it('returns false signingSecret is undefined', () => {
@@ -97,7 +87,7 @@ describe('Authorization module tests', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
-      const verified = auth.isVerified(request, undefined);
+      const verified = isVerified(request, undefined);
       expect(verified).to.equal(false);
     });
     it('returns false signingSecret is not a string', () => {
@@ -107,7 +97,7 @@ describe('Authorization module tests', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
-      const verified = auth.isVerified(request, 1234);
+      const verified = isVerified(request, 1234);
       expect(verified).to.equal(false);
     });
     it('returns false when timestamp is too old', () => {
@@ -117,7 +107,7 @@ describe('Authorization module tests', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
-      const verified = auth.isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
       expect(verified).to.equal(false);
     });
     it('returns false when timestamp is fresh, but signature doesn\'t match expected value', async () => {
@@ -128,11 +118,11 @@ describe('Authorization module tests', () => {
           'X-Slack-Request-Timestamp': time.toString(),
         },
       };
-      const verified = await auth.isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = await isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
       expect(verified).to.equal(false);
     });
     it('returns true for dev stage', async () => {
-      const verified = await auth.isVerified({}, {}, 'dev');
+      const verified = await isVerified({}, {}, 'dev');
       expect(verified).to.equal(true);
     });
   });
