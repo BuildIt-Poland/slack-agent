@@ -5,7 +5,7 @@ const { generateResponseBody, generateResponseBodyWithAttachments } = require('.
 const { isCity, isFutureDate } = require('../utility/requestValidator.js');
 const { parseBodyToObject } = require('../utility/requestParser.js');
 
-const { ENV_STAGE, SIGNING_SECRET, TABLE_NAME } = require('../config/all.js');
+const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
 module.exports.reservationList = async event => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
@@ -28,12 +28,12 @@ module.exports.reservationList = async event => {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
+  const reservation = await res.findReservationByDateAsync(message.dates);
   if (!reservation) {
     return internalServerError();
   }
 
-  const allPlaces = await res.listReservationsForDayAsync(reservation, message.city, TABLE_NAME);
+  const allPlaces = await res.listReservationsForDayAsync(reservation, message.city);
   if (!allPlaces) {
     return internalServerError();
   }
