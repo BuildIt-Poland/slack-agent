@@ -1,30 +1,36 @@
 const AWS = require('aws-sdk');
 const dynamoEnv = require('./dynamoEnv.js');
+const { TABLE_NAME } = require('../config/all.js');
 
 const configParams = dynamoEnv.awsEnv();
 
-exports.save = async (record, tableName) => {
+const decorateParamsWithTableName = params => ({
+  ...params,
+  TableName: TABLE_NAME,
+});
+
+exports.save = async (record) => {
   const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
   const params = {
     Item: {
       ...record,
     },
-    TableName: tableName,
   };
-  return documentClient.put(params).promise();
+
+  return documentClient.put(decorateParamsWithTableName(params)).promise();
 };
 
-exports.scan = (params) => {
+exports.scan = params => {
   const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
-  return documentClient.scan(params).promise();
+  return documentClient.scan(decorateParamsWithTableName(params)).promise();
 };
 
-exports.query = (params) => {
+exports.query = params => {
   const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
-  return documentClient.query(params).promise();
+  return documentClient.query(decorateParamsWithTableName(params)).promise();
 };
 
-exports.update = (params) => {
+exports.update = params => {
   const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
-  return documentClient.update(params).promise();
+  return documentClient.update(decorateParamsWithTableName(params)).promise();
 };

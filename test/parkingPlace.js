@@ -33,7 +33,6 @@ describe('parkingPlace module tests', () => {
           city: 'Gdansk',
           place: '11'
         },
-        'parking-dev'
       );
       expect(place).to.equal(true);
     });
