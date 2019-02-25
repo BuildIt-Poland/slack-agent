@@ -1,7 +1,7 @@
 const { v4 } = require('uuid');
 const _ = require('lodash');
-const { save, scan } = require('../communication/dynamo.js');
-const { error } = require('../communication/logger.js');
+const { save, scan } = require('../services/daoService.js');
+const { error } = require('../services/loggerService.js');
 
 const isParkingPlace = async (userInputParams) => {
   try {

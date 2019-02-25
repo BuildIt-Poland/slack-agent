@@ -4,7 +4,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 const dynamoEnv = require('../communication/dynamoEnv.js');
-const log = require('../communication/logger.js');
+const log = require('../services/loggerService.js');
 
 function createTableAsync(awsClient, params) {
   return new Promise((resolve, reject) => {

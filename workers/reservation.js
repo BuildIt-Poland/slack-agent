@@ -1,5 +1,5 @@
-const dynamo = require('../communication/dynamo.js');
-const log = require('../communication/logger.js');
+const dynamo = require('../services/daoService.js');
+const log = require('../services/loggerService.js');
 
 async function putReservation(place, reservationParams) {
   try {
