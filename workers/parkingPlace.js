@@ -1,9 +1,9 @@
 const { v4 } = require('uuid');
 const _ = require('lodash');
-const { save, scan } = require('../communication/dynamo.js');
-const { error } = require('../communication/logger.js');
+const { save, scan } = require('../services/daoService.js');
+const { error } = require('../services/loggerService.js');
 
-const isParkingPlace = async (userInputParams, tableName) => {
+const isParkingPlace = async (userInputParams) => {
   try {
     const { Items } = await scan({
       ExpressionAttributeValues: {
@@ -11,7 +11,6 @@ const isParkingPlace = async (userInputParams, tableName) => {
         ':city': `${userInputParams.city}`
       },
       FilterExpression: 'Place = :place and City = :city',
-      TableName: tableName
     });
     return _.isEmpty(Items);
   } catch (e) {
@@ -20,8 +19,8 @@ const isParkingPlace = async (userInputParams, tableName) => {
   }
 };
 
-exports.saveParkingPlace = async (userInputParams, tableName) => {
-  if (!await isParkingPlace(userInputParams, tableName)) return false;
+exports.saveParkingPlace = async (userInputParams) => {
+  if (!await isParkingPlace(userInputParams)) return false;
   try {
     await save(
       {
@@ -29,7 +28,6 @@ exports.saveParkingPlace = async (userInputParams, tableName) => {
         City: userInputParams.city,
         Place: userInputParams.place
       },
-      tableName
     );
     return true;
   } catch (e) {

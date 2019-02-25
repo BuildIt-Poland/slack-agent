@@ -1,7 +1,7 @@
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
 const log = require('npmlog');
-const logger = require('../communication/logger.js');
+const logger = require('../services/loggerService.js');
 require('mocha-sinon');
 
 describe('privateFunction()', () => {

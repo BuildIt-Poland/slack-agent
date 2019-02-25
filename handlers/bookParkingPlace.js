@@ -6,7 +6,7 @@ const { isCity, isFutureDate } = require('../utility/requestValidator.js');
 const { parseBodyToObject } = require('../utility/requestParser.js');
 const { generateResponseBody } = require('../utility/responseBody.js');
 
-const { ENV_STAGE, SIGNING_SECRET, TABLE_NAME } = require('../config/all.js');
+const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
 module.exports.book = async event => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
@@ -30,12 +30,12 @@ module.exports.book = async event => {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
+  const reservation = await res.findReservationByDateAsync(message.dates);
   if (!reservation) {
     return internalServerError();
   }
 
-  const availablePlace = await res.findFreePlaceAsync(reservation, message.city, TABLE_NAME);
+  const availablePlace = await res.findFreePlaceAsync(reservation, message.city);
   if (!availablePlace) {
     return internalServerError();
   }
@@ -45,7 +45,7 @@ module.exports.book = async event => {
     return internalServerError(body);
   }
 
-  const result = await res.saveReservationAsync(reservation.Id, availablePlace, message, TABLE_NAME);
+  const result = await res.saveReservationAsync(reservation.Id, availablePlace, message);
   return result ? success(generateResponseBody(
     `You booked a place number ${availablePlace.Place} in ${message.city} on ${message.dates}`,
   )) : internalServerError();

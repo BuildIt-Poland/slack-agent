@@ -1,7 +1,7 @@
-const dynamo = require('../communication/dynamo.js');
-const log = require('../communication/logger.js');
+const dynamo = require('../services/daoService.js');
+const log = require('../services/loggerService.js');
 
-async function putReservation(place, reservationParams, tableName) {
+async function putReservation(place, reservationParams) {
   try {
     await dynamo.save(
       {
@@ -14,7 +14,6 @@ async function putReservation(place, reservationParams, tableName) {
           },
         ],
       },
-      tableName,
     );
   } catch (error) {
     log.error('reservation.putReservation', error);
@@ -23,10 +22,9 @@ async function putReservation(place, reservationParams, tableName) {
   return true;
 }
 
-async function updateReservation(reservationId, place, userName, tableName) {
+async function updateReservation(reservationId, place, userName) {
   try {
     await dynamo.update({
-      TableName: tableName,
       Key: { Id: reservationId, City: 'multiple' },
       UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
       ExpressionAttributeNames: { '#reservations': 'Reservations' },
@@ -46,13 +44,12 @@ async function updateReservation(reservationId, place, userName, tableName) {
   return true;
 }
 
-async function findPlacesInCityAsync(city, tableName) {
+async function findPlacesInCityAsync(city) {
   const params = {
     KeyConditionExpression: 'City = :city',
     ExpressionAttributeValues: {
       ':city': city,
     },
-    TableName: tableName,
     IndexName: 'city-index',
   };
   try {
@@ -71,12 +68,12 @@ function findIndexPlaceReservation(reservation, reservationParams) {
   );
 }
 
-exports.saveReservationAsync = async (reservationId, place, reservationParams, tableName) =>
+exports.saveReservationAsync = async (reservationId, place, reservationParams) =>
   !reservationId
-    ? putReservation(place, reservationParams, tableName)
-    : updateReservation(reservationId, place, reservationParams.userName, tableName);
+    ? putReservation(place, reservationParams)
+    : updateReservation(reservationId, place, reservationParams.userName);
 
-exports.findReservationByDateAsync = async (date, tableName) => {
+exports.findReservationByDateAsync = async (date) => {
   const params = {
     KeyConditionExpression: '#id = :dates and City = :city',
     ExpressionAttributeNames: {
@@ -86,7 +83,6 @@ exports.findReservationByDateAsync = async (date, tableName) => {
       ':dates': date,
       ':city': 'multiple',
     },
-    TableName: tableName,
   };
   try {
     const result = await dynamo.query(params);
@@ -96,8 +92,8 @@ exports.findReservationByDateAsync = async (date, tableName) => {
     return null;
   }
 };
-exports.findFreePlaceAsync = async (reservation, city, tableName) => {
-  const places = await findPlacesInCityAsync(city, tableName);
+exports.findFreePlaceAsync = async (reservation, city) => {
+  const places = await findPlacesInCityAsync(city);
   if (!places) return null;
   if (!places.length) return {};
   if (!Object.keys(reservation).length) return places[0];
@@ -107,8 +103,8 @@ exports.findFreePlaceAsync = async (reservation, city, tableName) => {
   return freePlace || {};
 };
 
-exports.listReservationsForDayAsync = async (reservation, city, tableName) => {
-  const places = await findPlacesInCityAsync(city, tableName);
+exports.listReservationsForDayAsync = async (reservation, city) => {
+  const places = await findPlacesInCityAsync(city);
   if (!places) return null;
   if (!places.length) return [];
   if (!Object.keys(reservation).length)
@@ -130,12 +126,11 @@ exports.listReservationsForDayAsync = async (reservation, city, tableName) => {
   return allPlaces;
 };
 
-exports.deleteReservationPlace = async (reservation, reservationParams, tableName) => {
+exports.deleteReservationPlace = async (reservation, reservationParams) => {
   const placeIndex = findIndexPlaceReservation(reservation, reservationParams);
   if (placeIndex === -1) return false;
   try {
     await dynamo.update({
-      TableName: tableName,
       Key: { Id: reservation.Id, City: 'multiple' },
       UpdateExpression: `REMOVE Reservations[${placeIndex}]`,
     });

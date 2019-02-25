@@ -5,7 +5,7 @@ const { isCity } = require('../utility/requestValidator.js');
 const { parseBodyToObject } = require('../utility/requestParser.js');
 const { generateResponseBody } = require('../utility/responseBody.js');
 
-const { SIGNING_SECRET, ENV_STAGE, TABLE_NAME } = require('../config/all.js');
+const { SIGNING_SECRET, ENV_STAGE } = require('../config/all.js');
 
 module.exports.add = async (event) => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
@@ -27,7 +27,7 @@ module.exports.add = async (event) => {
     return success(generateResponseBody(message));
   }
 
-  const result = await parkingPlace.saveParkingPlace(message, TABLE_NAME);
+  const result = await parkingPlace.saveParkingPlace(message);
 
   if (result) {
     return success(

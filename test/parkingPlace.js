@@ -33,7 +33,6 @@ describe('parkingPlace module tests', () => {
           city: 'Gdansk',
           place: '11'
         },
-        'parking-dev'
       );
       expect(place).to.equal(true);
     });
@@ -54,7 +53,6 @@ describe('parkingPlace module tests', () => {
           city: 'Gdansk',
           place: '11'
         },
-        'parking-dev'
       );
       expect(place).to.equal(false);
     });
@@ -78,7 +76,6 @@ describe('parkingPlace failures module tests', () => {
           city: 'Gdansk',
           place: '11'
         },
-        'parking-dev'
       );
       expect(place).to.equal(false);
     });
@@ -94,7 +91,6 @@ describe('parkingPlace failures module tests', () => {
           city: 'Gdansk',
           place: '11'
         },
-        'parking-dev'
       );
       expect(place).to.equal(false);
     });
