@@ -1,9 +1,9 @@
 const _ = require('lodash');
 const auth = require('../security/authorization.js');
 const {
-  findReservationByDateAsync,
-  findFreePlaceAsync,
-  saveReservationAsync,
+  findReservationByDate,
+  findFreePlace,
+  saveReservation,
 } = require('../workers/reservation.js');
 
 const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
@@ -35,12 +35,12 @@ module.exports.book = async event => {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await findReservationByDateAsync(message.dates);
+  const reservation = await findReservationByDate(message.dates);
   if (!reservation) {
     return internalServerError();
   }
 
-  const availablePlace = await findFreePlaceAsync(reservation, message.city);
+  const availablePlace = await findFreePlace(reservation, message.city);
   if (!availablePlace) {
     return internalServerError();
   }
@@ -50,7 +50,7 @@ module.exports.book = async event => {
     return internalServerError(body);
   }
 
-  const result = await saveReservationAsync(reservation.Id, availablePlace, message);
+  const result = await saveReservation(reservation.Id, availablePlace, message);
   return result
     ? success(
         generateResponseBody(

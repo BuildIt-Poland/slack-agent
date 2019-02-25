@@ -2,7 +2,7 @@ const _ = require('lodash');
 const dynamo = require('../services/daoService.js');
 const log = require('../services/loggerService.js');
 
-async function putReservation(place, reservationParams) {
+const putReservation = async (place, reservationParams) => {
   const params = {
     Id: reservationParams.dates,
     City: 'multiple',
@@ -21,9 +21,9 @@ async function putReservation(place, reservationParams) {
     return false;
   }
   return true;
-}
+};
 
-async function updateReservation(reservationId, place, userName) {
+const updateReservation = async (reservationId, place, userName) => {
   const params = {
     Key: { Id: reservationId, City: 'multiple' },
     UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
@@ -45,9 +45,9 @@ async function updateReservation(reservationId, place, userName) {
     return false;
   }
   return true;
-}
+};
 
-async function findPlacesInCityAsync(city) {
+const findPlacesInCity = async city => {
   const params = {
     KeyConditionExpression: 'City = :city',
     ExpressionAttributeValues: {
@@ -63,21 +63,20 @@ async function findPlacesInCityAsync(city) {
     log.error('reservation.findPlacesInCityAsync', error);
     return null;
   }
-}
+};
 
-function findIndexPlaceReservation(reservation, reservationParams) {
-  return reservation.Reservations.findIndex(
+const findIndexPlaceReservation = (reservation, reservationParams) =>
+  reservation.Reservations.findIndex(
     place =>
       place.Reservation === reservationParams.userName && place.City === reservationParams.city,
   );
-}
 
-exports.saveReservationAsync = async (reservationId, place, reservationParams) =>
+exports.saveReservation = async (reservationId, place, reservationParams) =>
   !reservationId
     ? putReservation(place, reservationParams)
     : updateReservation(reservationId, place, reservationParams.userName);
 
-exports.findReservationByDateAsync = async date => {
+exports.findReservationByDate = async date => {
   const params = {
     KeyConditionExpression: '#id = :dates and City = :city',
     ExpressionAttributeNames: {
@@ -98,8 +97,8 @@ exports.findReservationByDateAsync = async date => {
   }
 };
 
-exports.findFreePlaceAsync = async (reservation, city) => {
-  const places = await findPlacesInCityAsync(city);
+exports.findFreePlace = async (reservation, city) => {
+  const places = await findPlacesInCity(city);
   if (!places) {
     return null;
   }
@@ -111,10 +110,10 @@ exports.findFreePlaceAsync = async (reservation, city) => {
   return places.find(place => !reservation.Reservations.some(item => place.Id === item.Id)) || {};
 };
 
-exports.listReservationsForDayAsync = async (reservation, city) => {
-  const places = await findPlacesInCityAsync(city);
+exports.listReservationsForDay = async (reservation, city) => {
+  const places = await findPlacesInCity(city);
   if (!places) {
-   return null;
+    return null;
   }
 
   if (_.isEmpty(reservation)) {
