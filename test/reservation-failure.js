@@ -81,7 +81,7 @@ describe('Reservation failures module tests', () => {
     });
     it('returns null', async () => {
       const freePlace = await res.findFreePlaceAsync({}, 'Gdansk', 'parking-dev');
-      expect(freePlace).to.deep.equal({});
+      expect(freePlace).to.equal(null);
     });
   });
   describe('Check listReservationsForDay(reservation, city, tableName) function', () => {
@@ -95,7 +95,7 @@ describe('Reservation failures module tests', () => {
     });
     it('returns null', async () => {
       const allReservations = await res.listReservationsForDayAsync({}, 'Gdansk', 'parking-dev');
-      expect(allReservations).to.deep.equal([]);
+      expect(allReservations).to.equal(null);
     });
   });
   describe('Check deleteReservationPlace(reservation, reservationParams, tableName) function', () => {

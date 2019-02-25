@@ -100,12 +100,12 @@ exports.findReservationByDateAsync = async date => {
 
 exports.findFreePlaceAsync = async (reservation, city) => {
   const places = await findPlacesInCityAsync(city);
-  if (!places || _.isEmpty(places)) {
-    return {};
+  if (!places) {
+    return null;
   }
 
   if (_.isEmpty(reservation)) {
-    return places[0];
+    return places[0] || {};
   }
 
   return places.find(place => !reservation.Reservations.some(item => place.Id === item.Id)) || {};
@@ -113,8 +113,8 @@ exports.findFreePlaceAsync = async (reservation, city) => {
 
 exports.listReservationsForDayAsync = async (reservation, city) => {
   const places = await findPlacesInCityAsync(city);
-  if (!places || !places.length) {
-    return [];
+  if (!places) {
+   return null;
   }
 
   if (_.isEmpty(reservation)) {
