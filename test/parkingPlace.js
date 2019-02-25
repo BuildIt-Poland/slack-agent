@@ -2,6 +2,7 @@
 const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
+const _ = require('lodash');
 const parkingPlace = require('../workers/parkingPlace.js');
 
 function initLogStub() {
@@ -12,126 +13,88 @@ function restoreLogStub() {
   this.sinon.restore();
 }
 
-describe('ParkingPlace module tests', () => {
+describe('parkingPlace module tests', () => {
   describe('Check saveParkingPlace(placeParams, tableName) function', () => {
     beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        if (
-          typeof params.TableName !== 'undefined' &&
-          params.TableName === 'parking-dev' &&
-          typeof params.Item.City !== 'undefined'
-        )
-          callback(null, true);
-        else callback({ error: 'error' }, false);
-      });
-      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
-        callback(null, { Items: [] });
+      AWS.mock('DynamoDB.DocumentClient', 'put', ({ Item, TableName }, callback) => {
+        if (TableName === 'parking-dev' && _.has(Item, 'City')) callback(null, true);
+        else callback({ error: 'invalid parameters' }, false);
       });
     });
     afterEach(() => {
       AWS.restore('DynamoDB.DocumentClient');
     });
-    it('returns true', async () => {
+    it('returns true when the parking space has been added to the database', async () => {
+      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
+        callback(null, { Items: [] })
+      );
       const place = await parkingPlace.saveParkingPlace(
         {
           city: 'Gdansk',
-          place: '11',
+          place: '11'
         },
-        'parking-dev',
+        'parking-dev'
       );
       expect(place).to.equal(true);
     });
-    it('returns false', async () => {
-      const place = await parkingPlace.saveParkingPlace({}, 'parking-dev');
-      expect(place).to.equal(false);
-    });
-  });
-  describe('Check saveParkingPlace(placeParams, tableName) function when place exists', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        if (
-          typeof params.TableName !== 'undefined' &&
-          params.TableName === 'parking-dev' &&
-          typeof params.Item.City !== 'undefined'
-        )
-          callback(null, true);
-        else callback({ error: 'error' }, false);
-      });
-      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
+    it('returns false when parking place exists in database', async () => {
+      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
         callback(null, {
           Items: [
             {
               Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
               City: 'Gdansk',
-              Place: 11,
-            },
-          ],
-        });
-      });
-    });
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
-    it('returns true', async () => {
+              Place: 11
+            }
+          ]
+        })
+      );
       const place = await parkingPlace.saveParkingPlace(
         {
           city: 'Gdansk',
-          place: '11',
+          place: '11'
         },
-        'parking-dev',
+        'parking-dev'
       );
       expect(place).to.equal(false);
     });
   });
 });
 
-describe('ParkingPlace failures module tests', () => {
+describe('parkingPlace failures module tests', () => {
   beforeEach(initLogStub);
-
   afterEach(restoreLogStub);
-
-  describe('Check saveParkingPlace(placeParams, tableName) function when scan failures', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        callback(null, true);
-      });
-      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
-        callback({ error: 'error' }, false);
-      });
-    });
+  describe('Check saveParkingPlace(placeParams, tableName) function', () => {
     afterEach(() => {
       AWS.restore('DynamoDB.DocumentClient');
     });
-    it('returns false', async () => {
+    it('returns false when database error occurred during scan', async () => {
+      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => callback(null, true));
+      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
+        callback({ error: 'database error' }, false)
+      );
       const place = await parkingPlace.saveParkingPlace(
         {
           city: 'Gdansk',
-          place: '11',
+          place: '11'
         },
-        'parking-dev',
+        'parking-dev'
       );
       expect(place).to.equal(false);
     });
-  });
-  describe('Check saveParkingPlace(placeParams, tableName) function when put failures', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        callback({ error: 'error' }, false);
-      });
-      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) => {
-        callback(null, { Items: [] });
-      });
-    });
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
-    it('returns false', async () => {
+    it('returns false when database error occurred during save', async () => {
+      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) =>
+        callback({ error: 'database error' }, false)
+      );
+      AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
+        callback(null, { Items: [] })
+      );
       const place = await parkingPlace.saveParkingPlace(
         {
           city: 'Gdansk',
-          place: '11',
+          place: '11'
         },
-        'parking-dev',
+        'parking-dev'
       );
       expect(place).to.equal(false);
     });

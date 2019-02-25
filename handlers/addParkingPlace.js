@@ -7,7 +7,7 @@ const { generateResponseBody } = require('../utility/responseBody.js');
 
 const { SIGNING_SECRET, ENV_STAGE, TABLE_NAME } = require('../config/all.js');
 
-module.exports.parkingPlace = async event => {
+module.exports.add = async (event) => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
   if (!isVerified) {
     return unauthorized();
@@ -15,24 +15,26 @@ module.exports.parkingPlace = async event => {
 
   const { message, isValid } = parseBodyToObject(event.body, {
     city: {
-      required: city => !!city,
-      pattern: isCity,
+      required: (city) => !!city,
+      pattern: isCity
     },
     place: {
-      required: date => !!date
-    },
+      required: (date) => !!date
+    }
   });
 
-  if (!isValid){
+  if (!isValid) {
     return success(generateResponseBody(message));
   }
 
   const result = await parkingPlace.saveParkingPlace(message, TABLE_NAME);
 
-  if(result) {
-    return success(generateResponseBody(
-      `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.place}`,
-    ));
+  if (result) {
+    return success(
+      generateResponseBody(
+        `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.place}`
+      )
+    );
   }
 
   return success(generateResponseBody(`You can't add parking place`));

@@ -42,17 +42,17 @@ custom:
   tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
 
 functions:
-  authorization:
-    handler: /handlers/authorize.authorization
+  authorize:
+    handler: /handlers/authorize.authorize
     events:
       - http:
-          path: slack/authorization
+          path: slack/authorize
           method: get
-  parkingPlace:
-    handler: /handlers/addParkingPlace.parkingPlace
+  add:
+    handler: /handlers/addParkingPlace.add
     events:
       - http:
-          path: slack/parkingPlace
+          path: slack/add
           method: post
   reservation:
     handler: /handlers/bookParkingPlace.reservation
