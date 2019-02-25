@@ -1,6 +1,11 @@
 const _ = require('lodash');
 const auth = require('../security/authorization.js');
-const res = require('../workers/reservation.js');
+const {
+  findReservationByDateAsync,
+  findFreePlaceAsync,
+  saveReservationAsync,
+} = require('../workers/reservation.js');
+
 const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
 const { isCity, isFutureDate } = require('../utility/requestValidator.js');
 const { parseBodyToObject } = require('../utility/requestParser.js');
@@ -30,12 +35,12 @@ module.exports.book = async event => {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await res.findReservationByDateAsync(message.dates);
+  const reservation = await findReservationByDateAsync(message.dates);
   if (!reservation) {
     return internalServerError();
   }
 
-  const availablePlace = await res.findFreePlaceAsync(reservation, message.city);
+  const availablePlace = await findFreePlaceAsync(reservation, message.city);
   if (!availablePlace) {
     return internalServerError();
   }
@@ -45,8 +50,14 @@ module.exports.book = async event => {
     return internalServerError(body);
   }
 
-  const result = await res.saveReservationAsync(reservation.Id, availablePlace, message);
-  return result ? success(generateResponseBody(
-    `You booked a place number ${availablePlace.Place} in ${message.city} on ${message.dates}`,
-  )) : internalServerError();
+  const result = await saveReservationAsync(reservation.Id, availablePlace, message);
+  return result
+    ? success(
+        generateResponseBody(
+          `You booked a place number ${availablePlace.Place} in ${message.city} on ${
+            message.dates
+          }`,
+        ),
+      )
+    : internalServerError();
 };
