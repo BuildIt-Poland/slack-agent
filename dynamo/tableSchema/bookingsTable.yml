@@ -6,12 +6,12 @@
         AttributeDefinitions:
         - AttributeName: City
           AttributeType: S
-        - AttributeName: Timestamp
+        - AttributeName: BookingTime
           AttributeType: S
         KeySchema:
         - AttributeName: City
           KeyType: HASH
-        - AttributeName: Timestamp
+        - AttributeName: BookingTime
           KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1

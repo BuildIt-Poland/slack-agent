@@ -1,7 +1,7 @@
 [
   {
     "City": "GDN",
-    "Timestamp": "2020/03/01",
+    "BookingTime": "2020/03/01",
     "Places": [
       {
         "Place": "1a",
@@ -19,7 +19,7 @@
   },
   {
     "City": "WAW",
-    "Timestamp": "2020/03/01",
+    "BookingTime": "2020/03/01",
     "Places": [
       {
         "Place": "1a",
@@ -37,7 +37,7 @@
   },
   {
     "City": "GDN",
-    "Timestamp": "2020/03/02",
+    "BookingTime": "2020/03/02",
     "Places": [
       {
         "Place": "1a",
@@ -55,7 +55,7 @@
   },
   {
     "City": "GDN",
-    "Timestamp": "2020/03/03",
+    "BookingTime": "2020/03/03",
     "Places": [
       {
         "Place": "1a",
@@ -73,7 +73,7 @@
   },
   {
     "City": "GDN",
-    "Timestamp": "2020/03/04",
+    "BookingTime": "2020/03/04",
     "Places": [
       {
         "Place": "1a",
@@ -91,7 +91,7 @@
   },
   {
     "City": "GDN",
-    "Timestamp": "2020/03/05",
+    "BookingTime": "2020/03/05",
     "Places": [
       {
         "Place": "1a",
