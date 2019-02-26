@@ -1,20 +1,134 @@
-[
+{
+  "ParkingPlaces": [
     {
-        "Id": "1",
-        "City": "Gdansk",
-        "Place": "1a",
-        "Types": "parkingPlace"
+      "City": "GDN",
+      "PlaceID": "1a"
     },
     {
-        "Id": "2",
-        "City": "Warszawa",
-        "Place": "34",
-        "Types": "parkingPlace"
+      "City": "GDN",
+      "PlaceID": "1b"
     },
     {
-      "Id": "3",
-      "City": "Gdansk",
-      "Place": "1b",
-      "Types": "parkingPlace"
-  }
-]
+      "City": "GDN",
+      "PlaceID": "1c"
+    },
+    {
+      "City": "WAW",
+      "PlaceID": "1a"
+    },
+    {
+      "City": "WAW",
+      "PlaceID": "1b"
+    }
+  ],
+  "Bookings": [
+    {
+      "City": "GDN",
+      "Timestamp": "2020/03/01",
+      "Places": [
+        {
+          "Place": "1a",
+          "Owner": "foo.bar"
+        },
+        {
+          "Place": "1b",
+          "Owner": "john.doe"
+        },
+        {
+          "Place": "1c",
+          "Owner": "mac.gyver"
+        }
+      ]
+    },
+    {
+      "City": "WAW",
+      "Timestamp": "2020/03/01",
+      "Places": [
+        {
+          "Place": "1a",
+          "Owner": "hein.maciej"
+        },
+        {
+          "Place": "1b",
+          "Owner": "free"
+        },
+        {
+          "Place": "1c",
+          "Owner": "free"
+        }
+      ]
+    },
+    {
+      "City": "GDN",
+      "Timestamp": "2020/03/02",
+      "Places": [
+        {
+          "Place": "1a",
+          "Owner": "foo.bar"
+        },
+        {
+          "Place": "1b",
+          "Owner": "free"
+        },
+        {
+          "Place": "1c",
+          "Owner": "free"
+        }
+      ]
+    },
+    {
+      "City": "GDN",
+      "Timestamp": "2020/03/03",
+      "Places": [
+        {
+          "Place": "1a",
+          "Owner": "foo.bar"
+        },
+        {
+          "Place": "1b",
+          "Owner": "free"
+        },
+        {
+          "Place": "1c",
+          "Owner": "free"
+        }
+      ]
+    },
+    {
+      "City": "GDN",
+      "Timestamp": "2020/03/04",
+      "Places": [
+        {
+          "Place": "1a",
+          "Owner": "foo.bar"
+        },
+        {
+          "Place": "1b",
+          "Owner": "free"
+        },
+        {
+          "Place": "1c",
+          "Owner": "free"
+        }
+      ]
+    },
+    {
+      "City": "GDN",
+      "Timestamp": "2020/03/05",
+      "Places": [
+        {
+          "Place": "1a",
+          "Owner": "foo.bar"
+        },
+        {
+          "Place": "1b",
+          "Owner": "free"
+        },
+        {
+          "Place": "1c",
+          "Owner": "free"
+        }
+      ]
+    }
+  ]
+}
