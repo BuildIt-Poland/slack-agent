@@ -6,12 +6,12 @@
         AttributeDefinitions:
         - AttributeName: City
           AttributeType: S
-        - AttributeName: Place
+        - AttributeName: PlaceID
           AttributeType: S
         KeySchema:
         - AttributeName: City
           KeyType: HASH
-        - AttributeName: Place
+        - AttributeName: PlaceID
           KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1

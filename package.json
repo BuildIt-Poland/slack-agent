@@ -4,7 +4,7 @@
   "description": "",
   "main": "authorizer.js",
   "scripts": {
-    "dev": "node -e 'require(\"./development/dynamoLocal.js\").configure()'",
+    "dev": "node -e 'require(\"./dynamo/populateDatabase.js\").populate()'",
     "test": "PARKING_PLACES_TABLE=ParkingPlaces-dev nyc --all --check-coverage --statements 30 --lines 30 --functions 30 --branches 30 --reporter=text mocha --reporter=spec",
     "eslint": "./node_modules/.bin/eslint ."
   },

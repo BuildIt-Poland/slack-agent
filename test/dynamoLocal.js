@@ -13,8 +13,8 @@ function restoreLogStub() {
   this.sinon.restore();
 }
 
-describe('DynamoLocal module tests', () => {
-  describe('Check configure() function', () => {
+describe('populateDatabase module tests', () => {
+  describe('Check populate() function', () => {
     before(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         if (typeof params.TableName === 'undefined')
@@ -60,12 +60,12 @@ describe('DynamoLocal module tests', () => {
     });
   });
 });
-describe('DynamoLocal failures module tests', () => {
+describe('populateDatabase failures module tests', () => {
   beforeEach(initLogStub);
 
   afterEach(restoreLogStub);
 
-  describe('Check configure() function', () => {
+  describe('Check populate() function', () => {
     before(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         callback({ error: 'document big one' }, 'failed to put data in database');
@@ -86,12 +86,12 @@ describe('DynamoLocal failures module tests', () => {
     });
   });
 });
-describe('DynamoLocal failures module tests', () => {
+describe('populateDatabase failures module tests', () => {
   beforeEach(initLogStub);
 
   afterEach(restoreLogStub);
 
-  describe('Check configure() function', () => {
+  describe('Check populate() function', () => {
     before(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         callback({ error: 'document big one' }, 'failed to put data in database');

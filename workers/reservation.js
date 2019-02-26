@@ -2,7 +2,7 @@ const _ = require('lodash');
 const dynamo = require('../services/daoService.js');
 const log = require('../services/loggerService.js');
 
-const { BOOKINGS_TABLE } = require('../config/all');
+const { BOOKINGS_TABLE } = require('../config/all.js');
 
 const putReservation = async (place, reservationParams) => {
   const params = {
@@ -94,7 +94,7 @@ exports.findReservationByDate = async (date) => {
     const { Items } = await dynamo.query(params, BOOKINGS_TABLE);
     return Items[0] || {};
   } catch (error) {
-    log.error('reservation.findReservationByDateAsync', error);
+    log.error('reservation.findReservationByDate', error);
     return null;
   }
 };

@@ -1,22 +1,22 @@
 [
-    {
-      "City": "GDN",
-      "PlaceID": "1a"
-    },
-    {
-      "City": "GDN",
-      "PlaceID": "1b"
-    },
-    {
-      "City": "GDN",
-      "PlaceID": "1c"
-    },
-    {
-      "City": "WAW",
-      "PlaceID": "1a"
-    },
-    {
-      "City": "WAW",
-      "PlaceID": "1b"
-    }
+  {
+    "City": "GDN",
+    "PlaceID": "1a"
+  },
+  {
+    "City": "GDN",
+    "PlaceID": "1b"
+  },
+  {
+    "City": "GDN",
+    "PlaceID": "1c"
+  },
+  {
+    "City": "WAW",
+    "PlaceID": "1a"
+  },
+  {
+    "City": "WAW",
+    "PlaceID": "1b"
+  }
 ]

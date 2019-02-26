@@ -31,7 +31,7 @@ function addItem(awsDocumentClient, item) {
 }
 
 exports.populate = async () => {
-  const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'parkingPlaces.json'), 'utf8'));
+  const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../dynamo/content/parkingPlaces.json'), 'utf8'));
   const dbConfig = yaml.safeLoad(
     fs.readFileSync(path.resolve(__dirname, '../dynamo/tableSchema/parkingPlacesTable.yml'), 'utf8')
   );
@@ -56,7 +56,7 @@ exports.populate = async () => {
 
     await Promise.all(addItemsPromises);
   } catch (error) {
-    log.error('dynamoLocal.configure', error);
+    log.error('populateDatabase.populate', error);
     return false;
   }
   return true;
