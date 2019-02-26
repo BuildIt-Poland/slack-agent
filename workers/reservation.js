@@ -94,6 +94,7 @@ exports.findReservationByDate = async (date) => {
     const { Items } = await dynamo.query(params, BOOKINGS_TABLE);
     return Items[0] || {};
   } catch (error) {
+    log.error(BOOKINGS_TABLE, params);
     log.error('reservation.findReservationByDate', error);
     return null;
   }
