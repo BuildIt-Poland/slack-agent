@@ -31,6 +31,17 @@ const createTable = (awsClient, params) =>
     });
   });
 
+const addItem = (awsDocumentClient, item) =>
+  new Promise((resolve, reject) => {
+    awsDocumentClient.put(item, (tableErr, tableData) => {
+      if (tableErr) {
+        reject(tableErr);
+      } else {
+        resolve(tableData);
+      }
+    });
+  });
+
 const populateTable = async table => {
   const connParams = dynamoEnv.awsEnv();
   const awsClient = new AWS.DynamoDB(connParams);
@@ -48,7 +59,7 @@ const populateTable = async table => {
   await createTable(awsClient, params);
 
   const addItemsPromises = _.map(docs, id =>
-    awsDocumentClient.put({
+    addItem(awsDocumentClient, {
       TableName: tableName,
       Item: id,
     }),
