@@ -6,7 +6,7 @@ const path = require('path');
 const dynamoEnv = require('../communication/dynamoEnv.js');
 const log = require('../services/loggerService.js');
 
-function createTableAsync(awsClient, params) {
+function createTable(awsClient, params) {
   return new Promise((resolve, reject) => {
     awsClient.createTable(params, (tableErr, tableData) => {
       if (tableErr) {
@@ -18,7 +18,7 @@ function createTableAsync(awsClient, params) {
   });
 }
 
-function addItemAsync(awsDocumentClient, item) {
+function addItem(awsDocumentClient, item) {
   return new Promise((resolve, reject) => {
     awsDocumentClient.put(item, (tableErr, tableData) => {
       if (tableErr) {
@@ -45,10 +45,10 @@ exports.configure = async () => {
   };
 
   try {
-    await createTableAsync(client, params);
+    await createTable(client, params);
 
     const addItemsPromises = _.map(docs, id =>
-      addItemAsync(documentClient, {
+      addItem(documentClient, {
         TableName: tableName,
         Item: id,
       }),

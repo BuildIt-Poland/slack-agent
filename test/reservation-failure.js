@@ -2,7 +2,13 @@
 const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
-const res = require('../workers/reservation.js');
+const {
+  saveReservation,
+  findFreePlace,
+  findReservationByDate,
+  listReservationsForDay,
+  deleteReservationPlace,
+} = require('../workers/reservation.js');
 
 function initLogStub() {
   this.sinon.stub(log, 'log');
@@ -17,7 +23,7 @@ describe('Reservation failures module tests', () => {
 
   afterEach(restoreLogStub);
 
-  describe('Check saveReservationAsync(reservationId, place, Dates, tableName) function', () => {
+  describe('Check saveReservation(reservationId, place, Dates, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         callback({ error: 'error' }, false);
@@ -30,7 +36,7 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns false due to put error', async () => {
-      const reservation = await res.saveReservationAsync(
+      const reservation = await saveReservation(
         null,
         {
           City: 'Gdansk',
@@ -43,7 +49,7 @@ describe('Reservation failures module tests', () => {
       expect(reservation).to.equal(false);
     });
     it('returns false due to put error', async () => {
-      const reservation = await res.saveReservationAsync(
+      const reservation = await saveReservation(
         '6f89ddc0-287d-11e9-ab74-83664e1af429',
         {
           City: 'Gdansk',
@@ -56,7 +62,7 @@ describe('Reservation failures module tests', () => {
       expect(reservation).to.equal(false);
     });
   });
-  describe('Check findReservationByDateAsync(date, tableName) function', () => {
+  describe('Check findReservationByDate(date, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
         callback({ error: 'error' }, null);
@@ -66,11 +72,11 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns null', async () => {
-      const reservation = await res.findReservationByDateAsync('11022019', 'parking-dev');
+      const reservation = await findReservationByDate('11022019', 'parking-dev');
       expect(reservation).equal(null);
     });
   });
-  describe('Check findFreePlaceAsync(reservation, city, tableName) function', () => {
+  describe('Check findFreePlace(reservation, city, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
         callback({ error: 'error' }, null);
@@ -80,8 +86,8 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns null', async () => {
-      const freePlace = await res.findFreePlaceAsync({}, 'Gdansk', 'parking-dev');
-      expect(freePlace).equals(null);
+      const freePlace = await findFreePlace({}, 'Gdansk', 'parking-dev');
+      expect(freePlace).to.equal(null);
     });
   });
   describe('Check listReservationsForDay(reservation, city, tableName) function', () => {
@@ -94,8 +100,8 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns null', async () => {
-      const allReservations = await res.listReservationsForDayAsync({}, 'Gdansk', 'parking-dev');
-      expect(allReservations).equals(null);
+      const allReservations = await listReservationsForDay({}, 'Gdansk', 'parking-dev');
+      expect(allReservations).to.equal(null);
     });
   });
   describe('Check deleteReservationPlace(reservation, reservationParams, tableName) function', () => {
@@ -125,7 +131,7 @@ describe('Reservation failures module tests', () => {
           },
         ],
       };
-      const deleted = await res.deleteReservationPlace(reservation, params, 'parking-dev');
+      const deleted = await deleteReservationPlace(reservation, params, 'parking-dev');
       expect(deleted).equals(false);
     });
   });

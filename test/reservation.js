@@ -1,10 +1,16 @@
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
-const res = require('../workers/reservation.js');
+const {
+  saveReservation,
+  findReservationByDate,
+  findFreePlace,
+  listReservationsForDay,
+  deleteReservationPlace,
+} = require('../workers/reservation.js');
 
 describe('Reservation module tests', () => {
-  describe('Check saveReservationAsync(reservationId, place, Dates, tableName) function', () => {
+  describe('Check saveReservation(reservationId, place, Dates, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         if (
@@ -25,7 +31,7 @@ describe('Reservation module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns true', async () => {
-      const reservation = await res.saveReservationAsync(
+      const reservation = await saveReservation(
         null,
         {
           Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
@@ -42,7 +48,7 @@ describe('Reservation module tests', () => {
       expect(reservation).to.equal(true);
     });
     it('returns true', async () => {
-      const reservation = await res.saveReservationAsync(
+      const reservation = await saveReservation(
         '11022019',
         {
           Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
@@ -59,7 +65,7 @@ describe('Reservation module tests', () => {
       expect(reservation).to.equal(true);
     });
   });
-  describe('Check findReservationByDateAsync(date, tableName) function', () => {
+  describe('Check findReservationByDate(date, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
         callback(null, {
@@ -83,13 +89,13 @@ describe('Reservation module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns reservation object', async () => {
-      const reservation = await res.findReservationByDateAsync('11022019', 'parking-dev');
+      const reservation = await findReservationByDate('11022019', 'parking-dev');
       expect(reservation)
         .to.be.a('object')
         .have.property('Id', '11022019');
     });
   });
-  describe('Check findReservationByDateAsync(date, tableName) function', () => {
+  describe('Check findReservationByDate(date, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
         callback(null, { Items: [] });
@@ -99,11 +105,11 @@ describe('Reservation module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns empty objects', async () => {
-      const reservation = await res.findReservationByDateAsync('11022019', 'parking-dev');
+      const reservation = await findReservationByDate('11022019', 'parking-dev');
       expect(reservation).to.be.deep.equal({});
     });
   });
-  describe('Check findFreePlaceAsync(reservation, city, tableName) function', () => {
+  describe('Check findFreePlace(reservation, city, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
         callback(null, {
@@ -137,7 +143,7 @@ describe('Reservation module tests', () => {
           },
         ],
       };
-      const freePlace = await res.findFreePlaceAsync(reservation, 'Gdansk', 'parking-dev');
+      const freePlace = await findFreePlace(reservation, 'Gdansk', 'parking-dev');
       expect(freePlace)
         .to.be.a('object')
         .have.property('Id');
@@ -161,7 +167,7 @@ describe('Reservation module tests', () => {
           },
         ],
       };
-      const freePlace = await res.findFreePlaceAsync(reservation, 'Gdansk', 'parking-dev');
+      const freePlace = await findFreePlace(reservation, 'Gdansk', 'parking-dev');
       expect(freePlace).to.be.deep.equal({});
     });
   });
@@ -200,7 +206,7 @@ describe('Reservation module tests', () => {
           },
         ],
       };
-      const allReservations = await res.listReservationsForDayAsync(
+      const allReservations = await listReservationsForDay(
         reservation,
         'Gdansk',
         'parking-dev',
@@ -211,7 +217,7 @@ describe('Reservation module tests', () => {
       expect(allReservations[0]).have.property('Reservation');
     });
     it('returns reservations array with empty reservation parameter', async () => {
-      const allReservations = await res.listReservationsForDayAsync({}, 'Gdansk', 'parking-dev');
+      const allReservations = await listReservationsForDay({}, 'Gdansk', 'parking-dev');
       expect(allReservations).to.be.a('array');
       expect(allReservations[0]).have.property('City');
       expect(allReservations[0]).have.property('Place');
@@ -247,7 +253,7 @@ describe('Reservation module tests', () => {
           },
         ],
       };
-      const deleted = await res.deleteReservationPlace(reservation, params, 'parking-dev');
+      const deleted = await deleteReservationPlace(reservation, params, 'parking-dev');
       expect(deleted).equals(true);
     });
     it('returns false', async () => {
@@ -261,7 +267,7 @@ describe('Reservation module tests', () => {
         City: 'multiple',
         Reservations: [],
       };
-      const deleted = await res.deleteReservationPlace(reservation, params, 'parking-dev');
+      const deleted = await deleteReservationPlace(reservation, params, 'parking-dev');
       expect(deleted).equals(false);
     });
   });
