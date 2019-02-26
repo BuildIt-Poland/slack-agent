@@ -10,7 +10,8 @@ provider:
     SLACK_CLIENT_SECRET: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_SIGNING_SECRET:  ${ssm:SLACK_AGENT_SIGING_SECRET}
     SLACK_CLIENT_SCOPES: ${ssm:SLACK_AGENT_CLIENT_SCOPE}
-    TABLE_NAME: ${self:custom.tableName}
+    PARKING_PLACES_TABLE: ${self:custom.ParkingPlaces}
+    BOOKINGS_TABLE: ${self:custom.bookings}
     ENV_STAGE: ${self:custom.stage}
   iamRoleStatements:
     - Effect: Allow
@@ -34,7 +35,8 @@ custom:
   # commands. Or fallsback to what we have set in the provider section.
   stage: ${opt:stage, self:provider.stage}
   # Set the table name here so we can use it while testing locally
-  tableName: parking-${self:custom.stage}
+  parkingPlaces: ParkingPlaces-${self:custom.stage}
+  bookings: bookings-${self:custom.stage}
   # Set our DynamoDB throughput for prod and all other non-prod stages.
   tableThroughputs:
     prod: 5
@@ -75,4 +77,5 @@ functions:
 # Create our resources with separate CloudFormation templates
 resources:
   # DynamoDB
-  - ${file(resources/dynamodb-table.yml)}
+  - ${file(dynamo/tableSchema/parkingPlacesTable.yml)}
+  - ${file(dynamo/tableSchema/bookingsTable.yml)}

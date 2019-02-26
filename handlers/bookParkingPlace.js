@@ -3,7 +3,7 @@ const auth = require('../security/authorization.js');
 const {
   findReservationByDate,
   findFreePlace,
-  saveReservation,
+  saveReservation
 } = require('../workers/reservation.js');
 
 const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
@@ -13,7 +13,7 @@ const { generateResponseBody } = require('../utility/responseBody.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
-module.exports.book = async event => {
+module.exports.book = async (event) => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
   if (!isVerified) {
     return unauthorized();
@@ -22,13 +22,13 @@ module.exports.book = async event => {
   const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
       isFutureDate,
-      required: date => !!date,
+      required: (date) => !!date
     },
     city: {
       pattern: isCity,
-      required: date => !!date,
+      required: (date) => !!date
     },
-    userName: {},
+    userName: {}
   });
 
   if (!isValid) {
@@ -54,10 +54,8 @@ module.exports.book = async event => {
   return result
     ? success(
         generateResponseBody(
-          `You booked a place number ${availablePlace.Place} in ${message.city} on ${
-            message.dates
-          }`,
-        ),
+          `You booked a place number ${availablePlace.Place} in ${message.city} on ${message.dates}`
+        )
       )
     : internalServerError();
 };

@@ -30,28 +30,28 @@ function addItem(awsDocumentClient, item) {
   });
 }
 
-exports.configure = async () => {
-  const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'docs.json'), 'utf8'));
+exports.populate = async () => {
+  const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'parkingPlaces.json'), 'utf8'));
   const dbConfig = yaml.safeLoad(
-    fs.readFileSync(path.resolve(__dirname, '../resources/dynamodb-table.yml'), 'utf8'),
+    fs.readFileSync(path.resolve(__dirname, '../dynamo/tableSchema/parkingPlacesTable.yml'), 'utf8')
   );
   const connParams = dynamoEnv.awsEnv();
   const client = new AWS.DynamoDB(connParams);
   const documentClient = new AWS.DynamoDB.DocumentClient(connParams);
-  const tableName = 'parking-dev';
+  const tableName = 'parkingPlaces-dev';
   const params = {
     ...dbConfig.Resources.dynamodb.Properties,
-    TableName: tableName,
+    TableName: tableName
   };
 
   try {
     await createTable(client, params);
 
-    const addItemsPromises = _.map(docs, id =>
+    const addItemsPromises = _.map(docs, (id) =>
       addItem(documentClient, {
         TableName: tableName,
-        Item: id,
-      }),
+        Item: id
+      })
     );
 
     await Promise.all(addItemsPromises);

@@ -17,7 +17,7 @@ describe('parkingPlace module tests', () => {
   describe('Check saveParkingPlace(placeParams, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', ({ Item, TableName }, callback) => {
-        if (TableName === 'parking-dev' && _.has(Item, 'City')) callback(null, true);
+        if (TableName === 'ParkingPlaces-dev' && _.has(Item, 'City')) callback(null, true);
         else callback({ error: 'invalid parameters' }, false);
       });
     });
@@ -28,12 +28,10 @@ describe('parkingPlace module tests', () => {
       AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
         callback(null, { Items: [] })
       );
-      const place = await parkingPlace.saveParkingPlace(
-        {
-          city: 'Gdansk',
-          place: '11'
-        },
-      );
+      const place = await parkingPlace.saveParkingPlace({
+        city: 'Gdansk',
+        place: '11'
+      });
       expect(place).to.equal(true);
     });
     it('returns false when parking place exists in database', async () => {
@@ -48,12 +46,10 @@ describe('parkingPlace module tests', () => {
           ]
         })
       );
-      const place = await parkingPlace.saveParkingPlace(
-        {
-          city: 'Gdansk',
-          place: '11'
-        },
-      );
+      const place = await parkingPlace.saveParkingPlace({
+        city: 'Gdansk',
+        place: '11'
+      });
       expect(place).to.equal(false);
     });
   });
@@ -71,12 +67,10 @@ describe('parkingPlace failures module tests', () => {
       AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
         callback({ error: 'database error' }, false)
       );
-      const place = await parkingPlace.saveParkingPlace(
-        {
-          city: 'Gdansk',
-          place: '11'
-        },
-      );
+      const place = await parkingPlace.saveParkingPlace({
+        city: 'Gdansk',
+        place: '11'
+      });
       expect(place).to.equal(false);
     });
     it('returns false when database error occurred during save', async () => {
@@ -86,12 +80,10 @@ describe('parkingPlace failures module tests', () => {
       AWS.mock('DynamoDB.DocumentClient', 'scan', (params, callback) =>
         callback(null, { Items: [] })
       );
-      const place = await parkingPlace.saveParkingPlace(
-        {
-          city: 'Gdansk',
-          place: '11'
-        },
-      );
+      const place = await parkingPlace.saveParkingPlace({
+        city: 'Gdansk',
+        place: '11'
+      });
       expect(place).to.equal(false);
     });
   });

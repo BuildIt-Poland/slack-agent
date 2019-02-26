@@ -1,9 +1,8 @@
-
 /* global describe it before after beforeEach afterEach */
 const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
-const dynamoLocal = require('../development/dynamoLocal.js');
+const { populate } = require('../dynamo/populateDatabase.js');
 require('mocha-sinon');
 
 function initLogStub() {
@@ -18,14 +17,34 @@ describe('DynamoLocal module tests', () => {
   describe('Check configure() function', () => {
     before(() => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        if (typeof params.TableName === 'undefined') callback({ error: 'typeof params.TableName == \'undefined\'' }, 'failed to put data in database');
-        else if (params.TableName !== 'parking-dev') callback({ error: 'params.TableName != \'parking-dev\'' }, 'failed to put data in database');
-        else if (typeof params.Item.Types === 'undefined') callback({ error: 'typeof params.Item.Types == \'undefined\'' }, 'failed to put data in database');
+        if (typeof params.TableName === 'undefined')
+          callback(
+            { error: "typeof params.TableName == 'undefined'" },
+            'failed to put data in database'
+          );
+        else if (params.TableName !== 'parkingPlaces-dev')
+          callback(
+            { error: "params.TableName != 'parkingPlaces-dev'" },
+            'failed to put data in database'
+          );
+        else if (typeof params.Item.Types === 'undefined')
+          callback(
+            { error: "typeof params.Item.Types == 'undefined'" },
+            'failed to put data in database'
+          );
         else callback(null, 'successfully put item in database');
       });
       AWS.mock('DynamoDB', 'createTable', (params, callback) => {
-        if (typeof params.TableName === 'undefined') callback({ error: 'typeof params.TableName == \'undefined\'' }, 'failed to create table in database');
-        else if (params.TableName !== 'parking-dev') callback({ error: 'params.TableName != \'parking-dev\'' }, 'failed to create table in database');
+        if (typeof params.TableName === 'undefined')
+          callback(
+            { error: "typeof params.TableName == 'undefined'" },
+            'failed to create table in database'
+          );
+        else if (params.TableName !== 'parkingPlaces-dev')
+          callback(
+            { error: "params.TableName != 'parkingPlaces-dev'" },
+            'failed to create table in database'
+          );
         else callback(null, 'successfully created table in database');
       });
     });
@@ -36,7 +55,7 @@ describe('DynamoLocal module tests', () => {
     });
 
     it('returns true', async () => {
-      const status = await dynamoLocal.configure();
+      const status = await populate();
       expect(status).to.equal(true);
     });
   });
@@ -62,7 +81,7 @@ describe('DynamoLocal failures module tests', () => {
     });
 
     it('returns false due to table error', async () => {
-      const status = await dynamoLocal.configure();
+      const status = await populate();
       expect(status).to.equal(false);
     });
   });
@@ -88,7 +107,7 @@ describe('DynamoLocal failures module tests', () => {
     });
 
     it('returns false due to put error', async () => {
-      const status = await dynamoLocal.configure();
+      const status = await populate();
       expect(status).to.equal(false);
     });
   });

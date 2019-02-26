@@ -6,7 +6,7 @@ const {
   findReservationByDate,
   findFreePlace,
   listReservationsForDay,
-  deleteReservationPlace,
+  deleteReservationPlace
 } = require('../workers/reservation.js');
 
 describe('Reservation module tests', () => {
@@ -15,14 +15,14 @@ describe('Reservation module tests', () => {
       AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
         if (
           typeof params.TableName !== 'undefined' &&
-          params.TableName === 'parking-dev' &&
+          params.TableName === 'ParkingPlaces-dev' &&
           typeof params.Item.City !== 'undefined'
         )
           callback(null, true);
         else callback({ error: 'error' }, false);
       });
       AWS.mock('DynamoDB.DocumentClient', 'update', (params, callback) => {
-        if (typeof params.TableName !== 'undefined' && params.TableName === 'parking-dev')
+        if (typeof params.TableName !== 'undefined' && params.TableName === 'ParkingPlaces-dev')
           callback(null, true);
         else callback({ error: 'error' }, false);
       });
@@ -36,14 +36,14 @@ describe('Reservation module tests', () => {
         {
           Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
           City: 'Gdansk',
-          Place: 11,
+          Place: 11
         },
         {
           Dates: '11022019',
           City: 'Gdansk',
-          UserName: 'mhein',
+          UserName: 'mhein'
         },
-        'parking-dev',
+        'ParkingPlaces-dev'
       );
       expect(reservation).to.equal(true);
     });
@@ -53,14 +53,14 @@ describe('Reservation module tests', () => {
         {
           Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
           City: 'Gdansk',
-          Place: 12,
+          Place: 12
         },
         {
           Dates: '11022019',
           City: 'Gdansk',
-          UserName: 'mhein',
+          UserName: 'mhein'
         },
-        'parking-dev',
+        'ParkingPlaces-dev'
       );
       expect(reservation).to.equal(true);
     });
@@ -77,11 +77,11 @@ describe('Reservation module tests', () => {
                 {
                   City: 'Gdansk',
                   Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-                  Place: 12,
-                },
-              ],
-            },
-          ],
+                  Place: 12
+                }
+              ]
+            }
+          ]
         });
       });
     });
@@ -89,10 +89,8 @@ describe('Reservation module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns reservation object', async () => {
-      const reservation = await findReservationByDate('11022019', 'parking-dev');
-      expect(reservation)
-        .to.be.a('object')
-        .have.property('Id', '11022019');
+      const reservation = await findReservationByDate('11022019', 'ParkingPlaces-dev');
+      expect(reservation).to.be.a('object').have.property('Id', '11022019');
     });
   });
   describe('Check findReservationByDate(date, tableName) function', () => {
@@ -105,7 +103,7 @@ describe('Reservation module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns empty objects', async () => {
-      const reservation = await findReservationByDate('11022019', 'parking-dev');
+      const reservation = await findReservationByDate('11022019', 'ParkingPlaces-dev');
       expect(reservation).to.be.deep.equal({});
     });
   });
@@ -117,14 +115,14 @@ describe('Reservation module tests', () => {
             {
               Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
               City: 'Gdansk',
-              Place: 11,
+              Place: 11
             },
             {
               Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
               City: 'Gdansk',
-              Place: 12,
-            },
-          ],
+              Place: 12
+            }
+          ]
         });
       });
     });
@@ -139,14 +137,12 @@ describe('Reservation module tests', () => {
           {
             Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
             City: 'Gdansk',
-            Place: 12,
-          },
-        ],
+            Place: 12
+          }
+        ]
       };
-      const freePlace = await findFreePlace(reservation, 'Gdansk', 'parking-dev');
-      expect(freePlace)
-        .to.be.a('object')
-        .have.property('Id');
+      const freePlace = await findFreePlace(reservation, 'Gdansk', 'ParkingPlaces-dev');
+      expect(freePlace).to.be.a('object').have.property('Id');
       expect(freePlace).have.property('City');
       expect(freePlace).have.property('Place');
     });
@@ -158,16 +154,16 @@ describe('Reservation module tests', () => {
           {
             Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
             City: 'Gdansk',
-            Place: 11,
+            Place: 11
           },
           {
             Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
             City: 'Gdansk',
-            Place: 12,
-          },
-        ],
+            Place: 12
+          }
+        ]
       };
-      const freePlace = await findFreePlace(reservation, 'Gdansk', 'parking-dev');
+      const freePlace = await findFreePlace(reservation, 'Gdansk', 'ParkingPlaces-dev');
       expect(freePlace).to.be.deep.equal({});
     });
   });
@@ -179,14 +175,14 @@ describe('Reservation module tests', () => {
             {
               Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
               City: 'Gdansk',
-              Place: 11,
+              Place: 11
             },
             {
               Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
               City: 'Gdansk',
-              Place: 12,
-            },
-          ],
+              Place: 12
+            }
+          ]
         });
       });
     });
@@ -202,14 +198,14 @@ describe('Reservation module tests', () => {
             Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
             City: 'Gdansk',
             Place: 12,
-            Reservation: 'mhein',
-          },
-        ],
+            Reservation: 'mhein'
+          }
+        ]
       };
       const allReservations = await listReservationsForDay(
         reservation,
         'Gdansk',
-        'parking-dev',
+        'ParkingPlaces-dev'
       );
       expect(allReservations).to.be.a('array');
       expect(allReservations[0]).have.property('City');
@@ -217,7 +213,7 @@ describe('Reservation module tests', () => {
       expect(allReservations[0]).have.property('Reservation');
     });
     it('returns reservations array with empty reservation parameter', async () => {
-      const allReservations = await listReservationsForDay({}, 'Gdansk', 'parking-dev');
+      const allReservations = await listReservationsForDay({}, 'Gdansk', 'ParkingPlaces-dev');
       expect(allReservations).to.be.a('array');
       expect(allReservations[0]).have.property('City');
       expect(allReservations[0]).have.property('Place');
@@ -227,7 +223,7 @@ describe('Reservation module tests', () => {
   describe('Check deleteReservationPlace(reservation, reservationParams, tableName) function', () => {
     beforeEach(() => {
       AWS.mock('DynamoDB.DocumentClient', 'update', (params, callback) => {
-        if (typeof params.TableName !== 'undefined' && params.TableName === 'parking-dev')
+        if (typeof params.TableName !== 'undefined' && params.TableName === 'ParkingPlaces-dev')
           callback(null, true);
         else callback({ error: 'error' }, false);
       });
@@ -239,7 +235,7 @@ describe('Reservation module tests', () => {
       const params = {
         dates: '11022019',
         city: 'Gdansk',
-        userName: 'maciej.hein',
+        userName: 'maciej.hein'
       };
       const reservation = {
         Id: '11022019',
@@ -249,25 +245,25 @@ describe('Reservation module tests', () => {
             City: 'Gdansk',
             Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
             Place: 12,
-            Reservation: 'maciej.hein',
-          },
-        ],
+            Reservation: 'maciej.hein'
+          }
+        ]
       };
-      const deleted = await deleteReservationPlace(reservation, params, 'parking-dev');
+      const deleted = await deleteReservationPlace(reservation, params, 'ParkingPlaces-dev');
       expect(deleted).equals(true);
     });
     it('returns false', async () => {
       const params = {
         dates: '11022019',
         city: 'Gdansk',
-        userName: 'maciej.hein',
+        userName: 'maciej.hein'
       };
       const reservation = {
         Id: '11022019',
         City: 'multiple',
-        Reservations: [],
+        Reservations: []
       };
-      const deleted = await deleteReservationPlace(reservation, params, 'parking-dev');
+      const deleted = await deleteReservationPlace(reservation, params, 'ParkingPlaces-dev');
       expect(deleted).equals(false);
     });
   });

@@ -7,7 +7,7 @@ const {
   findFreePlace,
   findReservationByDate,
   listReservationsForDay,
-  deleteReservationPlace,
+  deleteReservationPlace
 } = require('../workers/reservation.js');
 
 function initLogStub() {
@@ -41,10 +41,10 @@ describe('Reservation failures module tests', () => {
         {
           City: 'Gdansk',
           Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
-          Place: 11,
+          Place: 11
         },
         '11022019',
-        'parking-dev',
+        'ParkingPlaces-dev'
       );
       expect(reservation).to.equal(false);
     });
@@ -54,10 +54,10 @@ describe('Reservation failures module tests', () => {
         {
           City: 'Gdansk',
           Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-          Place: 12,
+          Place: 12
         },
         '11022019',
-        'parking-dev',
+        'ParkingPlaces-dev'
       );
       expect(reservation).to.equal(false);
     });
@@ -72,7 +72,7 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns null', async () => {
-      const reservation = await findReservationByDate('11022019', 'parking-dev');
+      const reservation = await findReservationByDate('11022019', 'ParkingPlaces-dev');
       expect(reservation).equal(null);
     });
   });
@@ -86,8 +86,8 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns null', async () => {
-      const freePlace = await findFreePlace({}, 'Gdansk', 'parking-dev');
-      expect(freePlace).to.equal(null);
+      const freePlace = await findFreePlace({}, 'Gdansk', 'ParkingPlaces-dev');
+      expect(freePlace).equals(null);
     });
   });
   describe('Check listReservationsForDay(reservation, city, tableName) function', () => {
@@ -100,8 +100,8 @@ describe('Reservation failures module tests', () => {
       AWS.restore('DynamoDB.DocumentClient');
     });
     it('returns null', async () => {
-      const allReservations = await listReservationsForDay({}, 'Gdansk', 'parking-dev');
-      expect(allReservations).to.equal(null);
+      const allReservations = await listReservationsForDay({}, 'Gdansk', 'ParkingPlaces-dev');
+      expect(allReservations).equals(null);
     });
   });
   describe('Check deleteReservationPlace(reservation, reservationParams, tableName) function', () => {
@@ -117,7 +117,7 @@ describe('Reservation failures module tests', () => {
       const params = {
         dates: '11022019',
         city: 'Gdansk',
-        userName: 'maciej.hein',
+        userName: 'maciej.hein'
       };
       const reservation = {
         Id: '11022019',
@@ -127,11 +127,11 @@ describe('Reservation failures module tests', () => {
             City: 'Gdansk',
             Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
             Place: 12,
-            Reservation: 'maciej.hein',
-          },
-        ],
+            Reservation: 'maciej.hein'
+          }
+        ]
       };
-      const deleted = await deleteReservationPlace(reservation, params, 'parking-dev');
+      const deleted = await deleteReservationPlace(reservation, params, 'ParkingPlaces-dev');
       expect(deleted).equals(false);
     });
   });

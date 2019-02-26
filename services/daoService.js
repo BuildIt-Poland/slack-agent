@@ -5,15 +5,15 @@ const configParams = dynamoEnv.awsEnv();
 
 const decorateParamsWithTableName = (params, tableName) => ({
   ...params,
-  TableName: tableName,
+  TableName: tableName
 });
 
 exports.save = async (record, tableName) => {
   const documentClient = new AWS.DynamoDB.DocumentClient(configParams);
   const params = {
     Item: {
-      ...record,
-    },
+      ...record
+    }
   };
 
   return documentClient.put(decorateParamsWithTableName(params, tableName)).promise();
