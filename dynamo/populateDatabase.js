@@ -5,56 +5,51 @@ const yaml = require('js-yaml');
 const path = require('path');
 const dynamoEnv = require('../communication/dynamoEnv.js');
 const log = require('../services/loggerService.js');
+const { BOOKINGS_TABLE, PARKING_PLACES_TABLE } = require('../config/all.js');
 
-function createTable(awsClient, params) {
-  return new Promise((resolve, reject) => {
-    awsClient.createTable(params, (tableErr, tableData) => {
-      if (tableErr) {
-        reject(tableErr);
-      } else {
-        resolve(tableData);
-      }
-    });
-  });
-}
+const dynamoTablesMap = {
+  parkingPlaces: {
+    tableName: PARKING_PLACES_TABLE,
+    contentPath: '../dynamo/content/parkingPlaces.json',
+    schemaPath: '../dynamo/tableSchema/parkingPlacesTable.yml',
+  },
+  bookings: {
+    tableName: BOOKINGS_TABLE,
+    contentPath: '../dynamo/content/bookings.json',
+    schemaPath: '../dynamo/tableSchema/bookingsTable.yml',
+  },
+};
 
-function addItem(awsDocumentClient, item) {
-  return new Promise((resolve, reject) => {
-    awsDocumentClient.put(item, (tableErr, tableData) => {
-      if (tableErr) {
-        reject(tableErr);
-      } else {
-        resolve(tableData);
-      }
-    });
-  });
-}
-
-exports.populate = async () => {
-  const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../dynamo/content/parkingPlaces.json'), 'utf8'));
-  const dbConfig = yaml.safeLoad(
-    fs.readFileSync(path.resolve(__dirname, '../dynamo/tableSchema/parkingPlacesTable.yml'), 'utf8')
-  );
+const populateTable = async table => {
   const connParams = dynamoEnv.awsEnv();
-  const client = new AWS.DynamoDB(connParams);
-  const documentClient = new AWS.DynamoDB.DocumentClient(connParams);
-  const tableName = 'parkingPlaces-dev';
+  const awsClient = new AWS.DynamoDB(connParams);
+  const awsDocumentClient = new AWS.DynamoDB.DocumentClient(connParams);
+
+  const { tableName, contentPath, schemaPath } = dynamoTablesMap[table];
+  const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, contentPath), 'utf8'));
+  const dbConfig = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, schemaPath), 'utf8'));
+
   const params = {
     ...dbConfig.Resources.dynamodb.Properties,
-    TableName: tableName
+    TableName: tableName,
   };
 
+  await awsClient.createTable(params);
+
+  const addItemsPromises = _.map(docs, id =>
+    awsDocumentClient.put({
+      TableName: tableName,
+      Item: id,
+    }),
+  );
+
+  await Promise.all(addItemsPromises);
+};
+
+exports.populate = async () => {
   try {
-    await createTable(client, params);
-
-    const addItemsPromises = _.map(docs, (id) =>
-      addItem(documentClient, {
-        TableName: tableName,
-        Item: id
-      })
-    );
-
-    await Promise.all(addItemsPromises);
+    await populateTable('parkingPlaces');
+    await populateTable('bookings');
   } catch (error) {
     log.error('populateDatabase.populate', error);
     return false;
