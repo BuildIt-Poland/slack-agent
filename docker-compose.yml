@@ -42,6 +42,7 @@ services:
       - CLIENT_SCOPES=scopes
       - SIGNING_SECRET=123
       - PARKING_PLACES_TABLE=ParkingPlaces-dev
+      - BOOKINGS_TABLE=Bookings-dev
       - LOCAL_DB=true
     command: "/handlers/bookParkingPlace.book '{\"body\": \"text=2020/02/21+Gdansk&user_name=hein.maciej\"}'"
     networks:

@@ -10,7 +10,7 @@ provider:
     SLACK_CLIENT_SECRET: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_SIGNING_SECRET:  ${ssm:SLACK_AGENT_SIGING_SECRET}
     SLACK_CLIENT_SCOPES: ${ssm:SLACK_AGENT_CLIENT_SCOPE}
-    PARKING_PLACES_TABLE: ${self:custom.ParkingPlaces}
+    PARKING_PLACES_TABLE: ${self:custom.parkingPlaces}
     BOOKINGS_TABLE: ${self:custom.bookings}
     ENV_STAGE: ${self:custom.stage}
   iamRoleStatements:
@@ -36,7 +36,7 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   # Set the table name here so we can use it while testing locally
   parkingPlaces: ParkingPlaces-${self:custom.stage}
-  bookings: bookings-${self:custom.stage}
+  bookings: Bookings-${self:custom.stage}
   # Set our DynamoDB throughput for prod and all other non-prod stages.
   tableThroughputs:
     prod: 5
