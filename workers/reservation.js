@@ -2,6 +2,8 @@ const _ = require('lodash');
 const dynamo = require('../services/daoService.js');
 const log = require('../services/loggerService.js');
 
+const { BOOKINGS_PLACE } = require('../config/all');
+
 const putReservation = async (place, reservationParams) => {
   const params = {
     Id: reservationParams.dates,
@@ -15,7 +17,7 @@ const putReservation = async (place, reservationParams) => {
   };
 
   try {
-    await dynamo.save(params);
+    await dynamo.save(params, BOOKINGS_PLACE);
   } catch (error) {
     log.error('reservation.putReservation', error);
     return false;
@@ -39,7 +41,7 @@ const updateReservation = async (reservationId, place, userName) => {
   };
 
   try {
-    await dynamo.update(params);
+    await dynamo.update(params, BOOKINGS_PLACE);
   } catch (error) {
     log.error('reservation.updateReservation', error);
     return false;
@@ -57,7 +59,7 @@ const findPlacesInCity = async city => {
   };
 
   try {
-    const { Items } = await dynamo.query(params);
+    const { Items } = await dynamo.query(params, BOOKINGS_PLACE);
     return Items;
   } catch (error) {
     log.error('reservation.findPlacesInCityAsync', error);
@@ -89,7 +91,7 @@ exports.findReservationByDate = async date => {
   };
 
   try {
-    const { Items } = await dynamo.query(params);
+    const { Items } = await dynamo.query(params, BOOKINGS_PLACE);
     return Items[0] || {};
   } catch (error) {
     log.error('reservation.findReservationByDateAsync', error);

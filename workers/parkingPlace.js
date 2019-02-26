@@ -3,15 +3,17 @@ const _ = require('lodash');
 const { save, scan } = require('../services/daoService.js');
 const { error } = require('../services/loggerService.js');
 
-const isParkingPlace = async (userInputParams) => {
+const { PARKING_PLACES_TABLE } = require('../config/all');
+
+const isParkingPlace = async userInputParams => {
   try {
     const { Items } = await scan({
       ExpressionAttributeValues: {
         ':place': `${userInputParams.place}`,
-        ':city': `${userInputParams.city}`
+        ':city': `${userInputParams.city}`,
       },
       FilterExpression: 'Place = :place and City = :city',
-    });
+    }, PARKING_PLACES_TABLE);
     return _.isEmpty(Items);
   } catch (e) {
     error('reservation.isParkingPlace', e);
@@ -19,16 +21,14 @@ const isParkingPlace = async (userInputParams) => {
   }
 };
 
-exports.saveParkingPlace = async (userInputParams) => {
-  if (!await isParkingPlace(userInputParams)) return false;
+exports.saveParkingPlace = async userInputParams => {
+  if (!(await isParkingPlace(userInputParams))) return false;
   try {
-    await save(
-      {
-        Id: v4(),
-        City: userInputParams.city,
-        Place: userInputParams.place
-      },
-    );
+    await save({
+      Id: v4(),
+      City: userInputParams.city,
+      Place: userInputParams.place,
+    }, PARKING_PLACES_TABLE);
     return true;
   } catch (e) {
     error('reservation.saveParkingPlace', e);
