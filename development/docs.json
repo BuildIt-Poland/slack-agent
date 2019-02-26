@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "ParkingPlaces": [
     {
@@ -132,3 +133,25 @@
     }
   ]
 }
+=======
+[
+  {
+    "Id": "1",
+    "City": "Gdansk",
+    "Place": "1a",
+    "Types": "parkingPlace"
+  },
+  {
+    "Id": "2",
+    "City": "Warszawa",
+    "Place": "34",
+    "Types": "parkingPlace"
+  },
+  {
+    "Id": "3",
+    "City": "Gdansk",
+    "Place": "1b",
+    "Types": "parkingPlace"
+  }
+]
+>>>>>>> develop

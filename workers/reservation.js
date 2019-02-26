@@ -1,50 +1,53 @@
+const _ = require('lodash');
 const dynamo = require('../services/daoService.js');
 const log = require('../services/loggerService.js');
 
-async function putReservation(place, reservationParams) {
-  try {
-    await dynamo.save(
+const putReservation = async (place, reservationParams) => {
+  const params = {
+    Id: reservationParams.dates,
+    City: 'multiple',
+    Reservations: [
       {
-        Id: reservationParams.dates,
-        City: 'multiple',
-        Reservations: [
-          {
-            ...place,
-            Reservation: reservationParams.userName,
-          },
-        ],
+        ...place,
+        Reservation: reservationParams.userName,
       },
-    );
+    ],
+  };
+
+  try {
+    await dynamo.save(params);
   } catch (error) {
     log.error('reservation.putReservation', error);
     return false;
   }
   return true;
-}
+};
 
-async function updateReservation(reservationId, place, userName) {
+const updateReservation = async (reservationId, place, userName) => {
+  const params = {
+    Key: { Id: reservationId, City: 'multiple' },
+    UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
+    ExpressionAttributeNames: { '#reservations': 'Reservations' },
+    ExpressionAttributeValues: {
+      ':place': [
+        {
+          ...place,
+          Reservation: userName,
+        },
+      ],
+    },
+  };
+
   try {
-    await dynamo.update({
-      Key: { Id: reservationId, City: 'multiple' },
-      UpdateExpression: 'set #reservations = list_append(#reservations, :place)',
-      ExpressionAttributeNames: { '#reservations': 'Reservations' },
-      ExpressionAttributeValues: {
-        ':place': [
-          {
-            ...place,
-            Reservation: userName,
-          },
-        ],
-      },
-    });
+    await dynamo.update(params);
   } catch (error) {
     log.error('reservation.updateReservation', error);
     return false;
   }
   return true;
-}
+};
 
-async function findPlacesInCityAsync(city) {
+const findPlacesInCity = async city => {
   const params = {
     KeyConditionExpression: 'City = :city',
     ExpressionAttributeValues: {
@@ -52,28 +55,28 @@ async function findPlacesInCityAsync(city) {
     },
     IndexName: 'city-index',
   };
+
   try {
-    const result = await dynamo.query(params);
-    return result.Items;
+    const { Items } = await dynamo.query(params);
+    return Items;
   } catch (error) {
     log.error('reservation.findPlacesInCityAsync', error);
     return null;
   }
-}
+};
 
-function findIndexPlaceReservation(reservation, reservationParams) {
-  return reservation.Reservations.findIndex(
+const findIndexPlaceReservation = (reservation, reservationParams) =>
+  reservation.Reservations.findIndex(
     place =>
       place.Reservation === reservationParams.userName && place.City === reservationParams.city,
   );
-}
 
-exports.saveReservationAsync = async (reservationId, place, reservationParams) =>
+exports.saveReservation = async (reservationId, place, reservationParams) =>
   !reservationId
     ? putReservation(place, reservationParams)
     : updateReservation(reservationId, place, reservationParams.userName);
 
-exports.findReservationByDateAsync = async (date) => {
+exports.findReservationByDate = async date => {
   const params = {
     KeyConditionExpression: '#id = :dates and City = :city',
     ExpressionAttributeNames: {
@@ -84,51 +87,60 @@ exports.findReservationByDateAsync = async (date) => {
       ':city': 'multiple',
     },
   };
+
   try {
-    const result = await dynamo.query(params);
-    return result.Items[0] || {};
+    const { Items } = await dynamo.query(params);
+    return Items[0] || {};
   } catch (error) {
     log.error('reservation.findReservationByDateAsync', error);
     return null;
   }
 };
-exports.findFreePlaceAsync = async (reservation, city) => {
-  const places = await findPlacesInCityAsync(city);
-  if (!places) return null;
-  if (!places.length) return {};
-  if (!Object.keys(reservation).length) return places[0];
-  const freePlace = places.find(
-    place => !reservation.Reservations.some(item => place.Id === item.Id),
-  );
-  return freePlace || {};
+
+exports.findFreePlace = async (reservation, city) => {
+  const places = await findPlacesInCity(city);
+  if (!places) {
+    return null;
+  }
+
+  if (_.isEmpty(reservation)) {
+    return places[0] || {};
+  }
+
+  return places.find(place => !reservation.Reservations.some(item => place.Id === item.Id)) || {};
 };
 
-exports.listReservationsForDayAsync = async (reservation, city) => {
-  const places = await findPlacesInCityAsync(city);
-  if (!places) return null;
-  if (!places.length) return [];
-  if (!Object.keys(reservation).length)
-    return places.map(place => ({ City: place.City, Place: place.Place, Reservation: 'free' }));
-  const allPlaces = places.map(place => {
+exports.listReservationsForDay = async (reservation, city) => {
+  const places = await findPlacesInCity(city);
+  if (!places) {
+    return null;
+  }
+
+  if (_.isEmpty(reservation)) {
+    return places.map(place => ({
+      ...place,
+      Reservation: 'free',
+    }));
+  }
+
+  return places.map(place => {
     const res = reservation.Reservations.find(item => place.Id === item.Id);
-    return res
-      ? {
-          City: res.City,
-          Place: res.Place,
-          Reservation: res.Reservation || null,
-        }
-      : {
-          City: place.City,
-          Place: place.Place,
-          Reservation: 'free',
-        };
+
+    return (
+      res || {
+        ...place,
+        Reservation: 'free',
+      }
+    );
   });
-  return allPlaces;
 };
 
 exports.deleteReservationPlace = async (reservation, reservationParams) => {
   const placeIndex = findIndexPlaceReservation(reservation, reservationParams);
-  if (placeIndex === -1) return false;
+  if (placeIndex === -1) {
+    return false;
+  }
+
   try {
     await dynamo.update({
       Key: { Id: reservation.Id, City: 'multiple' },
@@ -138,5 +150,6 @@ exports.deleteReservationPlace = async (reservation, reservationParams) => {
     log.error('reservation.deleteReservation', error);
     return false;
   }
+
   return true;
 };

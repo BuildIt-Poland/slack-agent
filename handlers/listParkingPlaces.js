@@ -1,5 +1,5 @@
 const auth = require('../security/authorization.js');
-const res = require('../workers/reservation.js');
+const { findReservationByDate, listReservationsForDay } = require('../workers/reservation.js');
 const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
 const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utility/responseBody.js');
 const { isCity, isFutureDate } = require('../utility/requestValidator.js');
@@ -28,12 +28,12 @@ module.exports.reservationList = async event => {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await res.findReservationByDateAsync(message.dates);
+  const reservation = await findReservationByDate(message.dates);
   if (!reservation) {
     return internalServerError();
   }
 
-  const allPlaces = await res.listReservationsForDayAsync(reservation, message.city);
+  const allPlaces = await listReservationsForDay(reservation, message.city);
   if (!allPlaces) {
     return internalServerError();
   }

@@ -1,5 +1,5 @@
 const auth = require('../security/authorization.js');
-const res = require('../workers/reservation.js');
+const { findReservationByDate, deleteReservationPlace} = require('../workers/reservation.js');
 const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
 const { isCity, isFutureDate } = require('../utility/requestValidator.js');
 const { parseBodyToObject } = require('../utility/requestParser.js');
@@ -29,12 +29,12 @@ module.exports.deleteReservation = async event => {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await res.findReservationByDateAsync(message.dates, TABLE_NAME);
+  const reservation = await findReservationByDate(message.dates, TABLE_NAME);
   if (!reservation) {
     return internalServerError();
   }
 
-  const placeDeleted = await res.deleteReservationPlace(reservation, message, TABLE_NAME);
+  const placeDeleted = await deleteReservationPlace(reservation, message, TABLE_NAME);
   if (!placeDeleted) {
     return success(generateResponseBody(`You don't have reservation`));
   }
