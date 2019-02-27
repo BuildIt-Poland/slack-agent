@@ -10,14 +10,14 @@ const isBookingAvailableForPeriod = async (bookingDates, city) => {
     ExpressionAttributeValues: {
       ':city': city,
       ':minDate': _.min(bookingDates),
-      ':maxDate': _.max(bookingDates),
-    },
+      ':maxDate': _.max(bookingDates)
+    }
   };
 
   const { Items } = await query(params, BOOKINGS_TABLE);
 
-  return _.every(Items, booking =>
-    _.some(booking.Places, placeBooking => placeBooking.Owner === 'free'),
+  return _.every(Items, (booking) =>
+    _.some(booking.Places, (placeBooking) => placeBooking.Owner === 'free')
   );
 };
 
@@ -26,8 +26,8 @@ const getBooking = async (bookingDate, city) => {
     KeyConditionExpression: 'City=:city and BookingDate = :bookingDate',
     ExpressionAttributeValues: {
       ':bookingDate': bookingDate,
-      ':city': city,
-    },
+      ':city': city
+    }
   };
 
   const { Items } = await query(params, BOOKINGS_TABLE);
@@ -39,38 +39,46 @@ const bookingExists = async (bookingDate, city) => !_.isEmpty(await getBooking(b
 const createBooking = async (bookingDate, city, userName) => {
   const parkingPlaces = _.map(await getParkingPlaces(city), ({ PlaceID }, index) => ({
     PlaceID,
-    Owner: index === 0 ? userName : 'free',
+    Owner: index === 0 ? userName : 'free'
   }));
 
   return save(
     {
       City: city,
       BookingDate: bookingDate,
-      Places: parkingPlaces,
+      Places: parkingPlaces
     },
-    BOOKINGS_TABLE,
+    BOOKINGS_TABLE
   );
 };
 
-const bookParkingPlace = async (bookingDate, city, userName) => {
+const updateParkingPlaceOwner = async (bookingDate, city, searchOwner, replaceOwner) => {
   const { Places: places } = await getBooking(bookingDate, city);
-  const freePlaceIndex = _.findIndex(places, { Owner: 'free' });
-  places[freePlaceIndex].Owner = userName;
-
+  const freePlaceIndex = _.findIndex(places, { Owner: searchOwner });
+  if (freePlaceIndex === -1) {
+    return {};
+  }
+  places[freePlaceIndex].Owner = replaceOwner;
   const params = {
     Key: {
       City: city,
-      BookingDate: bookingDate,
+      BookingDate: bookingDate
     },
     UpdateExpression: 'set Places = :places',
     ExpressionAttributeValues: {
-      ':places': places,
+      ':places': places
     },
-    ReturnValues: 'UPDATED_NEW',
+    ReturnValues: 'UPDATED_NEW'
   };
 
   return update(params, BOOKINGS_TABLE);
 };
+
+const bookParkingPlace = async (bookingDate, city, userName) =>
+  updateParkingPlaceOwner(bookingDate, city, 'free', userName);
+
+const unbookParkingPlace = async (bookingDate, city, userName) =>
+  updateParkingPlaceOwner(bookingDate, city, userName, 'free');
 
 module.exports = {
   bookingExists,
@@ -78,4 +86,5 @@ module.exports = {
   createBooking,
   getBooking,
   isBookingAvailableForPeriod,
+  unbookParkingPlace
 };
