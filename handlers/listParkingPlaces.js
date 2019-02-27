@@ -1,46 +1,46 @@
-const auth = require('../security/authorization.js');
-const { findReservationByDate, listReservationsForDay } = require('../dao/bookings.js');
+const _ = require('lodash');
+const { isVerified } = require('../security/authorization.js');
+const { getBooking } = require('../dao/bookings.js');
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
-const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utilities/responseBody.js');
+const {
+  generateResponseBody,
+  generateResponseBodyWithAttachments
+} = require('../utilities/responseBody.js');
 const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
-module.exports.reservationList = async event => {
-  const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
-  if (!isVerified) {
-    return unauthorized();
-  }
+module.exports.list = async (event) => {
+  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) return unauthorized();
 
   const { message, isValid } = parseBodyToObject(event.body, {
-    dates: {
+    bookingDate: {
       isFutureDate,
-      required: date => !!date,
+      required: (bookingDate) => !!bookingDate
     },
     city: {
       pattern: isCity,
-      required: date => !!date,
+      required: (date) => !!date
     },
-    userName: {},
+    userName: {}
   });
+
   if (!isValid) {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await findReservationByDate(message.dates);
-  if (!reservation) {
+  const { city, bookingDate } = message;
+
+  const booking = await getBooking(bookingDate, city).catch(() => {
     return internalServerError();
-  }
+  });
 
-  const allPlaces = await listReservationsForDay(reservation, message.city);
-  if (!allPlaces) {
-    return internalServerError();
-  }
+  if (_.isEmpty(booking)) return success(generateResponseBody(`Parking places don't exists`));
 
-  if (!allPlaces.length) {
-    return success(generateResponseBody(`Parking places don't exists`));
-  }
+  const [ { Places } ] = booking;
 
-  return success(generateResponseBodyWithAttachments('List of reservations with available places:', allPlaces));
+  return success(
+    generateResponseBodyWithAttachments('List of reservations with available places:', Places)
+  );
 };

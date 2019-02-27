@@ -12,8 +12,8 @@ exports.bookingExists = async (bookingDate, city) => {
     KeyConditionExpression: 'City=:city and BookingDate = :bookingDate',
     ExpressionAttributeValues: {
       ':bookingDate': bookingDate,
-      ':city': city,
-    },
+      ':city': city
+    }
   };
 
   const { Items } = await query(params, BOOKINGS_TABLE);
@@ -24,17 +24,29 @@ exports.bookingExists = async (bookingDate, city) => {
 exports.createBooking = async (bookingDate, city, userName) => {
   const parkingPlaces = _.map(await getParkingPlaces(city), ({ PlaceID }, index) => ({
     PlaceID,
-    Owner: index === 0 ? userName : 'free',
+    Owner: index === 0 ? userName : 'free'
   }));
 
   return save(
     {
       City: city,
       BookingDate: bookingDate,
-      Places: parkingPlaces,
+      Places: parkingPlaces
     },
-    BOOKINGS_TABLE,
+    BOOKINGS_TABLE
   );
 };
 
 exports.bookParkingPlace = (bookingDate, city, userName) => {};
+
+exports.getBooking = async (bookingDate, city) => {
+  const params = {
+    KeyConditionExpression: 'City = :city and BookingDate = :bookingDate',
+    ExpressionAttributeValues: {
+      ':city': city,
+      ':bookingDate': bookingDate
+    }
+  };
+  const { Items } = await query(params, BOOKINGS_TABLE);
+  return Items;
+};
