@@ -1,0 +1,28 @@
+version: '3'
+networks:
+  test_lambda:
+###############
+### for test usage only
+###############
+services:
+  #GUI: http://localhost:8000/shell/
+  dynamodb:
+    image: amazon/dynamodb-local
+    hostname: dynamodb
+    ports:
+      - 8000:8000
+    networks:
+      - test_lambda
+
+  config:
+    build:
+      dockerfile: devEnv/Dockerfile.dev
+      context: ../
+    hostname: config
+    environment:
+      - LOCAL_DB=true
+    networks:
+      - test_lambda
+    depends_on:
+      - dynamodb
+
