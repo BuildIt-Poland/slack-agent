@@ -10,7 +10,7 @@ const isBookingAvailableForPeriod = async (bookingDates, city) => {
     ExpressionAttributeValues: {
       ':city': city,
       ':minDate': _.min(bookingDates),
-      ':maxDate': _.min(bookingDates),
+      ':maxDate': _.max(bookingDates),
     },
   };
 
