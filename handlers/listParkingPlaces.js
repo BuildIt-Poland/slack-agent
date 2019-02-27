@@ -4,26 +4,28 @@ const { getBooking } = require('../dao/bookings.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const {
   generateResponseBody,
-  generateResponseBodyWithAttachments,
+  generateResponseBodyWithAttachments
 } = require('../utilities/responseBody.js');
 const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
-module.exports.list = async event => {
-  if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) return unauthorized();
+module.exports.list = async (event) => {
+  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
+    return unauthorized();
+  }
 
   const { message, isValid } = parseBodyToObject(event.body, {
     bookingDate: {
       isFutureDate,
-      required: bookingDate => !!bookingDate,
+      required: (bookingDate) => !!bookingDate
     },
     city: {
       pattern: isCity,
-      required: date => !!date,
+      required: (bookingDate) => !!bookingDate
     },
-    userName: {},
+    userName: {}
   });
 
   if (!isValid) {
@@ -40,7 +42,7 @@ module.exports.list = async event => {
   return success(
     generateResponseBodyWithAttachments(
       'List of reservations with available places:',
-      booking.Places,
-    ),
+      booking.Places
+    )
   );
 };

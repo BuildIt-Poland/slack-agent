@@ -52,13 +52,13 @@ const createBooking = async (bookingDate, city, userName) => {
   );
 };
 
-const updateParkingPlaceOwner = async (bookingDate, city, searchOwner, replaceOwner) => {
+const updateParkingPlaceOwner = async (bookingDate, city, currentOwner, newOwner) => {
   const { Places: places } = await getBooking(bookingDate, city);
-  const freePlaceIndex = _.findIndex(places, { Owner: searchOwner });
+  const freePlaceIndex = _.findIndex(places, { Owner: currentOwner });
   if (freePlaceIndex === -1) {
     return {};
   }
-  places[freePlaceIndex].Owner = replaceOwner;
+  places[freePlaceIndex].Owner = newOwner;
   const params = {
     Key: {
       City: city,
