@@ -38,7 +38,7 @@ module.exports.add = async event => {
 
   const { dates, city, userName } = message;
 
-  // const isBookingAvailable = isBookingAvailableForPeriod(dates, city);
+  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city);
   // if (!isBookingAvailable) {
   //   return internalServerError(); // TODO raise proper response
   // }
