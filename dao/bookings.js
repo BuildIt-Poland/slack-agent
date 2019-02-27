@@ -5,22 +5,20 @@ const { query, save, update } = require('../services/dbService.js');
 const { BOOKINGS_TABLE } = require('../config/all.js');
 
 const isBookingAvailableForPeriod = async (bookingDates, city) => {
-  const minDate = _.min(bookingDates);
-  const maxDate = _.min(bookingDates);
-
   const params = {
-    KeyConditionExpression:
-      'City = :city and BookingDate between :minDate and :maxDate',
+    KeyConditionExpression: 'City = :city and BookingDate between :minDate and :maxDate',
     ExpressionAttributeValues: {
       ':city': city,
-      ':minDate': minDate,
-      ':maxDate': maxDate,
+      ':minDate': _.min(bookingDates),
+      ':maxDate': _.min(bookingDates),
     },
   };
 
   const { Items } = await query(params, BOOKINGS_TABLE);
 
-  console.log(Items);
+  return _.every(Items, booking =>
+    _.some(booking.Places, placeBooking => placeBooking.Owner === 'free'),
+  );
 };
 
 const getBooking = async (bookingDate, city) => {

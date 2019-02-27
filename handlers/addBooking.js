@@ -38,10 +38,10 @@ module.exports.add = async event => {
 
   const { dates, city, userName } = message;
 
-  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city);
-  // if (!isBookingAvailable) {
-  //   return internalServerError(); // TODO raise proper response
-  // }
+  const isBookingAvailable = await isBookingAvailableForPeriod([dates], city);
+  if (!isBookingAvailable) {
+    return internalServerError(); // TODO raise proper response
+  }
 
   const bookingPromises = _.map([dates], async bookingDate => {
     if (await bookingExists(bookingDate, city)) {
@@ -54,8 +54,6 @@ module.exports.add = async event => {
   await Promise.all(bookingPromises).catch(() => {
     return internalServerError();
   });
-
-  await bookingExists(dates, city);
 
   return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
 };
