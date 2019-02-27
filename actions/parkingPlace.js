@@ -1,6 +1,6 @@
 const { v4 } = require('uuid');
 const _ = require('lodash');
-const { save, scan } = require('../services/daoService.js');
+const { save, scan } = require('../services/dbService.js');
 const { error } = require('../services/loggerService.js');
 
 const { PARKING_PLACES_TABLE } = require('../config/all');
@@ -35,3 +35,5 @@ exports.saveParkingPlace = async userInputParams => {
     return false;
   }
 };
+
+

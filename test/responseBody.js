@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const {
   generateResponseBody,
   generateResponseBodyWithAttachments
-} = require('../utility/responseBody.js');
+} = require('../utilities/responseBody.js');
 
 describe('responseBody module tests', () => {
   describe('Check generateResponseBody(text) function', () => {

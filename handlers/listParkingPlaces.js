@@ -1,9 +1,9 @@
 const auth = require('../security/authorization.js');
-const { findReservationByDate, listReservationsForDay } = require('../workers/reservation.js');
-const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
-const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utility/responseBody.js');
-const { isCity, isFutureDate } = require('../utility/requestValidator.js');
-const { parseBodyToObject } = require('../utility/requestParser.js');
+const { findReservationByDate, listReservationsForDay } = require('../actions/bookings.js');
+const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
+const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utilities/responseBody.js');
+const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { parseBodyToObject } = require('../utilities/requestParser.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 

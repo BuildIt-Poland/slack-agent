@@ -1,9 +1,9 @@
 const auth = require('../security/authorization.js');
-const { findReservationByDate, deleteReservationPlace } = require('../workers/reservation.js');
-const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
-const { isCity, isFutureDate } = require('../utility/requestValidator.js');
-const { parseBodyToObject } = require('../utility/requestParser.js');
-const { generateResponseBody } = require('../utility/responseBody.js');
+const { findReservationByDate, deleteReservationPlace } = require('../actions/bookings.js');
+const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
+const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { parseBodyToObject } = require('../utilities/requestParser.js');
+const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { SIGNING_SECRET, ENV_STAGE, PARKING_PLACES_TABLE } = require('../config/all.js');
 

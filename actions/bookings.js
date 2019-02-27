@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const dynamo = require('../services/daoService.js');
+const dynamo = require('../services/dbService.js');
 const log = require('../services/loggerService.js');
 
 const { BOOKINGS_TABLE } = require('../config/all.js');

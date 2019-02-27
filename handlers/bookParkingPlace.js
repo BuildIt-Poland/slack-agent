@@ -4,12 +4,12 @@ const {
   findReservationByDate,
   findFreePlace,
   saveReservation
-} = require('../workers/reservation.js');
+} = require('../actions/bookings.js');
 
-const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
-const { isCity, isFutureDate } = require('../utility/requestValidator.js');
-const { parseBodyToObject } = require('../utility/requestParser.js');
-const { generateResponseBody } = require('../utility/responseBody.js');
+const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
+const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { parseBodyToObject } = require('../utilities/requestParser.js');
+const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 

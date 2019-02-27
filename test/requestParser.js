@@ -1,7 +1,7 @@
 /* global describe it */
 const { expect } = require('chai');
-const { parseBodyToObject } = require('../utility/requestParser.js');
-const { isFutureDate, isCity} = require('../utility/requestValidator.js');
+const { parseBodyToObject } = require('../utilities/requestParser.js');
+const { isFutureDate, isCity} = require('../utilities/requestValidator.js');
 
 describe('Request Parser module tests', () => {
   describe('Check parseBodyToObject(body, inputFormat) function', () => {
@@ -22,7 +22,7 @@ describe('Request Parser module tests', () => {
       expect(message).to.haveOwnProperty('city', 'Gdansk');
       expect(message).to.haveOwnProperty('userName', 'user')
     });
-    it(`returns invalid object when parseBodyToObject(body, inputFormat) function is invoke with body parameter equals 
+    it(`returns invalid object when parseBodyToObject(body, inputFormat) function is invoke with body parameter equals
         text=2019/02/21&user_name=user`, () => {
       const { isValid, message } = parseBodyToObject('text=2019/02/21&user_name=user', {
         dates: {

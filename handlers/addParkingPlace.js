@@ -1,9 +1,9 @@
 const auth = require('../security/authorization.js');
-const parkingPlace = require('../workers/parkingPlace.js');
-const { success, unauthorized } = require('../utility/reponseBuilder.js');
-const { isCity } = require('../utility/requestValidator.js');
-const { parseBodyToObject } = require('../utility/requestParser.js');
-const { generateResponseBody } = require('../utility/responseBody.js');
+const parkingPlace = require('../actions/parkingPlace.js');
+const { success, unauthorized } = require('../utilities/reponseBuilder.js');
+const { isCity } = require('../utilities/requestValidator.js');
+const { parseBodyToObject } = require('../utilities/requestParser.js');
+const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { SIGNING_SECRET, ENV_STAGE } = require('../config/all.js');
 

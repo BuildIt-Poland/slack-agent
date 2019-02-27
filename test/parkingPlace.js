@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
 const _ = require('lodash');
-const parkingPlace = require('../workers/parkingPlace.js');
+const parkingPlace = require('../actions/parkingPlace.js');
 
 function initLogStub() {
   this.sinon.stub(log, 'log');

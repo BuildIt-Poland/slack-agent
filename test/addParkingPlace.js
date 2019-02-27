@@ -1,6 +1,6 @@
 /* global describe beforeEach afterEach it */
 const { expect } = require('chai');
-const parkingPlace = require('../workers/parkingPlace.js');
+const parkingPlace = require('../actions/parkingPlace.js');
 const { add } = require('../handlers/addParkingPlace.js');
 const authorization = require('../security/authorization.js');
 

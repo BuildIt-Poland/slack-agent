@@ -7,7 +7,7 @@ const {
   findFreePlace,
   listReservationsForDay,
   deleteReservationPlace
-} = require('../workers/reservation.js');
+} = require('../actions/bookings.js');
 
 describe('Reservation module tests', () => {
   describe('Check saveReservation(reservationId, place, Dates, tableName) function', () => {
