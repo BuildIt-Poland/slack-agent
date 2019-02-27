@@ -1,46 +1,48 @@
-const auth = require('../security/authorization.js');
-const { findReservationByDate, listReservationsForDay } = require('../workers/reservation.js');
-const { success, internalServerError, unauthorized } = require('../utility/reponseBuilder.js');
-const { generateResponseBody, generateResponseBodyWithAttachments } = require('../utility/responseBody.js');
-const { isCity, isFutureDate } = require('../utility/requestValidator.js');
-const { parseBodyToObject } = require('../utility/requestParser.js');
+const _ = require('lodash');
+const { isVerified } = require('../services/authService.js');
+const { getBooking } = require('../dao/bookings.js');
+const { success, unauthorized } = require('../utilities/reponseBuilder.js');
+const {
+  generateResponseBody,
+  generateResponseBodyWithAttachments
+} = require('../utilities/responseBody.js');
+const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { parseBodyToObject } = require('../utilities/requestParser.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
-module.exports.reservationList = async event => {
-  const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
-  if (!isVerified) {
+module.exports.list = async (event) => {
+  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
     return unauthorized();
   }
 
   const { message, isValid } = parseBodyToObject(event.body, {
-    dates: {
+    bookingDate: {
       isFutureDate,
-      required: date => !!date,
+      required: (bookingDate) => !!bookingDate
     },
     city: {
       pattern: isCity,
-      required: date => !!date,
+      required: (bookingDate) => !!bookingDate
     },
-    userName: {},
+    userName: {}
   });
+
   if (!isValid) {
     return success(generateResponseBody(message));
   }
 
-  const reservation = await findReservationByDate(message.dates);
-  if (!reservation) {
-    return internalServerError();
-  }
+  const { city, bookingDate } = message;
+  const booking = await getBooking(bookingDate, city);
 
-  const allPlaces = await listReservationsForDay(reservation, message.city);
-  if (!allPlaces) {
-    return internalServerError();
-  }
-
-  if (!allPlaces.length) {
+  if (_.isEmpty(booking)) {
     return success(generateResponseBody(`Parking places don't exists`));
   }
 
-  return success(generateResponseBodyWithAttachments('List of reservations with available places:', allPlaces));
+  return success(
+    generateResponseBodyWithAttachments(
+      'List of reservations with available places:',
+      booking.Places
+    )
+  );
 };

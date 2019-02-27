@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
-const dynamoEnv = require('../communication/dynamoEnv.js');
+const dynamoEnv = require('../config/dynamoEnv.js');
 const log = require('../services/loggerService.js');
 const { BOOKINGS_TABLE, PARKING_PLACES_TABLE } = require('../config/all.js');
 

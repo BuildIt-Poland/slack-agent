@@ -1,8 +1,8 @@
 /* global describe beforeEach afterEach it */
 const { expect } = require('chai');
-const parkingPlace = require('../workers/parkingPlace.js');
+const parkingPlace = require('../dao/parkingPlace.js');
 const { add } = require('../handlers/addParkingPlace.js');
-const authorization = require('../security/authorization.js');
+const authorization = require('../services/authService.js');
 
 function initParkingPlaceStub() {
   const stubSaveParkingPlace = this.sinon.stub(parkingPlace, 'saveParkingPlace');
