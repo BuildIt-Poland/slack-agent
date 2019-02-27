@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const auth = require('../security/authorization.js');
+const auth = require('../services/authService');
 const {
   bookingExists,
   bookParkingPlace,

@@ -1,6 +1,6 @@
 /* global describe beforeEach afterEach it */
 const { expect } = require('chai');
-const authorization = require('../security/authorization.js');
+const authorization = require('../services/authService.js');
 const { authorize } = require('../handlers/authorize.js');
 require('mocha-sinon');
 

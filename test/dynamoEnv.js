@@ -1,7 +1,7 @@
 
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
-const dynamoEnv = require('../communication/dynamoEnv.js');
+const dynamoEnv = require('../config/dynamoEnv.js');
 
 describe('dynamoEnv module tests', () => {
   let val;

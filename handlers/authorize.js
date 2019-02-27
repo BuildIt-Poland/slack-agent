@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { oAuthRedirectUrl, authorize } = require('../security/authorization.js');
+const { oAuthRedirectUrl, authorize } = require('../services/authService.js');
 const { success, redirect } = require('../utilities/reponseBuilder.js');
 
 const { CLIENT_ID, CLIENT_SECRET, CLIENT_SCOPES, ENV_STAGE } = require('../config/all.js');

@@ -1,4 +1,4 @@
-const auth = require('../security/authorization.js');
+const auth = require('../services/authService.js');
 const { findReservationByDate, deleteReservationPlace } = require('../dao/bookings.js');
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity, isFutureDate } = require('../utilities/requestValidator.js');

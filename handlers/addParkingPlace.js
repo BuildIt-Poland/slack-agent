@@ -1,4 +1,4 @@
-const { isVerified } = require('../security/authorization.js');
+const { isVerified } = require('../services/authService.js');
 const { addParkingPlace } = require('../dao/parkingPlace.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity } = require('../utilities/requestValidator.js');

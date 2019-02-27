@@ -1,7 +1,7 @@
 /* global describe it beforeEach afterEach */
 const { expect } = require('chai');
 const moxios = require('moxios');
-const { oAuthRedirectUrl, authorize, isVerified } = require('../security/authorization.js');
+const { oAuthRedirectUrl, authorize, isVerified } = require('../services/authService.js');
 
 describe('Authorization module tests', () => {
 	describe('Check authorize() function', () => {

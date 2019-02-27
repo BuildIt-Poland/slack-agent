@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { isVerified } = require('../security/authorization.js');
+const { isVerified } = require('../services/authService.js');
 const { getBooking } = require('../dao/bookings.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const {

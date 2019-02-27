@@ -4,12 +4,12 @@ const queryString = require('query-string');
 const crypto = require('crypto');
 const timingSafeCompare = require('tsscmp');
 
+exports.oAuthRedirectUrl = (authParams) => `https://slack.com/oauth/authorize?${queryString.stringify(authParams)}`;
+
 exports.authorize = (payload) => {
 	if (payload.stage === 'dev') return Promise.resolve('Dev environment - no security.');
 	return axios.post('https://slack.com/api/oauth.access', queryString.stringify(payload));
 };
-
-exports.oAuthRedirectUrl = (authParams) => `https://slack.com/oauth/authorize?${queryString.stringify(authParams)}`;
 
 exports.isVerified = (request, signingSecret, stage) => {
 	if (stage === 'dev') return Promise.resolve(true);
