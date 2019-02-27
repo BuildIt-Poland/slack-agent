@@ -1,5 +1,5 @@
 const auth = require('../security/authorization.js');
-const parkingPlace = require('../dao/parkingPlace.js');
+const { addParkingPlace } = require('../dao/parkingPlace.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
@@ -18,7 +18,7 @@ module.exports.add = async (event) => {
       required: (city) => !!city,
       pattern: isCity
     },
-    place: {
+    placeId: {
       required: (date) => !!date
     }
   });
@@ -27,12 +27,12 @@ module.exports.add = async (event) => {
     return success(generateResponseBody(message));
   }
 
-  const result = await parkingPlace.saveParkingPlace(message);
+  const result = await addParkingPlace(message);
 
   if (result) {
     return success(
       generateResponseBody(
-        `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.place}`
+        `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.placeId}`
       )
     );
   }
