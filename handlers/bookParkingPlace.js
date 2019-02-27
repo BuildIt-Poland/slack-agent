@@ -4,7 +4,7 @@ const {
   findReservationByDate,
   findFreePlace,
   saveReservation
-} = require('../actions/bookings.js');
+} = require('../dao/bookings.js');
 
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity, isFutureDate } = require('../utilities/requestValidator.js');

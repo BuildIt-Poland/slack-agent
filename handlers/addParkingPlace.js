@@ -1,5 +1,5 @@
 const auth = require('../security/authorization.js');
-const parkingPlace = require('../actions/parkingPlace.js');
+const parkingPlace = require('../dao/parkingPlace.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');

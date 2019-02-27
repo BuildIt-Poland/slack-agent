@@ -1,5 +1,5 @@
 const auth = require('../security/authorization.js');
-const { findReservationByDate, deleteReservationPlace } = require('../actions/bookings.js');
+const { findReservationByDate, deleteReservationPlace } = require('../dao/bookings.js');
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');

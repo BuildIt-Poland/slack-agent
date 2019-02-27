@@ -8,7 +8,7 @@ const {
   findReservationByDate,
   listReservationsForDay,
   deleteReservationPlace
-} = require('../actions/bookings.js');
+} = require('../dao/bookings.js');
 
 function initLogStub() {
   this.sinon.stub(log, 'log');

@@ -7,7 +7,7 @@ const {
   findFreePlace,
   listReservationsForDay,
   deleteReservationPlace
-} = require('../actions/bookings.js');
+} = require('../dao/bookings.js');
 
 describe('Reservation module tests', () => {
   describe('Check saveReservation(reservationId, place, Dates, tableName) function', () => {
