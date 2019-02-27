@@ -44,7 +44,7 @@ services:
       - PARKING_PLACES_TABLE=ParkingPlaces-dev
       - BOOKINGS_TABLE=Bookings-dev
       - LOCAL_DB=true
-    command: "/handlers/bookParkingPlace.book '{\"body\": \"text=2020/02/21+Gdansk&user_name=hein.maciej\"}'"
+    command: "/handlers/addBooking.add '{\"body\": \"text=2020/02/02+GDN&user_name=hein.maciej\"}'"
     networks:
       - test_lambda
     depends_on:

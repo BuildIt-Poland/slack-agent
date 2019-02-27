@@ -1,8 +1,38 @@
 const _ = require('lodash');
-const dynamo = require('../services/dbService.js');
 const log = require('../services/loggerService.js');
+const { getParkingPlaces } = require('./parkingPlace.js');
+const { query, save, update } = require('../services/dbService.js');
 
 const { BOOKINGS_TABLE } = require('../config/all.js');
+
+exports.isBookingAvailableForPeriod = (bookingDates, city) => {};
+
+exports.bookingExists = async (bookingDate, city) => {
+  const params = {
+    KeyConditionExpression: 'City=:city and BookingDate = :bookingDate',
+    ExpressionAttributeValues: {
+      ':bookingDate': bookingDate,
+      ':city': city,
+    },
+  };
+
+  const { Items } = await query(params, BOOKINGS_TABLE);
+
+  return !_.isEmpty(Items);
+};
+
+exports.createBooking = async (bookingDate, city) => {
+  const parkingPlaces = await getParkingPlaces(city);
+
+  return save({
+    City: city,
+    BookingDate: bookingDate,
+    Places: parkingPlaces,
+  }, BOOKINGS_TABLE)
+};
+
+exports.bookParkingPlace = (bookingDate, city) => {
+};
 
 const putReservation = async (place, reservationParams) => {
   const params = {
@@ -11,13 +41,13 @@ const putReservation = async (place, reservationParams) => {
     Reservations: [
       {
         ...place,
-        Reservation: reservationParams.userName
-      }
-    ]
+        Reservation: reservationParams.userName,
+      },
+    ],
   };
 
   try {
-    await dynamo.save(params, BOOKINGS_TABLE);
+    await save(params, BOOKINGS_TABLE);
   } catch (error) {
     log.error('reservation.putReservation', error);
     return false;
@@ -34,14 +64,14 @@ const updateReservation = async (reservationId, place, userName) => {
       ':place': [
         {
           ...place,
-          Reservation: userName
-        }
-      ]
-    }
+          Reservation: userName,
+        },
+      ],
+    },
   };
 
   try {
-    await dynamo.update(params, BOOKINGS_TABLE);
+    await update(params, BOOKINGS_TABLE);
   } catch (error) {
     log.error('reservation.updateReservation', error);
     return false;
@@ -49,17 +79,17 @@ const updateReservation = async (reservationId, place, userName) => {
   return true;
 };
 
-const findPlacesInCity = async (city) => {
+const findPlacesInCity = async city => {
   const params = {
     KeyConditionExpression: 'City = :city',
     ExpressionAttributeValues: {
-      ':city': city
+      ':city': city,
     },
-    IndexName: 'city-index'
+    IndexName: 'city-index',
   };
 
   try {
-    const { Items } = await dynamo.query(params, BOOKINGS_TABLE);
+    const { Items } = await query(params, BOOKINGS_TABLE);
     return Items;
   } catch (error) {
     log.error('reservation.findPlacesInCityAsync', error);
@@ -69,8 +99,8 @@ const findPlacesInCity = async (city) => {
 
 const findIndexPlaceReservation = (reservation, reservationParams) =>
   reservation.Reservations.findIndex(
-    (place) =>
-      place.Reservation === reservationParams.userName && place.City === reservationParams.city
+    place =>
+      place.Reservation === reservationParams.userName && place.City === reservationParams.city,
   );
 
 exports.saveReservation = async (reservationId, place, reservationParams) =>
@@ -78,23 +108,22 @@ exports.saveReservation = async (reservationId, place, reservationParams) =>
     ? putReservation(place, reservationParams)
     : updateReservation(reservationId, place, reservationParams.userName);
 
-exports.findReservationByDate = async (date) => {
+exports.findReservationByDate = async date => {
   const params = {
     KeyConditionExpression: '#id = :dates and City = :city',
     ExpressionAttributeNames: {
-      '#id': 'Id'
+      '#id': 'Id',
     },
     ExpressionAttributeValues: {
       ':dates': date,
-      ':city': 'multiple'
-    }
+      ':city': 'multiple',
+    },
   };
 
   try {
-    const { Items } = await dynamo.query(params, BOOKINGS_TABLE);
+    const { Items } = await query(params, BOOKINGS_TABLE);
     return Items[0] || {};
   } catch (error) {
-    log.error(BOOKINGS_TABLE, params);
     log.error('reservation.findReservationByDate', error);
     return null;
   }
@@ -110,9 +139,7 @@ exports.findFreePlace = async (reservation, city) => {
     return places[0] || {};
   }
 
-  return (
-    places.find((place) => !reservation.Reservations.some((item) => place.Id === item.Id)) || {}
-  );
+  return places.find(place => !reservation.Reservations.some(item => place.Id === item.Id)) || {};
 };
 
 exports.listReservationsForDay = async (reservation, city) => {
@@ -122,19 +149,19 @@ exports.listReservationsForDay = async (reservation, city) => {
   }
 
   if (_.isEmpty(reservation)) {
-    return places.map((place) => ({
+    return places.map(place => ({
       ...place,
-      Reservation: 'free'
+      Reservation: 'free',
     }));
   }
 
-  return places.map((place) => {
-    const res = reservation.Reservations.find((item) => place.Id === item.Id);
+  return places.map(place => {
+    const res = reservation.Reservations.find(item => place.Id === item.Id);
 
     return (
       res || {
         ...place,
-        Reservation: 'free'
+        Reservation: 'free',
       }
     );
   });
@@ -147,9 +174,9 @@ exports.deleteReservationPlace = async (reservation, reservationParams) => {
   }
 
   try {
-    await dynamo.update({
+    await update({
       Key: { Id: reservation.Id, City: 'multiple' },
-      UpdateExpression: `REMOVE Reservations[${placeIndex}]`
+      UpdateExpression: `REMOVE Reservations[${placeIndex}]`,
     });
   } catch (error) {
     log.error('reservation.deleteReservation', error);

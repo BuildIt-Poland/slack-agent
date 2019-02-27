@@ -7,7 +7,7 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { SIGNING_SECRET, ENV_STAGE } = require('../config/all.js');
 
-module.exports.add = async (event) => {
+module.exports.add = async event => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
   if (!isVerified) {
     return unauthorized();
@@ -15,27 +15,25 @@ module.exports.add = async (event) => {
 
   const { message, isValid } = parseBodyToObject(event.body, {
     city: {
-      required: (city) => !!city,
-      pattern: isCity
+      required: city => !!city,
+      pattern: isCity,
     },
     placeId: {
-      required: (date) => !!date
-    }
+      required: date => !!date,
+    },
   });
 
   if (!isValid) {
     return success(generateResponseBody(message));
   }
 
-  const result = await addParkingPlace(message);
+  await addParkingPlace(message).catch(() => {
+    return success(generateResponseBody(`You can't add parking place`));
+  });
 
-  if (result) {
-    return success(
-      generateResponseBody(
-        `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.placeId}`
-      )
-    );
-  }
-
-  return success(generateResponseBody(`You can't add parking place`));
+  return success(
+    generateResponseBody(
+      `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.placeId}`,
+    ),
+  );
 };
