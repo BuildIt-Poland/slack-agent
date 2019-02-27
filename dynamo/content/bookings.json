@@ -4,15 +4,15 @@
     "BookingDate": "2020/03/01",
     "Places": [
       {
-        "Place": "1a",
+        "PlaceID": "1a",
         "Owner": "foo.bar"
       },
       {
-        "Place": "1b",
+        "PlaceID": "1b",
         "Owner": "john.doe"
       },
       {
-        "Place": "1c",
+        "PlaceID": "1c",
         "Owner": "mac.gyver"
       }
     ]
@@ -22,15 +22,15 @@
     "BookingDate": "2020/03/01",
     "Places": [
       {
-        "Place": "1a",
+        "PlaceID": "1a",
         "Owner": "hein.maciej"
       },
       {
-        "Place": "1b",
+        "PlaceID": "1b",
         "Owner": "free"
       },
       {
-        "Place": "1c",
+        "PlaceID": "1c",
         "Owner": "free"
       }
     ]
@@ -40,15 +40,15 @@
     "BookingDate": "2020/03/02",
     "Places": [
       {
-        "Place": "1a",
+        "PlaceID": "1a",
         "Owner": "foo.bar"
       },
       {
-      "Place": "1b",
+      "PlaceID": "1b",
         "Owner": "free"
       },
       {
-        "Place": "1c",
+        "PlaceID": "1c",
         "Owner": "free"
       }
     ]
@@ -58,15 +58,15 @@
     "BookingDate": "2020/03/03",
     "Places": [
       {
-        "Place": "1a",
+        "PlaceID": "1a",
         "Owner": "foo.bar"
       },
       {
-        "Place": "1b",
+        "PlaceID": "1b",
         "Owner": "free"
       },
       {
-        "Place": "1c",
+        "PlaceID": "1c",
         "Owner": "free"
       }
     ]
@@ -76,15 +76,15 @@
     "BookingDate": "2020/03/04",
     "Places": [
       {
-        "Place": "1a",
+        "PlaceID": "1a",
         "Owner": "foo.bar"
       },
       {
-        "Place": "1b",
+        "PlaceID": "1b",
         "Owner": "free"
       },
       {
-        "Place": "1c",
+        "PlaceID": "1c",
         "Owner": "free"
       }
     ]
@@ -94,15 +94,15 @@
     "BookingDate": "2020/03/05",
     "Places": [
       {
-        "Place": "1a",
+        "PlaceID": "1a",
         "Owner": "foo.bar"
       },
       {
-        "Place": "1b",
+        "PlaceID": "1b",
         "Owner": "free"
       },
       {
-        "Place": "1c",
+        "PlaceID": "1c",
         "Owner": "free"
       }
     ]

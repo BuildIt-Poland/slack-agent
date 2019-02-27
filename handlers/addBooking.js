@@ -55,5 +55,7 @@ module.exports.add = async event => {
     return internalServerError();
   });
 
+  await bookingExists(dates, city);
+
   return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
 };
