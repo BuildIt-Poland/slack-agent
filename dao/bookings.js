@@ -1,13 +1,12 @@
 const _ = require('lodash');
-const log = require('../services/loggerService.js');
 const { getParkingPlaces } = require('./parkingPlace.js');
 const { query, save, update } = require('../services/dbService.js');
 
 const { BOOKINGS_TABLE } = require('../config/all.js');
 
-exports.isBookingAvailableForPeriod = (bookingDates, city) => {};
+const isBookingAvailableForPeriod = (bookingDates, city) => {};
 
-exports.bookingExists = async (bookingDate, city) => {
+const getBooking = async (bookingDate, city) => {
   const params = {
     KeyConditionExpression: 'City=:city and BookingDate = :bookingDate',
     ExpressionAttributeValues: {
@@ -18,10 +17,14 @@ exports.bookingExists = async (bookingDate, city) => {
 
   const { Items } = await query(params, BOOKINGS_TABLE);
 
-  return !_.isEmpty(Items);
+  return Items[0] || {};
 };
 
-exports.createBooking = async (bookingDate, city, userName) => {
+
+const bookingExists = async (bookingDate, city) =>
+  !_.isEmpty(await getBooking(bookingDate, city));
+
+const createBooking = async (bookingDate, city, userName) => {
   const parkingPlaces = _.map(await getParkingPlaces(city), ({ PlaceID }, index) => ({
     PlaceID,
     Owner: index === 0 ? userName : 'free'
@@ -37,16 +40,30 @@ exports.createBooking = async (bookingDate, city, userName) => {
   );
 };
 
-exports.bookParkingPlace = (bookingDate, city, userName) => {};
+const bookParkingPlace = async (bookingDate, city, userName) => {
+  const { Places: places } = await getBooking(bookingDate, city);
+  const freePlaceIndex = _.findIndex(places, { Owner: 'free' });
+  places[freePlaceIndex].Owner = userName;
 
-exports.getBooking = async (bookingDate, city) => {
   const params = {
-    KeyConditionExpression: 'City = :city and BookingDate = :bookingDate',
+    Key: {
+      City: city,
+      BookingDate: bookingDate
+    },
+    UpdateExpression: 'set Places = :places',
     ExpressionAttributeValues: {
-      ':city': city,
-      ':bookingDate': bookingDate
-    }
+      ':places': places,
+    },
+    ReturnValues: 'UPDATED_NEW',
   };
-  const { Items } = await query(params, BOOKINGS_TABLE);
-  return Items;
+
+  return update(params, BOOKINGS_TABLE)
 };
+
+module.exports({
+  bookingExists,
+  bookParkingPlace,
+  createBooking,
+  getBooking,
+  isBookingAvailableForPeriod,
+})
