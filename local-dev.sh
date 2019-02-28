@@ -45,8 +45,8 @@ function createDefaultEnv {
     touch $1
     echo -e "#!/bin/bash" >> $1
     echo -e "export SLACK_AGENT_EVENT_FILE=\"devEnv/events/event\"" >> $1
-    echo -e "export SLACK_AGENT_HANDLER=\"bookParkingPlace\"" >> $1
-    echo -e "export SLACK_AGENT_FUNCTION=\"book\"" >> $1
+    echo -e "export SLACK_AGENT_HANDLER=\"addBooking\"" >> $1
+    echo -e "export SLACK_AGENT_FUNCTION=\"add\"" >> $1
 }
 
 #wizard that configures devEnv/env-vars.sh
