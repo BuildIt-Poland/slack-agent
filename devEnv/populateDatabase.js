@@ -10,12 +10,12 @@ const { BOOKINGS_TABLE, PARKING_PLACES_TABLE } = require('../config/all.js');
 const dynamoTablesMap = {
   parkingPlaces: {
     tableName: PARKING_PLACES_TABLE,
-    contentPath: '../dynamo/content/parkingPlaces.json',
+    contentPath: '../devEnv/dbContent/parkingPlaces.json',
     schemaPath: '../dynamo/tableSchema/parkingPlacesTable.yml',
   },
   bookings: {
     tableName: BOOKINGS_TABLE,
-    contentPath: '../dynamo/content/bookings.json',
+    contentPath: '../devEnv/dbContent/bookings.json',
     schemaPath: '../dynamo/tableSchema/bookingsTable.yml',
   },
 };

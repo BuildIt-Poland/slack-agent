@@ -4,7 +4,7 @@
   "description": "",
   "main": "authorizer.js",
   "scripts": {
-    "dev": "node -e 'require(\"./dynamo/populateDatabase.js\").populate()'",
+    "dev": "node -e 'require(\"./devEnv/populateDatabase.js\").populate()'",
     "test": "jest",
     "eslint": "./node_modules/.bin/eslint ."
   },
