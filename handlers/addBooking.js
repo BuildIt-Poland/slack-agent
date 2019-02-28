@@ -26,7 +26,7 @@ module.exports.add = async (event) => {
     },
     city: {
       pattern: isCity,
-      required: (date) => !!date
+      required: (city) => !!city
     },
     userName: {}
   });
