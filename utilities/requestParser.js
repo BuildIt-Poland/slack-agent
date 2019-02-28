@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
-const momentRange = require('moment-range');
 const queryString = require('query-string');
+const { isValid, DATE_FORMAT, getDatesInRange } = require('../services/dateService.js');
 
 const isParamValid = (inputParam, paramValidators) =>
   _.every(_.values(paramValidators), (validate) => validate(inputParam));
@@ -14,34 +14,12 @@ const validateInputParams = (inputParams, inputFormat) =>
     true
   );
 
-const getDatesBetween = (minDate, maxDate) => {
-  const min = moment(minDate, 'YYYY/MM/DD');
-
-  const max = moment(maxDate, 'YYYY/MM/DD');
-
-  if (
-    !min.isValid() &&
-    !max.isValid() &&
-    !min.isSameOrAfter(moment(), 'date') &&
-    !max.isSameOrAfter(moment(), 'date')
-  ) {
-    return [];
-  }
-  return _.map(
-    min.isSameOrBefore(max)
-      ? [ ...momentRange.extendMoment(moment).range(min, max).reverseBy('days') ]
-      : [ ...momentRange.extendMoment(moment).range(max, min).reverseBy('days') ],
-    (m) => m.format('YYYY/MM/DD')
-  );
-};
-
 const parseDatesToArray = (dates) => {
   const [ minDate, maxDate ] = _.split(dates, '-');
   if (!maxDate) {
-    const min = moment(minDate, 'YYYY/MM/DD');
-    return min.isValid && min.isSameOrAfter(moment(), 'date') ? [ min.format('YYYY/MM/DD') ] : [];
+    return isValid(min) ? [ moment(minDate, DATE_FORMAT).format(DATE_FORMAT) ] : [];
   }
-  return getDatesBetween(minDate, maxDate);
+  return isValid(min) && isValid(max) ? getDatesInRange(min, max) : [];
 };
 
 exports.parseBodyToObject = (body, inputFormat) => {

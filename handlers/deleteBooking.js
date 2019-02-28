@@ -15,7 +15,7 @@ module.exports.delete = async (event) => {
 
   const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
-      required: (date) => !_.isEmpty(dates);
+      required: (date) => !_.isEmpty(date)
     },
     city: {
       pattern: isCity,
