@@ -5,27 +5,6 @@ networks:
 ### for test usage only
 ###############
 services:
-  #GUI: http://localhost:8000/shell/
-  dynamodb:
-    image: amazon/dynamodb-local
-    hostname: dynamodb
-    ports:
-      - 8000:8000
-    networks:
-      - test_lambda
-
-  config:
-    build:
-      dockerfile: Dockerfile.dev
-      context: .
-    hostname: config
-    environment:
-      - LOCAL_DB=true
-    networks:
-      - test_lambda
-    depends_on:
-      - dynamodb
-
 # to test endpoint please modify "command"
 # general syntax:
 # "handler.<func_name> {\"body\":{<event_data>}}'"
@@ -35,7 +14,7 @@ services:
     image: 'lambci/lambda:nodejs8.10'
     hostname: slack-agent
     volumes:
-      - ./:/var/task
+      - ../:/var/task
     environment:
       - ENV_STAGE=dev
       - CLIENT_ID=123
@@ -44,8 +23,6 @@ services:
       - PARKING_PLACES_TABLE=ParkingPlaces-dev
       - BOOKINGS_TABLE=Bookings-dev
       - LOCAL_DB=true
-    command: "/handlers/addBooking.add '{\"body\": \"text=2020/03/01+GDN&user_name=hein.maciej\"}'"
+    command: "/handlers/${SLACK_AGENT_HANDLER}.${SLACK_AGENT_FUNCTION} '${SLACK_AGENT_EVENT_JSON}'"
     networks:
       - test_lambda
-    depends_on:
-      - config

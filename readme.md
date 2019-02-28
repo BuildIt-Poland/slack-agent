@@ -3,17 +3,16 @@
 For running lambdas locally we're using `dynamodb-local` from AWS amd `lambci` on Docker. There's also `config` container
 which is responsible for db tables configuration.
 
-* `docker-compose up` to start    
-* `ctrl-z` or `docker-compose down` to stop    
-* if you modify `dynamoLocal.js` file, pls run `docker-compose up --build`    
-* if you don't stop `dynamodb` between runnings, you'll face error from `config`: `Cannot create preexisting table`. It's irrelevant as you need table which is right there.    
+* `local-dev.sh start` to run lambda function and DynamoDB-local if not available.   
+* `local-dev.sh stop` to terminate currently running instance of DynamoDB-local. _NOTE_ You don't need to stop DB between different lambdas calls.     
+* `local-dev.sh config` to configure which lambda and event should be used in test run.   
+
+_DB-GUI_: http://localhost:8000/shell/
 
 ### Configuration
 
-For **changing running params** Open `docker-compose.yml` and edit `command` line in `lambda` ex:
+For **changing running params** run `local-dev.sh config` or edit file `devEnv/env-vars.sh` by hand.
 
-`command: "handler.parkingPlaceList '{\"body\":{\"test\": \"123\"}}'"`
+By default it uses `devEnv/events/event` as a file with event passed to lambda. However you may modify it in wizard.
 
-where `parkingPlaceList` is lambda function name and `'{\"body\":{\"test\": \"123\"}}'` is a event body (Note. *escapes* are important :) ).
-
-For **adding preload documents** to local db add them to file `./development/docs.json`.
+For **adding preload documents** to local db add them to files in `./dynamo/content` directory.
