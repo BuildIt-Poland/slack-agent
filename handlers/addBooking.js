@@ -4,17 +4,17 @@ const {
   bookingExists,
   bookParkingPlace,
   createBooking,
-  isBookingAvailableForPeriod,
+  isBookingAvailableForPeriod
 } = require('../dao/bookings.js');
 
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
-const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
 
-module.exports.add = async event => {
+module.exports.add = async (event) => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
   if (!isVerified) {
     return unauthorized();
@@ -22,14 +22,13 @@ module.exports.add = async event => {
 
   const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
-      isFutureDate,
-      required: date => !!date,
+      required: (date) => !_.isEmpty(date)
     },
     city: {
       pattern: isCity,
-      required: date => !!date,
+      required: (date) => !!date
     },
-    userName: {},
+    userName: {}
   });
 
   if (!isValid) {
@@ -38,12 +37,12 @@ module.exports.add = async event => {
 
   const { dates, city, userName } = message;
 
-  const isBookingAvailable = await isBookingAvailableForPeriod([dates], city);
+  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city);
   if (!isBookingAvailable) {
     return internalServerError(); // TODO raise proper response
   }
 
-  const bookingPromises = _.map([dates], async bookingDate => {
+  const bookingPromises = _.map(dates, async (bookingDate) => {
     if (await bookingExists(bookingDate, city)) {
       return bookParkingPlace(bookingDate, city, userName);
     }

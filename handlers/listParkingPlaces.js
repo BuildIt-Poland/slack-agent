@@ -6,7 +6,7 @@ const {
   generateResponseBody,
   generateResponseBodyWithAttachments
 } = require('../utilities/responseBody.js');
-const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
@@ -17,9 +17,8 @@ module.exports.list = async (event) => {
   }
 
   const { message, isValid } = parseBodyToObject(event.body, {
-    bookingDate: {
-      isFutureDate,
-      required: (bookingDate) => !!bookingDate
+    dates: {
+      required: (dates) => !_.isEmpty(dates)
     },
     city: {
       pattern: isCity,
@@ -32,8 +31,8 @@ module.exports.list = async (event) => {
     return success(generateResponseBody(message));
   }
 
-  const { city, bookingDate } = message;
-  const booking = await getBooking(bookingDate, city);
+  const { city, dates } = message;
+  const booking = await getBooking(dates[0], city);
 
   if (_.isEmpty(booking)) {
     return success(generateResponseBody(`Parking places don't exists`));
