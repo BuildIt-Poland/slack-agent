@@ -21,6 +21,7 @@ services:
     hostname: config
     environment:
       - LOCAL_DB=true
+    command: npm run dev
     networks:
       - test_lambda
     depends_on:
