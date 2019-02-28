@@ -1,43 +1,45 @@
-/* global describe it beforeEach afterEach */
 const log = require('npmlog');
 const logger = require('../../app/services/loggerService.js');
 
-describe('privateFunction()', () => {
-  beforeEach(function initLogStub() {
-    this.sinon.stub(log, 'log');
-  });
+jest.mock('npmlog');
 
-  afterEach(function restoreLogStub(){
-    this.sinon.restore();
+describe('loggerService.test.js', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('debug() passes basic data', () => {
     logger.debug('function', 'messages');
-    expect(log.log.calledOnce).to.equals(true);
-    expect(log.log.calledWith('debug', 'function', 'messages')).to.equals(true);
+
+    expect(log.log).toBeCalledTimes(1);
+    expect(log.log).toBeCalledWith('debug', 'function', 'messages');
   });
 
   it('info() passes basic data and concatanates one param', () => {
     logger.info('function', 'messages: %s', true);
-    expect(log.log.calledOnce).to.equals(true);
-    expect(log.log.calledWith('info', 'function', 'messages: true')).to.equals(true);
+
+    expect(log.log).toBeCalledTimes(1);
+    expect(log.log).toBeCalledWith('info', 'function', 'messages: true');
   });
 
   it('warn() passes basic data and concatanates many params', () => {
     logger.warn('function', 'messages %s %s %s', 'are', true, 111);
-    expect(log.log.calledOnce).to.equals(true);
-    expect(log.log.calledWith('warn', 'function', 'messages are true 111')).to.equals(true);
+
+    expect(log.log).toBeCalledTimes(1);
+    expect(log.log).toBeCalledWith('warn', 'function', 'messages are true 111');
   });
 
   it('error() works with only function name as param', () => {
-    logger.error('function');
-    expect(log.log.calledOnce).to.equals(true);
-    expect(log.log.calledWith('error', 'function')).to.equals(true);
+    logger.error('function', 'args');
+
+    expect(log.log).toBeCalledTimes(1);
+    expect(log.log).toBeCalledWith('error', 'function', 'args');
   });
 
   it('error works with no params passes basic data', () => {
     logger.error();
-    expect(log.log.calledOnce).to.equals(true);
-    expect(log.log.calledWith('error')).to.equals(true);
+
+    expect(log.log).toBeCalledTimes(1);
+    expect(log.log).toBeCalledWith('error', undefined, '');
   });
 });
