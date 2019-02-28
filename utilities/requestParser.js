@@ -1,7 +1,6 @@
 const _ = require('lodash');
-const moment = require('moment');
 const queryString = require('query-string');
-const { isValid, DATE_FORMAT, getDatesInRange } = require('../services/dateService.js');
+const { isDateValid, getDatesInRange, parseDate } = require('../services/dateService.js');
 
 const isParamValid = (inputParam, paramValidators) =>
   _.every(_.values(paramValidators), (validate) => validate(inputParam));
@@ -17,9 +16,9 @@ const validateInputParams = (inputParams, inputFormat) =>
 const parseDatesToArray = (dates) => {
   const [ minDate, maxDate ] = _.split(dates, '-');
   if (!maxDate) {
-    return isValid(min) ? [ moment(minDate, DATE_FORMAT).format(DATE_FORMAT) ] : [];
+    return isDateValid(minDate) ? [ parseDate(minDate) ] : [];
   }
-  return isValid(min) && isValid(max) ? getDatesInRange(min, max) : [];
+  return isDateValid(minDate) && isDateValid(maxDate) ? getDatesInRange(minDate, maxDate) : [];
 };
 
 exports.parseBodyToObject = (body, inputFormat) => {
