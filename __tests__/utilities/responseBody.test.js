@@ -1,41 +1,46 @@
 /* global describe it */
 const {
   generateResponseBody,
-  generateResponseBodyWithAttachments
+  generateResponseBodyWithAttachments,
 } = require('../../app/utilities/responseBody.js');
 
-describe('responseBody module tests', () => {
-  describe('Check generateResponseBody(text) function', () => {
+describe('responseBody.test.js', () => {
+  describe('Checks generateResponseBody method', () => {
     it('returns body with text', () => {
       const body = generateResponseBody(`You can't add parking place`);
-      const bodyJson = JSON.parse(body);
-      expect(bodyJson).to.haveOwnProperty('text', `You can't add parking place`);
+      const { text } = JSON.parse(body);
+
+      expect(text).toBe(`You can't add parking place`);
     });
   });
-  describe('Check generateResponseBodyWithAttachments(title, attachments) function', () => {
+
+  describe('Checks generateResponseBodyWithAttachments method', () => {
     it('returns body with title and attachments', () => {
       const body = generateResponseBodyWithAttachments('Places:', [
         {
           city: 'Gdansk',
-          place: 11
-        }
+          place: 11,
+        },
       ]);
-      const bodyJson = JSON.parse(body);
-      expect(bodyJson).to.haveOwnProperty('text', 'Places:');
-      expect(bodyJson).to.haveOwnProperty('attachments');
-      expect(bodyJson.attachments[0]).to.haveOwnProperty('text', `*city:* Gdansk\n*place:* 11\n`);
+      const { attachments, text } = JSON.parse(body);
+
+      expect(text).toBe('Places:');
+      expect(attachments).toBeDefined();
+      expect(attachments[0].text).toBe(`*city:* Gdansk\n*place:* 11\n`);
     });
-    it('returns body with title and attachments when body parameter is null', () => {
+
+    it('returns body with title and attachments when place parameter equals null', () => {
       const body = generateResponseBodyWithAttachments('Places:', [
         {
           city: 'Gdansk',
-          place: null
-        }
+          place: null,
+        },
       ]);
-      const bodyJson = JSON.parse(body);
-      expect(bodyJson).to.haveOwnProperty('text', 'Places:');
-      expect(bodyJson).to.haveOwnProperty('attachments');
-      expect(bodyJson.attachments[0]).to.haveOwnProperty('text', `*city:* Gdansk\n`);
+      const { attachments, text } = JSON.parse(body);
+
+      expect(text).toBe('Places:');
+      expect(attachments).toBeDefined();
+      expect(attachments[0].text).toBe(`*city:* Gdansk\n`);
     });
   });
 });

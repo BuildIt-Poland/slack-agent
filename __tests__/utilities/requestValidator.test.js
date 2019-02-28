@@ -1,24 +1,25 @@
 /* global describe it */
-const { isFutureDate, isCity} = require('../../app/utilities/requestValidator.js');
+const { isFutureDate, isCity } = require('../../app/utilities/requestValidator.js');
 
-describe('requestValidator module tests', () => {
-  describe('Check isFutureDate(date) function', () => {
+describe('requestValidator.test.js', () => {
+  describe('Checks isFutureDate method', () => {
     it('returns true for future dates', () => {
-        expect(isFutureDate('2030/03/02')).to.equal(true);
+      expect(isFutureDate('2030/03/02')).toBe(true);
     });
     it('returns false for past dates', () => {
-        expect(isFutureDate('2010/03/02')).to.equal(false);
+      expect(isFutureDate('2010/03/02')).toBe(false);
     });
   });
-  describe('Check isCity(city) function', () => {
+
+  describe('Checks isCity method', () => {
     it('returns true for strings with characters [A-Z,a-z]', () => {
-        expect(isCity('Gdansk')).to.equal(true);
+      expect(isCity('Gdansk')).toBe(true);
     });
     it('returns false for strings with numbers', () => {
-        expect(isCity('213Gdansk')).to.equal(false);
+      expect(isCity('213Gdansk')).toBe(false);
     });
     it('returns false for strings with special characters', () => {
-        expect(isCity('Gd$ansk')).to.equal(false);
+      expect(isCity('Gd$ansk')).toBe(false);
     });
   });
 });
