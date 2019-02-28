@@ -1,6 +1,6 @@
 const { query, save } = require('../services/dbService.js');
 
-const { PARKING_PLACES_TABLE } = require('../config/all');
+const { PARKING_PLACES_TABLE } = require('../../config/all');
 
 exports.addParkingPlace = async (userInputParams) => {
   return save(

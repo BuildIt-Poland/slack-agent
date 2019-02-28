@@ -1,9 +1,8 @@
 /* global describe it */
-const { expect } = require('chai');
 const {
   generateResponseBody,
   generateResponseBodyWithAttachments
-} = require('../utilities/responseBody.js');
+} = require('../../app/utilities/responseBody.js');
 
 describe('responseBody module tests', () => {
   describe('Check generateResponseBody(text) function', () => {

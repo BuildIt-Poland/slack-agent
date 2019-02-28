@@ -1,9 +1,7 @@
 /* global describe it before after beforeEach afterEach */
-const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
-const { populate } = require('../dynamo/populateDatabase.js');
-require('mocha-sinon');
+const { populate } = require('../../dynamo/populateDatabase.js');
 
 function initLogStub() {
   this.sinon.stub(log, 'log');

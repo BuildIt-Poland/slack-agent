@@ -1,5 +1,4 @@
 /* global describe it beforeEach afterEach */
-const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
 const {
@@ -8,7 +7,7 @@ const {
   findReservationByDate,
   listReservationsForDay,
   deleteReservationPlace
-} = require('../dao/bookings.js');
+} = require('../../app/dao/bookings.js');
 
 function initLogStub() {
   this.sinon.stub(log, 'log');

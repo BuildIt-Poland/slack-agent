@@ -1,8 +1,6 @@
 /* global describe beforeEach afterEach it */
-const { expect } = require('chai');
-const authorization = require('../services/authService.js');
-const { authorize } = require('../handlers/authorize.js');
-require('mocha-sinon');
+const authorization = require('../../app/services/authService.js');
+const { authorize } = require('../../app/handlers/authorize.js');
 
 function initAuthorizeStub() {
 	const stubAuthorize = this.sinon.stub(authorization, 'authorize');

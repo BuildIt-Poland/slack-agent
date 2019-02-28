@@ -1,5 +1,4 @@
 /* global describe it beforeEach afterEach */
-const { expect } = require('chai');
 const AWS = require('aws-sdk-mock');
 const {
   saveReservation,
@@ -7,7 +6,7 @@ const {
   findFreePlace,
   listReservationsForDay,
   deleteReservationPlace
-} = require('../dao/bookings.js');
+} = require('../../app/dao/bookings.js');
 
 describe('Reservation module tests', () => {
   describe('Check saveReservation(reservationId, place, Dates, tableName) function', () => {

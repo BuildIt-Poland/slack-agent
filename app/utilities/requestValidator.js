@@ -1,5 +1,5 @@
-const moment = require('moment');
 const _ = require('lodash');
+const moment = require('moment');
 
 exports.isFutureDate = (date) => {
     const formatDate = _.replace(date, new RegExp('/', 'g'), '-')

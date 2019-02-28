@@ -1,7 +1,6 @@
 /* global describe it */
-const { expect } = require('chai');
-const { parseBodyToObject } = require('../utilities/requestParser.js');
-const { isFutureDate, isCity} = require('../utilities/requestValidator.js');
+const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
+const { isFutureDate, isCity} = require('../../app/utilities/requestValidator.js');
 
 describe('Request Parser module tests', () => {
   describe('Check parseBodyToObject(body, inputFormat) function', () => {

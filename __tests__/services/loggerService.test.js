@@ -1,8 +1,6 @@
 /* global describe it beforeEach afterEach */
-const { expect } = require('chai');
 const log = require('npmlog');
-const logger = require('../services/loggerService.js');
-require('mocha-sinon');
+const logger = require('../../app/services/loggerService.js');
 
 describe('privateFunction()', () => {
   beforeEach(function initLogStub() {

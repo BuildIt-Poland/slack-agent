@@ -1,9 +1,8 @@
 /* global describe it beforeEach afterEach */
-const { expect } = require('chai');
+const _ = require('lodash');
 const AWS = require('aws-sdk-mock');
 const log = require('npmlog');
-const _ = require('lodash');
-const parkingPlace = require('../dao/parkingPlace.js');
+const parkingPlace = require('../../app/dao/parkingPlace.js');
 
 function initLogStub() {
   this.sinon.stub(log, 'log');

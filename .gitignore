@@ -6,8 +6,5 @@ jspm_packages
 .serverless/
 node_modules/
 
-# Istambul output directorie
-.nyc_output/
-
 # local-env temporary file
 env-vars*

@@ -4,7 +4,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 const dynamoEnv = require('../config/dynamoEnv.js');
-const log = require('../services/loggerService.js');
+const log = require('../app/services/loggerService.js');
 const { BOOKINGS_TABLE, PARKING_PLACES_TABLE } = require('../config/all.js');
 
 const dynamoTablesMap = {

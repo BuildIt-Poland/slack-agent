@@ -1,6 +1,5 @@
 /* global describe it */
-const { expect } = require('chai');
-const { isFutureDate, isCity} = require('../utilities/requestValidator.js');
+const { isFutureDate, isCity} = require('../../app/utilities/requestValidator.js');
 
 describe('requestValidator module tests', () => {
   describe('Check isFutureDate(date) function', () => {

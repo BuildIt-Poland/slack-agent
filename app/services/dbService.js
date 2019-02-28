@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const dynamoEnv = require('../config/dynamoEnv.js');
+const dynamoEnv = require('../../config/dynamoEnv.js');
 
 const configParams = dynamoEnv.awsEnv();
 

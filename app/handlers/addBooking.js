@@ -12,7 +12,7 @@ const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
-const { ENV_STAGE, SIGNING_SECRET } = require('../config/all.js');
+const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
 module.exports.add = async event => {
   const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
