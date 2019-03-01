@@ -2,7 +2,7 @@ const dynamoEnv = require('../../config/dynamoEnv.js');
 
 const { LOCAL_DB } = process.env;
 
-describe('dynamoEnv module tests', () => {
+describe('dynamoEnv.test.js', () => {
   describe('Check awsEnv() function', () => {
     afterEach(() => {
       process.env.LOCAL_DB = LOCAL_DB;

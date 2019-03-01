@@ -1,7 +1,7 @@
 const moxios = require('moxios');
 const { oAuthRedirectUrl, authorize, isVerified } = require('../../app/services/authService.js');
 
-describe('Authorization module tests', () => {
+describe('authService.test.js', () => {
   describe('Check authorize() function', () => {
     beforeEach(() => {
       moxios.install();
