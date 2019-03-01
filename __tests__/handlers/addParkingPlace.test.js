@@ -36,7 +36,7 @@ describe('addParkingPlace handler module tests', () => {
       const response = await add({ body: 'text=Gdansk+30' });
       expect(response.statusCode).to.equal(200);
       expect(response.body).to.equal(
-        '{"text": "You added a parking place.\n *City:* Gdansk\n *Place:* 30"}'
+        '{"text": "You added a parking place.\n *City:* Gdansk\n *Place:* 30"}',
       );
     });
     it('returns 200 with parser error', async () => {

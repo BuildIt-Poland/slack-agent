@@ -1,30 +1,27 @@
-/* global describe beforeEach afterEach it */
-const authorization = require('../../app/services/authService.js');
 const { authorize } = require('../../app/handlers/authorize.js');
 
-function initAuthorizeStub() {
-	const stubAuthorize = this.sinon.stub(authorization, 'authorize');
-	stubAuthorize.returns({
-		status: 200,
-		body: 'Authorized'
-	});
-}
-
-function restoreAuthorizeStub() {
-	this.sinon.restore();
-}
+jest.mock('../../app/services/authService.js', () => ({
+  oAuthRedirectUrl: () => '',
+  authorize: jest.fn(() => ({
+    status: 200,
+    body: 'Authorized',
+  })),
+}));
 
 describe('authorize handler module tests', () => {
-	describe('Check authorize(event) function', () => {
-		beforeEach(initAuthorizeStub);
-		afterEach(restoreAuthorizeStub);
-		it('authorize(event) function returns 200 if code is filled in queryStringParameters', async () => {
-			const authorized = await authorize({ queryStringParameters: { code: 234 } });
-			expect(authorized.statusCode).to.equal(200);
-		});
-		it(`authorize(event) function returns 301 if there isn't code in queryStringParameters`, async () => {
-			const authorized = await authorize({ queryStringParameters: {} });
-			expect(authorized.statusCode).to.equal(301);
-		});
-	});
+  describe('Check authorize(event) function', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('authorize(event) function returns 200 if code is filled in queryStringParameters', async () => {
+      const authorized = await authorize({ queryStringParameters: { code: 234 } });
+
+      expect(authorized.statusCode).toBe(200);
+    });
+    it(`authorize(event) function returns 301 if there isn't code in queryStringParameters`, async () => {
+      const authorized = await authorize({ queryStringParameters: {} });
+      expect(authorized.statusCode).toBe(301);
+    });
+  });
 });

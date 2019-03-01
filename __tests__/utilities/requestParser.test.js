@@ -2,7 +2,7 @@
 const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
 const { isFutureDate, isCity } = require('../../app/utilities/requestValidator.js');
 
-describe.only('requestParser.test.js', () => {
+describe('requestParser.test.js', () => {
   describe('Checks parseBodyToObject method', () => {
     it('returns valid and parsed object', () => {
       const { isValid, message } = parseBodyToObject('text=2030/02/21+Gdansk&user_name=john.doe', {
