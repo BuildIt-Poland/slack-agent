@@ -1,147 +1,87 @@
-/* global describe it beforeEach afterEach */
-const AWS = require('aws-sdk-mock');
-const {
-  saveReservation,
-  findFreePlace,
-  findReservationByDate,
-  listReservationsForDay,
-  deleteReservationPlace,
-} = require('../../app/dao/bookings.js');
+jest.mock('../../app/dao/bookings.js');
+jest.mock('../../app/services/authService.js');
+jest.mock('../../app/utilities/requestParser.js');
 
-jest.mock('npmlog');
+const { isBookingAvailableForPeriod, createBooking } = require('../../app/dao/bookings.js');
+const { isVerified } = require('../../app/services/authService.js');
+const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
+const { add } = require('../../app/handlers/addBooking.js');
 
-describe('Reservation failures module tests', () => {
-  beforeEach(() => {
+describe('addBooking.test.js', () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('Check saveReservation(reservationId, place, Dates, tableName) function', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
-        callback({ error: 'error' }, false);
-      });
-      AWS.mock('DynamoDB.DocumentClient', 'update', (params, callback) => {
-        callback({ error: 'error' }, false);
-      });
-    });
+  it('returns 401 status for unauthroized user', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(false));
+    const response = await add({ body: 'text=Gdansk+30' });
 
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
-
-    it('returns false due to put error', async () => {
-      const reservation = await saveReservation(
-        null,
-        {
-          City: 'Gdansk',
-          Id: '6f89ddc0-287d-11e9-ab74-83664e1af428',
-          Place: 11,
-        },
-        '11022019',
-        'ParkingPlaces-dev',
-      );
-
-      expect(reservation).toBe(false);
-    });
-
-    it('returns false due to put error', async () => {
-      const reservation = await saveReservation(
-        '6f89ddc0-287d-11e9-ab74-83664e1af429',
-        {
-          City: 'Gdansk',
-          Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-          Place: 12,
-        },
-        '11022019',
-        'ParkingPlaces-dev',
-      );
-
-      expect(reservation).to.equal(false);
-    });
+    expect(response.statusCode).toBe(401);
   });
 
-  describe('Check findReservationByDate(date, tableName) function', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
-        callback({ error: 'error' }, null);
-      });
-    });
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
+  it('calls parseBodyToObject with body as first argument', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    parseBodyToObject.mockImplementation(() => ({
+      message: 'mocked message',
+      isValid: true,
+    }));
 
-    it('returns null', async () => {
-      const reservation = await findReservationByDate('11022019', 'ParkingPlaces-dev');
+    const body = 'text=2020/02/21+Gdansk&user_name=john.doe';
+    await add({ body });
 
-      expect(reservation).equal(null);
-    });
+    expect(parseBodyToObject).toBeCalledWith(body, expect.any(Object));
   });
 
-  describe('Check findFreePlace(reservation, city, tableName) function', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
-        callback({ error: 'error' }, null);
-      });
-    });
+  it('returns success and proper message if body format is invalid', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    parseBodyToObject.mockImplementation(() => ({
+      message: 'Body invalid',
+      isValid: false,
+    }));
 
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
+    const { body, statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
-    it('returns null', async () => {
-      const freePlace = await findFreePlace({}, 'Gdansk', 'ParkingPlaces-dev');
-
-      expect(freePlace).equals(null);
-    });
-  });
-  describe('Check listReservationsForDay(reservation, city, tableName) function', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'query', (params, callback) => {
-        callback({ error: 'error' }, null);
-      });
-    });
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
-    it('returns null', async () => {
-      const allReservations = await listReservationsForDay({}, 'Gdansk', 'ParkingPlaces-dev');
-
-      expect(allReservations).equals(null);
-    });
+    expect(statusCode).toBe(200);
+    expect(body).toBe('{"text": "Body invalid"}');
   });
 
-  describe('Check deleteReservationPlace(reservation, reservationParams, tableName) function', () => {
-    beforeEach(() => {
-      AWS.mock('DynamoDB.DocumentClient', 'update', (params, callback) => {
-        callback({ error: 'error' }, false);
-      });
-    });
+  it('returns internal server error while booking is unavailable for period', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    parseBodyToObject.mockImplementation(() => ({
+      message: 'mocked message',
+      isValid: true,
+    }));
+    isBookingAvailableForPeriod.mockImplementation(() => false);
 
-    afterEach(() => {
-      AWS.restore('DynamoDB.DocumentClient');
-    });
+    const { statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    expect(statusCode).toBe(500);
+  });
 
-    it('returns true', async () => {
-      const params = {
-        dates: '11022019',
-        city: 'Gdansk',
-        userName: 'maciej.hein',
-      };
-      const reservation = {
-        Id: '11022019',
-        City: 'multiple',
-        Reservations: [
-          {
-            City: 'Gdansk',
-            Id: '78b32460-287d-11e9-ae75-1578cdc7c649',
-            Place: 12,
-            Reservation: 'maciej.hein',
-          },
-        ],
-      };
-      const deleted = await deleteReservationPlace(reservation, params, 'ParkingPlaces-dev');
+  it('returns internal server error while error occured during booking', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    parseBodyToObject.mockImplementation(() => ({
+      message: 'mocked message',
+      isValid: true,
+    }));
+    isBookingAvailableForPeriod.mockImplementation(() => true);
+    createBooking.mockImplementation(() => Promise.reject(new Error()));
 
-      expect(deleted).toBe(false);
-    });
+    const { statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+
+    expect(statusCode).toBe(500);
+  });
+
+  it('returns success status and creates booking correctly', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    parseBodyToObject.mockImplementation(() => ({
+      message: 'mocked message',
+      isValid: true,
+    }));
+    isBookingAvailableForPeriod.mockImplementation(() => true);
+    createBooking.mockImplementation(() => Promise.resolve(true));
+
+    const { statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+
+    expect(statusCode).toBe(200);
   });
 });

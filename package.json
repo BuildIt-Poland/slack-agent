@@ -5,7 +5,7 @@
   "main": "authorizer.js",
   "scripts": {
     "dev": "node -e 'require(\"./devEnv/populateDatabase.js\").populate()'",
-    "test": "jest",
+    "test": "jest --verbose --coverage",
     "eslint": "./node_modules/.bin/eslint ."
   },
   "author": "",

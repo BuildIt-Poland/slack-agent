@@ -8,7 +8,9 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.add = async (event) => {
-  if (await isVerified(event, SIGNING_SECRET, ENV_STAGE)) return unauthorized();
+  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
+    return unauthorized();
+  }
 
   const { message, isValid } = parseBodyToObject(event.body, {
     city: {

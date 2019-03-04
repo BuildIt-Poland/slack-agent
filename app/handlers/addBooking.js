@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const auth = require('../services/authService');
+const { isVerified } = require('../services/authService');
 const {
   bookingExists,
   bookParkingPlace,
@@ -15,8 +15,7 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
 module.exports.add = async event => {
-  const isVerified = await auth.isVerified(event, SIGNING_SECRET, ENV_STAGE);
-  if (!isVerified) {
+  if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
     return unauthorized();
   }
 
@@ -51,9 +50,9 @@ module.exports.add = async event => {
     return createBooking(bookingDate, city, userName);
   });
 
-  await Promise.all(bookingPromises).catch(() => {
+  return Promise.all(bookingPromises).then(() => {
+    return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
+  }).catch(() => {
     return internalServerError();
   });
-
-  return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
 };

@@ -15,20 +15,25 @@ describe.only('parkingPlace.test.js', () => {
     beforeEach(() => {
       mockSave('City', 'PlaceID', 'ParkingPlaces-dev');
     });
+
     it('returns true when the parking space has been added to the database', async () => {
       const place = await addParkingPlace({
         City: 'GDN',
         PlaceID: '1a',
       });
+
       expect(place).toBe(true);
     });
   });
+
   describe('Checks getParkingPlace method', () => {
     beforeEach(() => {
       mockQuery(parkingPalcesData);
     });
+
     it('returns parking places for specific city', async () => {
       const parkingPlaces = await getParkingPlaces('GDN');
+
       expect(parkingPlaces[0]).toHaveProperty('City', 'GDN');
       expect(parkingPlaces[0]).toHaveProperty('PlaceID', '1a');
     });
