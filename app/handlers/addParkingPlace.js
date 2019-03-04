@@ -1,4 +1,4 @@
-const { isUnauthorized } = require('../services/authService.js');
+const { isVerified } = require('../services/authService.js');
 const { addParkingPlace } = require('../dao/parkingPlace.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity } = require('../utilities/requestValidator.js');
@@ -8,7 +8,9 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.add = async (event) => {
-  if (await isUnauthorized(event, SIGNING_SECRET, ENV_STAGE)) return unauthorized();
+  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
+    return unauthorized();
+  }
 
   const { message, isValid } = parseBodyToObject(event.body, {
     city: {

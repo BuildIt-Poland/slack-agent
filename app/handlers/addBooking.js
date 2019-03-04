@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { isUnauthorized } = require('../services/authService');
+const { isVerified } = require('../services/authService');
 const {
   bookingExists,
   bookParkingPlace,
@@ -15,7 +15,7 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
 module.exports.add = async event => {
-  if(await isUnauthorized(event, SIGNING_SECRET, ENV_STAGE)) {
+  if(!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
     return unauthorized();
   }
 

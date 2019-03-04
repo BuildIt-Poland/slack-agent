@@ -1,5 +1,5 @@
 const moxios = require('moxios');
-const { oAuthRedirectUrl, authorize, isUnauthorized } = require('../../app/services/authService.js');
+const { oAuthRedirectUrl, authorize, isVerified } = require('../../app/services/authService.js');
 
 describe('authService.test.js', () => {
   describe('Check authorize() function', () => {
@@ -61,15 +61,15 @@ describe('authService.test.js', () => {
     });
   });
 
-  describe('Check isUnauthorized() function', () => {
+  describe('Check isVerified() function', () => {
     it('returns false when missing headers properties in request', () => {
-      const verified = isUnauthorized({}, {});
+      const verified = isVerified({}, {});
 
       expect(verified).toBe(false);
     });
 
     it('returns false when missing X-Slack-Signature and X-Slack-Request-Timestamp properties', () => {
-      const verified = isUnauthorized({ headers: {} }, {});
+      const verified = isVerified({ headers: {} }, {});
 
       expect(verified).toBe(false);
     });
@@ -81,7 +81,7 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': false,
         },
       };
-      const verified = isUnauthorized(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 
       expect(verified).toBe(false);
     });
@@ -94,7 +94,7 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
-      const verified = isUnauthorized(request, undefined);
+      const verified = isVerified(request, undefined);
 
       expect(verified).toBe(false);
     });
@@ -107,7 +107,7 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
-      const verified = isUnauthorized(request, 1234);
+      const verified = isVerified(request, 1234);
 
       expect(verified).toBe(false);
     });
@@ -120,7 +120,7 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
-      const verified = isUnauthorized(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 
       expect(verified).toBe(false);
     });
@@ -134,13 +134,13 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': time.toString(),
         },
       };
-      const verified = await isUnauthorized(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = await isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 
       expect(verified).toBe(false);
     });
 
     it('returns true for dev stage', async () => {
-      const verified = await isUnauthorized({}, {}, 'dev');
+      const verified = await isVerified({}, {}, 'dev');
 
       expect(verified).toBe(true);
     });

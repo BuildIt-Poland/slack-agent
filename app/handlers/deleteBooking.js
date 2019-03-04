@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { isUnauthorized } = require('../services/authService.js');
+const { isVerified } = require('../services/authService.js');
 const { unbookParkingPlace } = require('../dao/bookings.js');
 const { success, unauthorized, internalServerError } = require('../utilities/reponseBuilder.js');
 const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
@@ -9,7 +9,7 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.delete = async (event) => {
-  if (!await isUnauthorized(event, SIGNING_SECRET, ENV_STAGE)) {
+  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
     return unauthorized();
   }
 
