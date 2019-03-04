@@ -1,19 +1,19 @@
 /* global describe it beforeEach afterEach */
 const { addParkingPlace, getParkingPlaces } = require('../../app/dao/parkingPlace.js');
 const {
-  restoreDynamoClient,
-  saveParkingPlace,
-  PARKING_PLACES,
-  query,
+  restoreDynamoClientMock,
+  mockSave,
+  mockQuery,
 } = require('../../__mocks__/services/dbService.js');
+const { parkingPalcesData } = require('../../__mocks__/data/parkingPlace.js');
 
 describe.only('parkingPlace.test.js', () => {
   afterEach(() => {
-    restoreDynamoClient();
+    restoreDynamoClientMock();
   });
   describe('Checks saveParkingPlace method', () => {
     beforeEach(() => {
-      saveParkingPlace('database error');
+      mockSave('City', 'PlaceID', 'ParkingPlaces-dev');
     });
     it('returns true when the parking space has been added to the database', async () => {
       const place = await addParkingPlace({
@@ -25,7 +25,7 @@ describe.only('parkingPlace.test.js', () => {
   });
   describe('Checks getParkingPlace method', () => {
     beforeEach(() => {
-      query(PARKING_PLACES);
+      mockQuery(parkingPalcesData);
     });
     it('returns parking places for specific city', async () => {
       const parkingPlaces = await getParkingPlaces('GDN');
