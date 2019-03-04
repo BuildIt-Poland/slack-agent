@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { isVerified } = require('../services/authService.js');
+const { isUnauthorized } = require('../services/authService.js');
 const { getBooking } = require('../dao/bookings.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const {
@@ -12,7 +12,7 @@ const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
 module.exports.list = async (event) => {
-  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
+  if (!await isUnauthorized(event, SIGNING_SECRET, ENV_STAGE)) {
     return unauthorized();
   }
 

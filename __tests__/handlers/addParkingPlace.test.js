@@ -12,7 +12,7 @@ describe('addParkingPlace.test.js', () => {
 
   it('returns 200 and success message for authorized user and parking place added correctly', async () => {
     parkingPlace.addParkingPlace.mockImplementation(() => Promise.resolve(true));
-    authorization.isVerified.mockImplementation(() => Promise.resolve(false));
+    authorization.isUnauthorized.mockImplementation(() => Promise.resolve(false));
     const response = await add({ body: 'text=Gdansk+30' });
 
     expect(response.statusCode).toBe(200);
@@ -23,16 +23,16 @@ describe('addParkingPlace.test.js', () => {
 
   it('returns 200 and `Invalid Command` message for authorized user and parser error', async () => {
     parkingPlace.addParkingPlace.mockImplementation(() => Promise.resolve(true));
-    authorization.isVerified.mockImplementation(() => Promise.resolve(false));
+    authorization.isUnauthorized.mockImplementation(() => Promise.resolve(false));
     const response = await add({ body: 'text=30' });
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBe('{"text": "Invalid command"}');
   });
 
-  it('return 401 user unauthorized user', async () => {
+  it('return 401 for unauthorized user', async () => {
     parkingPlace.addParkingPlace.mockImplementation(() => Promise.resolve(true));
-    authorization.isVerified.mockImplementation(() => Promise.resolve(true));
+    authorization.isUnauthorized.mockImplementation(() => Promise.resolve(true));
     const response = await add({ body: 'text=Gdansk+30' });
 
     expect(response.statusCode).toBe(401);

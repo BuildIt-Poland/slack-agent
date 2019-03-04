@@ -11,7 +11,7 @@ exports.authorize = (payload) => {
 	return axios.post('https://slack.com/api/oauth.access', queryString.stringify(payload));
 };
 
-exports.isVerified = (request, signingSecret, stage) => {
+exports.isUnauthorized = (request, signingSecret, stage) => {
 	if (stage === 'dev') return Promise.resolve(true);
 	const signatureProperty = 'X-Slack-Signature';
 	const timestampProperty = 'X-Slack-Request-Timestamp';
