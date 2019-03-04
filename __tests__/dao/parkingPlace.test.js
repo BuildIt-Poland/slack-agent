@@ -7,6 +7,10 @@ jest.mock('../../app/services/dbService.js', () => ({
 }));
 
 describe.only('parkingPlace.test.js', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('Checks saveParkingPlace method', () => {
     it('returns true when the parking space has been added to the database', async () => {
       const place = await addParkingPlace({
