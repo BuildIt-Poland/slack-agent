@@ -1,4 +1,4 @@
-/* global describe it beforeEach afterEach */
+/* global describe it */
 const {
   getBooking,
   bookingExists,
@@ -6,29 +6,47 @@ const {
   isBookingAvailableForPeriod,
   bookParkingPlace,
   unbookParkingPlace,
+  updateBookingWithOwner,
 } = require('../../app/dao/bookings.js');
-const {
-  mockSave,
-  mockQuery,
-  restoreDynamoClientMock,
-} = require('../../__mocks__/services/dbService.js');
-const { parkingPalcesData } = require('../../__mocks__/data/parkingPlace.js');
-const { bookingsData } = require('../../__mocks__/data/bookings.js');
+const { query, save, update } = require('../../app/services/dbService.js');
+const { getParkingPlaces } = require('../../app/dao/parkingPlace.js');
+
+jest.mock('../../app/services/dbService.js');
+jest.mock('../../app/dao/parkingPlace.js');
+
+const bookingDataMock = owner => ({
+  Items: [
+    {
+      Places: [
+        {
+          Owner: owner,
+        },
+      ],
+    },
+  ],
+});
 
 describe.only('bookings.test.js', () => {
   afterEach(() => {
-    restoreDynamoClientMock();
+    jest.clearAllMocks();
   });
+
   describe('Checks getBooking method', () => {
     it('returns booking for date and city', async () => {
-      mockQuery(bookingsData.availableBooking);
+      query.mockImplementation(() => ({
+        Items: ['booking'],
+      }));
+
       const booking = await getBooking('2020/03/01', 'WAW');
-      expect(booking).toHaveProperty('City', 'WAW');
-      expect(booking).toHaveProperty('BookingDate', '2020/03/01');
-      expect(booking).toHaveProperty('Places');
+
+      expect(booking).toEqual('booking');
     });
-    it(`returns empty array when booking doesn't exist`, async () => {
-      mockQuery();
+
+    it(`returns empty object when booking doesn't exist`, async () => {
+      query.mockImplementation(() => ({
+        Items: [],
+      }));
+
       const booking = await getBooking('2020/03/01', 'WAW');
 
       expect(booking).toEqual({});
@@ -37,12 +55,20 @@ describe.only('bookings.test.js', () => {
 
   describe('Checks bookingExists method', () => {
     it('returs true when booking exist', async () => {
-      mockQuery(bookingsData.availableBooking);
+      query.mockImplementation(() => ({
+        Items: ['booking'],
+      }));
+
       const doesExist = await bookingExists('2020/03/01', 'WAW');
+
       expect(doesExist).toEqual(true);
     });
+
     it(`returns false when booking doesn't exist`, async () => {
-      mockQuery();
+      query.mockImplementation(() => ({
+        Items: [],
+      }));
+
       const doesExist = await bookingExists('2020/03/01', 'WAW');
 
       expect(doesExist).toEqual(false);
@@ -50,12 +76,17 @@ describe.only('bookings.test.js', () => {
   });
 
   describe('Checks createBooking method', () => {
-    beforeAll(() => {
-      mockSave('City', 'BookingDate', 'Bookings-dev');
-      mockQuery(parkingPalcesData);
-    });
-
     it('returns true when booking created', async () => {
+      save.mockImplementation(() => true);
+      getParkingPlaces.mockImplementation(() => [
+        {
+          PlaceID: '1',
+        },
+        {
+          PlaceID: '2',
+        },
+      ]);
+
       const booking = await createBooking('2020/03/01', 'WAW', 'jon.robinson');
 
       expect(booking).toEqual(true);
@@ -64,14 +95,16 @@ describe.only('bookings.test.js', () => {
 
   describe('Checks isBookingAvailableForPeriod method', () => {
     it('returns true when booking is available for period', async () => {
-      mockQuery(bookingsData.availableBooking);
+      query.mockImplementation(() => bookingDataMock('free'));
+
       const isAvailable = await isBookingAvailableForPeriod('2020/03/01', 'WAW');
 
       expect(isAvailable).toEqual(true);
     });
 
     it('returns false when booking is unavailable for period', async () => {
-      mockQuery(bookingsData.unavailableBooking);
+      query.mockImplementation(() => bookingDataMock('joo.foo'));
+
       const isAvailable = await isBookingAvailableForPeriod('2020/03/01', 'WAW');
 
       expect(isAvailable).toEqual(false);
@@ -80,25 +113,83 @@ describe.only('bookings.test.js', () => {
 
   describe('Checks bookParkingPlace method', () => {
     beforeEach(() => {
-      mockQuery(parkingPalcesData);
+      update.mockImplementation(() => 'updated booking');
     });
 
-    it('returns empty object when place booked', async () => {
-      const booking = await bookParkingPlace('2020/03/01', 'WAW');
+    it('returns updated booking when place booked', async () => {
+      query.mockImplementation(() => bookingDataMock('free'));
 
-      expect(booking).toEqual({});
+      const updatedBooking = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+
+      expect(updatedBooking).toEqual('updated booking');
+    });
+
+    it('returns empty object when the reservation is unavailable', async () => {
+      query.mockImplementation(() => bookingDataMock('joo.foo'));
+
+      const updatedBooking = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+
+      expect(updatedBooking).toEqual({});
     });
   });
 
   describe('Checks unbookParkingPlace method', () => {
     beforeEach(() => {
-      mockQuery(parkingPalcesData);
+      update.mockImplementation(() => 'updated booking');
     });
 
-    it('returns empty object when place unbooked', async () => {
-      const booking = await unbookParkingPlace('2020/03/01', 'WAW');
+    it('returns updated booking without booking place', async () => {
+      query.mockImplementation(() => bookingDataMock('joo.foo'));
 
-      expect(booking).toEqual({});
+      const updatedBooking = await unbookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+
+      expect(updatedBooking).toEqual('updated booking');
+    });
+
+    it(`returns empty object when reservation doesn't exist`, async () => {
+      query.mockImplementation(() => bookingDataMock('free'));
+
+      const updatedBooking = await unbookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+
+      expect(updatedBooking).toEqual({});
+    });
+  });
+
+  describe('Checks updateBookingWithOwner method', () => {
+    beforeEach(() => {
+      update.mockImplementation(() => 'updated booking');
+    });
+
+    it('return updated booking with reservation for appropriate user', async () => {
+      query.mockImplementation(() => bookingDataMock('free'));
+
+      const updatedBooking = await updateBookingWithOwner('2020/03/01', 'WAW', 'free', 'joo,foo');
+
+      expect(updatedBooking).toEqual('updated booking');
+    });
+
+    it('return updated booking with without reservation for appropriate user', async () => {
+      query.mockImplementation(() => bookingDataMock('joo,foo'));
+
+      const updatedBooking = await updateBookingWithOwner('2020/03/01', 'WAW', 'joo,foo', 'free');
+
+      expect(updatedBooking).toEqual('updated booking');
+    });
+
+    it(`returns empty object when reservation doesn't exist`, async () => {
+      query.mockImplementation(() => bookingDataMock('free'));
+
+      const updatedBooking = await updateBookingWithOwner('2020/03/01', 'WAW', 'joo.foo', 'free');
+
+      expect(updatedBooking).toEqual({});
+    });
+
+    it(`returns empty object when the reservation is unavailable`, async () => {
+      query.mockImplementation(() => bookingDataMock('joo.foo'));
+
+      const updatedBooking = await updateBookingWithOwner('2020/03/01', 'WAW', 'free', 'joo.foo');
+
+      expect(updatedBooking).toEqual({});
     });
   });
 });
