@@ -2,7 +2,7 @@ const _ = require('lodash');
 const { isVerified } = require('../services/authService.js');
 const { unbookParkingPlace } = require('../dao/bookings.js');
 const { success, unauthorized, internalServerError } = require('../utilities/reponseBuilder.js');
-const { isCity, isFutureDate } = require('../utilities/requestValidator.js');
+const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
@@ -15,8 +15,7 @@ module.exports.delete = async (event) => {
 
   const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
-      isFutureDate,
-      required: (date) => !!date
+      required: (date) => !_.isEmpty(date)
     },
     city: {
       pattern: isCity,

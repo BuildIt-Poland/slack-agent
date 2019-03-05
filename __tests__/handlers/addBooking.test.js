@@ -48,7 +48,9 @@ describe('addBooking.test.js', () => {
   it('returns internal server error while booking is unavailable for period', async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     parseBodyToObject.mockImplementation(() => ({
-      message: 'mocked message',
+      message: {
+        dates: ['2020/02/21'],
+      },
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => false);
@@ -60,7 +62,9 @@ describe('addBooking.test.js', () => {
   it('returns internal server error while error occured during booking', async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     parseBodyToObject.mockImplementation(() => ({
-      message: 'mocked message',
+      message: {
+        dates: ['2020/02/21'],
+      },
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => true);
@@ -74,7 +78,9 @@ describe('addBooking.test.js', () => {
   it('returns success status and creates booking correctly', async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     parseBodyToObject.mockImplementation(() => ({
-      message: 'mocked message',
+      message: {
+        dates: ['2020/02/21'],
+      },
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => true);
