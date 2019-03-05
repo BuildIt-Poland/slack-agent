@@ -20,7 +20,6 @@ describe('requestParser.test.js', () => {
       expect(message.city).toBe('Gdansk');
       expect(message.userName).toBe('john.doe');
     });
-
     it(`returns invalid object when parseBodyToObject method is called with 'text=2019/02/21&user_name=user'`, () => {
       const { isValid, message } = parseBodyToObject('text=2019/02/21&user_name=user', {
         dates: {
