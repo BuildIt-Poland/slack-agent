@@ -4,7 +4,7 @@ const {
   bookingExists,
   bookParkingPlace,
   createBooking,
-  isBookingAvailableForPeriod
+  isBookingAvailableForPeriod,
 } = require('../dao/bookings.js');
 
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
@@ -14,20 +14,20 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
-module.exports.add = async event => {
+module.exports.book = async event => {
   if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
     return unauthorized();
   }
 
   const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
-      required: (date) => !_.isEmpty(date)
+      required: date => !_.isEmpty(date),
     },
     city: {
       pattern: isCity,
-      required: (city) => !!city
+      required: city => !!city,
     },
-    userName: {}
+    userName: {},
   });
 
   if (!isValid) {
@@ -41,7 +41,7 @@ module.exports.add = async event => {
     return internalServerError(); // TODO raise proper response
   }
 
-  const bookingPromises = _.map(dates, async (bookingDate) => {
+  const bookingPromises = _.map(dates, async bookingDate => {
     if (await bookingExists(bookingDate, city)) {
       return bookParkingPlace(bookingDate, city, userName);
     }
@@ -49,9 +49,11 @@ module.exports.add = async event => {
     return createBooking(bookingDate, city, userName);
   });
 
-  return Promise.all(bookingPromises).then(() => {
-    return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
-  }).catch(() => {
-    return internalServerError();
-  });
+  return Promise.all(bookingPromises)
+    .then(() => {
+      return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
+    })
+    .catch(() => {
+      return internalServerError();
+    });
 };

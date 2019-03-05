@@ -8,20 +8,20 @@ const { generateResponseBody } = require('../utilities/responseBody.js');
 
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
-module.exports.delete = async (event) => {
-  if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
+module.exports.unbook = async event => {
+  if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
     return unauthorized();
   }
 
   const { message, isValid } = parseBodyToObject(event.body, {
     dates: {
-      required: (date) => !_.isEmpty(date)
+      required: date => !_.isEmpty(date),
     },
     city: {
       pattern: isCity,
-      required: (date) => !!date
+      required: date => !!date,
     },
-    userName: {}
+    userName: {},
   });
 
   if (!isValid) {
@@ -30,7 +30,7 @@ module.exports.delete = async (event) => {
 
   const { dates, city, userName } = message;
 
-  const bookingPromises = _.map([ dates ], async (bookingDate) => {
+  const bookingPromises = _.map([dates], async bookingDate => {
     return unbookParkingPlace(bookingDate, city, userName);
   });
 

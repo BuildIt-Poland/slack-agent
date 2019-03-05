@@ -8,14 +8,14 @@ provider:
   environment:
     SLACK_CLIENT_ID: ${ssm:SLACK_AGENT_CLIENT_ID}
     SLACK_CLIENT_SECRET: ${ssm:SLACK_AGENT_CLIENT_ID}
-    SLACK_SIGNING_SECRET:  ${ssm:SLACK_AGENT_SIGING_SECRET}
+    SLACK_SIGNING_SECRET: ${ssm:SLACK_AGENT_SIGING_SECRET}
     SLACK_CLIENT_SCOPES: ${ssm:SLACK_AGENT_CLIENT_SCOPE}
     PARKING_PLACES_TABLE: ${self:custom.parkingPlaces}
     BOOKINGS_TABLE: ${self:custom.bookings}
     ENV_STAGE: ${self:custom.stage}
   iamRoleStatements:
     - Effect: Allow
-      Resource: "*"
+      Resource: '*'
       Action:
         - dynamodb:DescribeTable
         - dynamodb:Query
@@ -45,34 +45,34 @@ custom:
 
 functions:
   authorize:
-    handler: /handlers/authorize.authorize
+    handler: app/handlers/authorize.authorize
     events:
       - http:
           path: slack/authorize
           method: get
-  add:
-    handler: /handlers/addParkingPlace.add
+  addParkingPlace:
+    handler: app/handlers/addParkingPlace.add
     events:
       - http:
           path: slack/add
           method: post
-  reservation:
-    handler: /handlers/bookParkingPlace.reservation
+  addBooking:
+    handler: app/handlers/addBooking.book
     events:
       - http:
-          path: slack/reservation
+          path: slack/book
           method: post
-  reservationList:
-    handler: /handlers/listParkingPlaces.reservationList
+  listParkingPlaces:
+    handler: app/handlers/listParkingPlaces.list
     events:
       - http:
-          path: slack/reservationList
+          path: slack/list
           method: post
-  deleteReservation:
-    handler: /handlers/handler.unbookParkingPlace
+  deleteBooking:
+    handler: app/handlers/deleteBooking.unbook
     events:
       - http:
-          path: slack/deleteReservation
+          path: slack/unbook
           method: post
 # Create our resources with separate CloudFormation templates
 resources:
