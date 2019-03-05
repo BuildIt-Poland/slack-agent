@@ -1,18 +1,18 @@
-  Resources:
-    dynamodb:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:custom.bookings}
-        AttributeDefinitions:
+Resources:
+  bookings:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.bookings}
+      AttributeDefinitions:
         - AttributeName: City
           AttributeType: S
         - AttributeName: BookingDate
           AttributeType: S
-        KeySchema:
+      KeySchema:
         - AttributeName: City
           KeyType: HASH
         - AttributeName: BookingDate
           KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1

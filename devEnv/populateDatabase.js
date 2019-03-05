@@ -50,9 +50,8 @@ const populateTable = async table => {
   const { tableName, contentPath, schemaPath } = dynamoTablesMap[table];
   const docs = JSON.parse(fs.readFileSync(path.resolve(__dirname, contentPath), 'utf8'));
   const dbConfig = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, schemaPath), 'utf8'));
-
   const params = {
-    ...dbConfig.Resources.dynamodb.Properties,
+    ...dbConfig.Resources[table].Properties,
     TableName: tableName,
   };
 
