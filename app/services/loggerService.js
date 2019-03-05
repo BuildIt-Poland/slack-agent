@@ -15,7 +15,6 @@ module.exports.info = (func, ...args) => {
   log.log('info', func, util.format(...args));
 };
 
-
 module.exports.warn = (func, ...args) => {
   log.heading = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   log.log('warn', func, util.format(...args));

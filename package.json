@@ -5,7 +5,7 @@
   "main": "authorizer.js",
   "scripts": {
     "dev": "node -e 'require(\"./devEnv/populateDatabase.js\").populate()'",
-    "test": "nyc --all --check-coverage --statements 30 --lines 30 --functions 30 --branches 30 --reporter=text mocha --reporter=spec",
+    "test": "jest --verbose --coverage",
     "eslint": "./node_modules/.bin/eslint ."
   },
   "author": "",
@@ -24,17 +24,15 @@
   "devDependencies": {
     "aws-sdk": "^2.395.0",
     "aws-sdk-mock": "^4.3.0",
-    "chai": "^4.2.0",
     "eslint": "^5.14.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jest": "^22.3.0",
     "husky": "^1.3.1",
+    "jest": "^24.1.0",
     "js-yaml": "^3.12.1",
-    "mocha": "^5.2.0",
-    "mocha-sinon": "^2.1.0",
     "moxios": "^0.4.0",
-    "nyc": "^13.1.0",
     "serverless-stage-manager": "^1.0.5"
   }
 }

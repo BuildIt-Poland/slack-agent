@@ -6,7 +6,7 @@ const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
-const { SIGNING_SECRET, ENV_STAGE } = require('../config/all.js');
+const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.delete = async (event) => {
   if (!await isVerified(event, SIGNING_SECRET, ENV_STAGE)) {
