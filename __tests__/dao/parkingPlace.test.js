@@ -1,4 +1,3 @@
-/* global describe it */
 const { addParkingPlace, getParkingPlaces } = require('../../app/dao/parkingPlace.js');
 
 jest.mock('../../app/services/dbService.js', () => ({

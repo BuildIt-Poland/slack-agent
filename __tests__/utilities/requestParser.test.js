@@ -1,4 +1,3 @@
-/* global describe it */
 const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
 const { isFutureDate, isCity } = require('../../app/utilities/requestValidator.js');
 

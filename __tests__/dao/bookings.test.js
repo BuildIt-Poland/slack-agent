@@ -1,4 +1,3 @@
-/* global describe it */
 const {
   getBooking,
   bookingExists,
@@ -112,7 +111,7 @@ describe.only('bookings.test.js', () => {
   });
 
   describe('Checks bookParkingPlace method', () => {
-    beforeEach(() => {
+    beforeAll(() => {
       update.mockImplementation(() => 'updated booking');
     });
 
@@ -134,7 +133,7 @@ describe.only('bookings.test.js', () => {
   });
 
   describe('Checks unbookParkingPlace method', () => {
-    beforeEach(() => {
+    beforeAll(() => {
       update.mockImplementation(() => 'updated booking');
     });
 
@@ -156,7 +155,7 @@ describe.only('bookings.test.js', () => {
   });
 
   describe('Checks updateBookingWithOwner method', () => {
-    beforeEach(() => {
+    beforeAll(() => {
       update.mockImplementation(() => 'updated booking');
     });
 
