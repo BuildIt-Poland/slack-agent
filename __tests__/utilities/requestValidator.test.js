@@ -1,4 +1,3 @@
-/* global describe it */
 const { isFutureDate, isCity } = require('../../app/utilities/requestValidator.js');
 
 describe('requestValidator.test.js', () => {
