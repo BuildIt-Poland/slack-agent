@@ -5,7 +5,7 @@ jest.mock('../../app/utilities/requestParser.js');
 const { isBookingAvailableForPeriod, createBooking } = require('../../app/dao/bookings.js');
 const { isVerified } = require('../../app/services/authService.js');
 const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
-const { add } = require('../../app/handlers/addBooking.js');
+const { book } = require('../../app/handlers/addBooking.js');
 
 describe('addBooking.test.js', () => {
   afterEach(() => {
@@ -14,7 +14,7 @@ describe('addBooking.test.js', () => {
 
   it('returns 401 status for unauthroized user', async () => {
     isVerified.mockImplementation(() => Promise.resolve(false));
-    const response = await add({ body: 'text=Gdansk+30' });
+    const response = await book({ body: 'text=Gdansk+30' });
 
     expect(response.statusCode).toBe(401);
   });
@@ -27,7 +27,7 @@ describe('addBooking.test.js', () => {
     }));
 
     const body = 'text=2020/02/21+Gdansk&user_name=john.doe';
-    await add({ body });
+    await book({ body });
 
     expect(parseBodyToObject).toBeCalledWith(body, expect.any(Object));
   });
@@ -39,7 +39,7 @@ describe('addBooking.test.js', () => {
       isValid: false,
     }));
 
-    const { body, statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    const { body, statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
     expect(statusCode).toBe(200);
     expect(body).toBe('{"text": "Body invalid"}');
@@ -55,7 +55,7 @@ describe('addBooking.test.js', () => {
     }));
     isBookingAvailableForPeriod.mockImplementation(() => false);
 
-    const { statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
     expect(statusCode).toBe(500);
   });
 
@@ -70,7 +70,7 @@ describe('addBooking.test.js', () => {
     isBookingAvailableForPeriod.mockImplementation(() => true);
     createBooking.mockImplementation(() => Promise.reject(new Error()));
 
-    const { statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
     expect(statusCode).toBe(500);
   });
@@ -86,7 +86,7 @@ describe('addBooking.test.js', () => {
     isBookingAvailableForPeriod.mockImplementation(() => true);
     createBooking.mockImplementation(() => Promise.resolve(true));
 
-    const { statusCode } = await add({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
     expect(statusCode).toBe(200);
   });
