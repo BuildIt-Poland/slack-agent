@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "node -e 'require(\"./devEnv/populateDatabase.js\").populate()'",
     "test": "jest --verbose --coverage",
-    "eslint": "./node_modules/.bin/eslint ."
+    "eslint": "./node_modules/.bin/eslint .",
+    "start-lambda": "sh local-dev.sh start",
+    "stop-lambda": "sh local-dev.sh stop",
+    "configure-lambda": "sh local-dev.sh config"
   },
   "author": "",
   "license": "ISC",
