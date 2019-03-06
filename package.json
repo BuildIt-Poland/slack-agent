@@ -7,9 +7,9 @@
     "dev": "node -e 'require(\"./devEnv/populateDatabase.js\").populate()'",
     "test": "jest --verbose --coverage",
     "eslint": "./node_modules/.bin/eslint .",
-    "start-lambda": "sh local-dev.sh start",
-    "stop-lambda": "sh local-dev.sh stop",
-    "configure-lambda": "sh local-dev.sh config"
+    "start-lambda": "bash devEnv/local-dev.sh start",
+    "stop-lambda": "bash devEnv/local-dev.sh stop",
+    "configure-lambda": "bash devEnv/local-dev.sh config"
   },
   "author": "",
   "license": "ISC",
