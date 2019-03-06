@@ -5,7 +5,7 @@ which is responsible for db tables configuration.
 
 * `npm run start-lambda` to run lambda function and DynamoDB-local if not available.
 * `npm run stop-lambda` to terminate currently running instance of DynamoDB-local. _NOTE_ You don't need to stop DB between different lambdas calls.
-* `npm run configure-lambda` to configure which lambda and event should be used in test run.
+* `npm run configure-lambda` to configure which handler should be used in test run.
 
 _DB-GUI_: http://localhost:8000/shell/
 
