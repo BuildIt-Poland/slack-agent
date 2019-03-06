@@ -25,15 +25,14 @@ const getParkingPlaces = async city => {
   return Items;
 };
 
-const createParkingPlacesWithOwner = async city => {
-  return _.map(await getParkingPlaces(city), ({ PlaceID }) => ({
+const getFreeParkingPlacesMap = async city =>
+  _.map(await getParkingPlaces(city), ({ PlaceID }) => ({
     PlaceID,
     Owner: 'free',
   }));
-};
 
 module.exports = {
   getParkingPlaces,
   addParkingPlace,
-  createParkingPlacesWithOwner,
+  getFreeParkingPlacesMap,
 };

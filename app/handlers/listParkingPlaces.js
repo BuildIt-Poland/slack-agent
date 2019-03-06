@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { isVerified } = require('../services/authService.js');
 const { getBooking } = require('../dao/bookings.js');
-const { createParkingPlacesWithOwner } = require('../dao/parkingPlace.js');
+const { getFreeParkingPlacesMap } = require('../dao/parkingPlace.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const {
   generateResponseBody,
@@ -34,11 +34,11 @@ module.exports.list = async event => {
 
   const { city, dates } = message;
 
-  const booking = await getBooking(dates[0], city);
+  let { Places: parkingPlaces } = await getBooking(dates[0], city);
 
-  const parkingPlaces = _.isEmpty(booking)
-    ? await createParkingPlacesWithOwner(city)
-    : booking.Places;
+  if (_.isEmpty(parkingPlaces)) {
+    parkingPlaces = await getFreeParkingPlacesMap;
+  }
 
   return success(
     generateResponseBodyWithAttachments(

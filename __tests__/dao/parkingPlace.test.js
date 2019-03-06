@@ -1,7 +1,7 @@
 const {
   addParkingPlace,
   getParkingPlaces,
-  createParkingPlacesWithOwner,
+  getFreeParkingPlacesMap,
 } = require('../../app/dao/parkingPlace.js');
 const { save, query } = require('../../app/services/dbService');
 
@@ -18,7 +18,7 @@ describe.only('parkingPlace.test.js', () => {
   });
   describe('Checks saveParkingPlace method', () => {
     it('returns true when the parking space has been added to the database', async () => {
-      save.mockImplementation(() => true);
+      save.mockImplementation(() => Promise.resolve(true));
 
       const place = await addParkingPlace(ParkingPlaceMock);
 
@@ -37,13 +37,13 @@ describe.only('parkingPlace.test.js', () => {
       expect(parkingPlaces).toEqual([]);
     });
   });
-  describe('Checks createParkingPlaces method', () => {
-    it('returns parking places with owner', async () => {
+  describe('Checks getFreeParkingPlacesMap method', () => {
+    it('returns free parking places with owner', async () => {
       query.mockImplementation(() => ({
         Items: [ParkingPlaceMock],
       }));
 
-      const parkingPlaces = await createParkingPlacesWithOwner('GDN');
+      const parkingPlaces = await getFreeParkingPlacesMap('GDN');
 
       expect(parkingPlaces[0]).toHaveProperty('Owner', 'free');
     });
