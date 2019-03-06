@@ -36,17 +36,17 @@ function setVariable() {
     if [ -z $val ] && [ ! -z $default_val ]; then
         val=$default_val
     fi
-    echo -e "export $variable_name=\"$val\"" >> $file
+    echo "export $variable_name=\"$val\"" >> $file
     export $variable_name="$val"
 }
 
 #populate env file with values if missing
 function createDefaultEnv {
     touch $1
-    echo -e "#!/bin/bash" >> $1
-    echo -e "export SLACK_AGENT_EVENT_FILE=\"devEnv/events/event\"" >> $1
-    echo -e "export SLACK_AGENT_HANDLER=\"addBooking\"" >> $1
-    echo -e "export SLACK_AGENT_FUNCTION=\"add\"" >> $1
+    echo "#!/bin/bash" >> $1
+    echo "export SLACK_AGENT_EVENT_FILE=\"devEnv/events/event\"" >> $1
+    echo "export SLACK_AGENT_HANDLER=\"addBooking\"" >> $1
+    echo "export SLACK_AGENT_FUNCTION=\"book\"" >> $1
 }
 
 #wizard that configures devEnv/env-vars.sh
@@ -61,8 +61,8 @@ function config {
         rm $_tmp_file
     fi
     touch $_tmp_file
-    echo -e "#!/bin/bash" > $_tmp_file
-    
+    echo "#!/bin/bash" > $_tmp_file
+
     echo "$(tput setaf 4)Sample value is 'devEnv/events/event'. Add new files next to this one. There is no validation on existance. $(tput sgr 0)"
     setVariable "Path to file containing event json" "SLACK_AGENT_EVENT_FILE" "$SLACK_AGENT_EVENT_FILE" $_tmp_file
     echo "$(tput setaf 4)Go to 'handlers' directory and choose one of filenames without extension. $(tput sgr 0)"
@@ -117,7 +117,7 @@ function readme {
 
         $(tput setaf 2)start$(tput setaf 4)  - to run lambda function and DynamoDB-local if not available.
         $(tput setaf 2)stop$(tput setaf 4)   - to terminate currently running instance of DynamoDB-local.
-        $(tput setaf 2)config$(tput setaf 4) - to configure which lambda and event should be used in test. 
+        $(tput setaf 2)config$(tput setaf 4) - to configure which lambda and event should be used in test.
     $(tput sgr 0)"
 }
 

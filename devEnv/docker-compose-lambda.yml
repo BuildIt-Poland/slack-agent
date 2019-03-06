@@ -23,6 +23,6 @@ services:
       - PARKING_PLACES_TABLE=ParkingPlaces-dev
       - BOOKINGS_TABLE=Bookings-dev
       - LOCAL_DB=true
-    command: "/handlers/${SLACK_AGENT_HANDLER}.${SLACK_AGENT_FUNCTION} '${SLACK_AGENT_EVENT_JSON}'"
+    command: "/app/handlers/${SLACK_AGENT_HANDLER}.${SLACK_AGENT_FUNCTION} '${SLACK_AGENT_EVENT_JSON}'"
     networks:
       - test_lambda
