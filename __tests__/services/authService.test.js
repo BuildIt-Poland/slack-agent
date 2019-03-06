@@ -41,9 +41,10 @@ describe('authService.test.js', () => {
         client_secret: 'as',
         stage: 'dev',
       };
-      const url = await authorize(payload);
 
-      expect(typeof url).toBe('string');
+      const url = authorize(payload);
+
+      await expect(url).rejects.toEqual(new Error('Dev environment - no security.'));
     });
   });
 
@@ -62,31 +63,32 @@ describe('authService.test.js', () => {
   });
 
   describe('Check isVerified() function', () => {
-    it('returns false when missing headers properties in request', () => {
+    it('returns false when missing headers properties in request', async () => {
       const verified = isVerified({}, {});
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
-    it('returns false when missing X-Slack-Signature and X-Slack-Request-Timestamp properties', () => {
+    it('returns false when missing X-Slack-Signature and X-Slack-Request-Timestamp properties', async () => {
       const verified = isVerified({ headers: {} }, {});
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
-    it('returns false if properties are not defined properly is undefined', () => {
+    it('returns false if properties are not defined properly is undefined', async () => {
       const request = {
         headers: {
           'X-Slack-Signature': false,
           'X-Slack-Request-Timestamp': false,
         },
       };
+
       const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
-    it('returns false signingSecret is undefined', () => {
+    it('returns false signingSecret is undefined', async () => {
       const request = {
         headers: {
           'X-Slack-Signature':
@@ -94,12 +96,13 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': '1548754209',
         },
       };
+
       const verified = isVerified(request, undefined);
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
-    it('returns false signingSecret is not a string', () => {
+    it('returns false signingSecret is not a string', async () => {
       const request = {
         headers: {
           'X-Slack-Signature':
@@ -109,10 +112,10 @@ describe('authService.test.js', () => {
       };
       const verified = isVerified(request, 1234);
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
-    it('returns false when timestamp is too old', () => {
+    it('returns false when timestamp is too old', async () => {
       const request = {
         headers: {
           'X-Slack-Signature':
@@ -122,7 +125,7 @@ describe('authService.test.js', () => {
       };
       const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
     it("returns false when timestamp is fresh, but signature doesn't match expected value", async () => {
@@ -134,9 +137,9 @@ describe('authService.test.js', () => {
           'X-Slack-Request-Timestamp': time.toString(),
         },
       };
-      const verified = await isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
+      const verified = isVerified(request, '85c51f2e87bf29a6b1976386c542887f');
 
-      expect(verified).toBe(false);
+      await expect(verified).rejects.toEqual(new Error('User unauthorized'));
     });
 
     it('returns true for dev stage', async () => {
