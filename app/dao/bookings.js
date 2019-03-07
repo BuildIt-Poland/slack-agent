@@ -4,6 +4,8 @@ const { query, save, update } = require('../services/dbService.js');
 
 const { BOOKINGS_TABLE } = require('../../config/all.js');
 
+const { parseCurrentDate } = require('../services/dateService.js');
+
 const isBookingAvailableForPeriod = async (bookingDates, city) => {
   const params = {
     KeyConditionExpression: 'City = :city and BookingDate between :minDate and :maxDate',
@@ -79,6 +81,25 @@ const bookParkingPlace = async (bookingDate, city, userName) =>
 const unbookParkingPlace = async (bookingDate, city, userName) =>
   updateBookingWithOwner(bookingDate, city, userName, 'free');
 
+const getFutureBookingsByCity = async city => {
+  const params = {
+    KeyConditionExpression: 'City=:city AND BookingDate >= :bookingDate',
+    ExpressionAttributeValues: {
+      ':bookingDate': parseCurrentDate(),
+      ':city': city,
+    },
+  };
+
+  const { Items } = await query(params, BOOKINGS_TABLE);
+  return Items;
+};
+
+const getFutureBookings = async () => {
+  const futureBookingsPromises = _.map(['GDN', 'WAW'], city => getFutureBookingsByCity(city));
+  const futureBookings = await Promise.all(futureBookingsPromises);
+  return _.flatten(futureBookings);
+};
+
 module.exports = {
   bookingExists,
   bookParkingPlace,
@@ -87,4 +108,5 @@ module.exports = {
   isBookingAvailableForPeriod,
   unbookParkingPlace,
   updateBookingWithOwner,
+  getFutureBookings,
 };
