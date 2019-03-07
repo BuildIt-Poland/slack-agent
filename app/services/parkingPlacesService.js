@@ -17,7 +17,7 @@ const mapParkingPlacesForUser = (places, city, bookingDate, userName) =>
     [],
   );
 
-exports.userParkingPlaces = (userName, futureBookings) =>
+exports.getUserParkingPlaces = (userName, futureBookings) =>
   _.reduce(
     futureBookings,
     (parkingPlaces, { Places, City, BookingDate }) => [

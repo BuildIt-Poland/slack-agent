@@ -1,10 +1,9 @@
 const _ = require('lodash');
 const { getParkingPlaces } = require('./parkingPlace.js');
 const { query, save, update } = require('../services/dbService.js');
+const { parseCurrentDate } = require('../services/dateService.js');
 
 const { BOOKINGS_TABLE } = require('../../config/all.js');
-
-const { parseCurrentDate } = require('../services/dateService.js');
 
 const isBookingAvailableForPeriod = async (bookingDates, city) => {
   const params = {

@@ -7,7 +7,7 @@ const {
   generateResponseBody,
   generateResponseBodyWithAttachments,
 } = require('../utilities/responseBody.js');
-const { userParkingPlaces } = require('../services/parkingPlacesService.js');
+const { getUserParkingPlaces } = require('../services/parkingPlacesService.js');
 
 module.exports.my = async event => {
   if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
@@ -24,7 +24,7 @@ module.exports.my = async event => {
 
   const futureBookings = await getFutureBookings();
 
-  const myParkingPlaces = userParkingPlaces(message.userName, futureBookings);
+  const myParkingPlaces = getUserParkingPlaces(message.userName, futureBookings);
 
   return success(generateResponseBodyWithAttachments('My bookings:', myParkingPlaces));
 };
