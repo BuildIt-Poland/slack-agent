@@ -74,6 +74,12 @@ functions:
       - http:
           path: slack/unbook
           method: post
+  listUserParkingPlaces:
+    handler: app/handlers/listUserParkingPlaces.my
+    events:
+      - http:
+          path: slack/my
+          method: post
 # Create our resources with separate CloudFormation templates
 resources:
   # DynamoDB
