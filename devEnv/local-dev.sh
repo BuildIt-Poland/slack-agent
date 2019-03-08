@@ -108,7 +108,13 @@ function stop {
         export SLACK_AGENT_EVENT_JSON=""
         docker-compose -f devEnv/docker-compose-db.yml down
         docker-compose -f devEnv/docker-compose-lambda.yml down
-    fi
+        #clear docker remove untagged images
+        _dockerImages=$(docker images | grep "^<none>" | awk "{print $3}")
+        if [ "$_dockerImages" != "" ]; then
+            echo "Deleting untagged images"
+            docker rmi $_dockerImages > /dev/null
+        fi
+      fi
 }
 
 function readme {
