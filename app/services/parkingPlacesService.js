@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const mapParkingPlacesForUser = (places, city, bookingDate, userName) =>
+exports.mapParkingPlacesForUser = (places, city, bookingDate, userName) =>
   _.reduce(
     places,
     (bookedParkingPlaces, { PlaceID, Owner }) =>
@@ -22,7 +22,7 @@ exports.getUserParkingPlaces = (userName, futureBookings) =>
     futureBookings,
     (parkingPlaces, { Places, City, BookingDate }) => [
       ...parkingPlaces,
-      ...mapParkingPlacesForUser(Places, City, BookingDate, userName),
+      ...this.mapParkingPlacesForUser(Places, City, BookingDate, userName),
     ],
     [],
   );
