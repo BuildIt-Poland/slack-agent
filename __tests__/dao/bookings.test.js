@@ -1,7 +1,8 @@
-jest.mock('../../app/services/dbService.js');
 jest.mock('../../app/dao/parkingPlace.js');
+jest.mock('../../app/services/dbService.js');
 jest.mock('../../app/services/dateService.js');
 
+const { getParkingPlaces } = require('../../app/dao/parkingPlace.js');
 const {
   getBooking,
   bookingExists,
@@ -13,7 +14,6 @@ const {
   getFutureBookings,
 } = require('../../app/dao/bookings.js');
 const { query, save, update } = require('../../app/services/dbService.js');
-const { getParkingPlaces } = require('../../app/dao/parkingPlace.js');
 const { parseCurrentDate } = require('../../app/services/dateService.js');
 
 const bookingDataMock = owner => ({
@@ -198,7 +198,7 @@ describe.only('bookings.test.js', () => {
   describe('Checks getFutureBookings method', () => {
     beforeAll(() => {
       query.mockImplementation(() => ({
-        Items: ['future booking'],
+        Items: [],
       }));
       parseCurrentDate.mockImplementation(() => '2020/03/11');
     });
@@ -206,7 +206,7 @@ describe.only('bookings.test.js', () => {
     it('returns future bookings', async () => {
       const futureBookings = await getFutureBookings();
 
-      expect(futureBookings).toEqual(['future booking', 'future booking']);
+      expect(futureBookings).toEqual([]);
     });
   });
 });

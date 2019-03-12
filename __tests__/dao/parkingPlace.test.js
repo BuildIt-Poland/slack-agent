@@ -1,7 +1,7 @@
+jest.mock('../../app/services/dbService.js');
+
 const { addParkingPlace, getParkingPlaces } = require('../../app/dao/parkingPlace.js');
 const { save, query } = require('../../app/services/dbService');
-
-jest.mock('../../app/services/dbService.js');
 
 const ParkingPlaceMock = {
   City: 'GDN',

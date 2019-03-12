@@ -24,14 +24,14 @@ describe.only('parkingPlacesService.test.js', () => {
         parkingPlacesService,
         'getParkingPlacesForUser',
       );
-      mapParkingPlacesForUserMock.mockImplementation(() => ['ParkingPlaces', 'ParkingPlaces']);
+      mapParkingPlacesForUserMock.mockImplementation(() => []);
 
       const userParkingPlaces = parkingPlacesService.getParkingPlacesForBookings(
         bookingsMock,
         'foo.bar',
       );
 
-      expect(userParkingPlaces).toEqual(['ParkingPlaces', 'ParkingPlaces']);
+      expect(userParkingPlaces).toEqual([]);
     });
   });
 
