@@ -30,7 +30,7 @@ module.exports.unbook = async event => {
 
   const { dates, city, userName } = message;
 
-  const bookingPromises = _.map([dates], async bookingDate => {
+  const bookingPromises = _.map(dates, async bookingDate => {
     return unbookParkingPlace(bookingDate, city, userName);
   });
 
