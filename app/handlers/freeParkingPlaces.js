@@ -37,7 +37,7 @@ module.exports.free = async event => {
 
   const { Places } = await getBooking(date, city);
 
-  const parkingPlaces = getParkingPlacesForUser(Places, city, date, 'free');
+  const parkingPlaces = getParkingPlacesForUser(Places, 'free');
 
   if (_.isEmpty(parkingPlaces)) {
     return success(generateResponseBody(`We don't have available places`));

@@ -39,27 +39,23 @@ describe.only('parkingPlacesService.test.js', () => {
     const { Places, City, BookingDate } = bookingsMock[0];
 
     it(`returns available parking places for user`, () => {
-      const [mapedParkingPlace] = parkingPlacesService.getParkingPlacesForUser(
-        Places,
+      const [parkingPlace] = parkingPlacesService.getParkingPlacesForUser(Places, 'foo.bar', {
         City,
         BookingDate,
-        'foo.bar',
-      );
+      });
 
-      expect(mapedParkingPlace).toHaveProperty('PlaceID', '1a');
-      expect(mapedParkingPlace).toHaveProperty('City', 'GDN');
-      expect(mapedParkingPlace).toHaveProperty('BookingDate', '2020/03/01');
+      expect(parkingPlace).toHaveProperty('PlaceID', '1a');
+      expect(parkingPlace).toHaveProperty('City', 'GDN');
+      expect(parkingPlace).toHaveProperty('BookingDate', '2020/03/01');
     });
 
     it(`returns empty array when user did't book parking place`, () => {
-      const mapedParkingPlaces = parkingPlacesService.getParkingPlacesForUser(
-        Places,
+      const parkingPlaces = parkingPlacesService.getParkingPlacesForUser(Places, 'testUser', {
         City,
         BookingDate,
-        'testUser',
-      );
+      });
 
-      expect(mapedParkingPlaces).toEqual([]);
+      expect(parkingPlaces).toEqual([]);
     });
   });
 

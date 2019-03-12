@@ -6,8 +6,8 @@ exports.mapParkingPlacesWithUser = (parkingPlaces, userName) =>
     Owner: userName,
   }));
 
-exports.getParkingPlacesForUser = (places, city, bookingDate, userName) =>
-  _.reduce(
+exports.getParkingPlacesForUser = (places, userName, additionalProperties = {}) => {
+  return _.reduce(
     places,
     (bookedParkingPlaces, { PlaceID, Owner }) =>
       Owner === userName
@@ -15,20 +15,23 @@ exports.getParkingPlacesForUser = (places, city, bookingDate, userName) =>
             ...bookedParkingPlaces,
             {
               PlaceID,
-              City: city,
-              BookingDate: bookingDate,
+              ...additionalProperties,
             },
           ]
         : bookedParkingPlaces,
     [],
   );
+};
 
 exports.getParkingPlacesForBookings = (futureBookings, userName) =>
   _.reduce(
     futureBookings,
     (parkingPlaces, { Places, City, BookingDate }) => [
       ...parkingPlaces,
-      ...this.getParkingPlacesForUser(Places, City, BookingDate, userName),
+      ...this.getParkingPlacesForUser(Places, userName, {
+        City,
+        BookingDate,
+      }),
     ],
     [],
   );

@@ -55,7 +55,7 @@ describe('listUserParkingPlaces.test.js', () => {
       },
       isValid: true,
     }));
-    getFutureBookings.mockImplementation(() => Error(500));
+    getFutureBookings.mockImplementation(() => []);
     getParkingPlacesForBookings.mockImplementation(() => []);
 
     const { statusCode } = await my({ body: 'text=user_name=john.doe' });
