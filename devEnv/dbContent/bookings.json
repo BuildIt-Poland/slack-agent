@@ -19,7 +19,7 @@
   },
   {
     "City": "WAW",
-    "BookingDate": "2020/03/01",
+    "BookingDate": "2020/04/01",
     "Places": [
       {
         "PlaceID": "1a",
@@ -44,7 +44,7 @@
         "Owner": "foo.bar"
       },
       {
-      "PlaceID": "1b",
+        "PlaceID": "1b",
         "Owner": "free"
       },
       {

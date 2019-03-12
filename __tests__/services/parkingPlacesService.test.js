@@ -18,38 +18,41 @@ describe.only('parkingPlacesService.test.js', () => {
     jest.restoreAllMocks();
   });
 
-  describe('Checks getUserParkingPlaces method', () => {
+  describe('Checks getParkingPlacesForBookings method', () => {
     it('returns all booked parking places for specific user', () => {
       const mapParkingPlacesForUserMock = jest.spyOn(
         parkingPlacesService,
-        'mapParkingPlacesForUser',
+        'getParkingPlacesForUser',
       );
       mapParkingPlacesForUserMock.mockImplementation(() => ['ParkingPlaces', 'ParkingPlaces']);
 
-      const userParkingPlaces = parkingPlacesService.getUserParkingPlaces('foo.bar', bookingsMock);
+      const userParkingPlaces = parkingPlacesService.getParkingPlacesForBookings(
+        bookingsMock,
+        'foo.bar',
+      );
 
       expect(userParkingPlaces).toEqual(['ParkingPlaces', 'ParkingPlaces']);
     });
   });
 
-  describe('Checks mapParkingPlacesForUser method', () => {
+  describe('Checks getParkingPlacesForUser method', () => {
     const { Places, City, BookingDate } = bookingsMock[0];
 
-    it(`returns maped available parking places for user`, () => {
-      const mapedParkingPlaces = parkingPlacesService.mapParkingPlacesForUser(
+    it(`returns available parking places for user`, () => {
+      const [mapedParkingPlace] = parkingPlacesService.getParkingPlacesForUser(
         Places,
         City,
         BookingDate,
         'foo.bar',
       );
 
-      expect(mapedParkingPlaces[0]).toHaveProperty('PlaceID', '1a');
-      expect(mapedParkingPlaces[0]).toHaveProperty('City', 'GDN');
-      expect(mapedParkingPlaces[0]).toHaveProperty('BookingDate', '2020/03/01');
+      expect(mapedParkingPlace).toHaveProperty('PlaceID', '1a');
+      expect(mapedParkingPlace).toHaveProperty('City', 'GDN');
+      expect(mapedParkingPlace).toHaveProperty('BookingDate', '2020/03/01');
     });
 
     it(`returns empty array when user did't book parking place`, () => {
-      const mapedParkingPlaces = parkingPlacesService.mapParkingPlacesForUser(
+      const mapedParkingPlaces = parkingPlacesService.getParkingPlacesForUser(
         Places,
         City,
         BookingDate,
@@ -57,6 +60,24 @@ describe.only('parkingPlacesService.test.js', () => {
       );
 
       expect(mapedParkingPlaces).toEqual([]);
+    });
+  });
+
+  describe('Checks mapParkingPlacesWithUser method', () => {
+    it('returns maped parking places', () => {
+      const parkingPlacesMock = [
+        {
+          PlaceID: '1a',
+        },
+      ];
+
+      const [parkingPlace] = parkingPlacesService.mapParkingPlacesWithUser(
+        parkingPlacesMock,
+        'joo.foo',
+      );
+
+      expect(parkingPlace).toHaveProperty('PlaceID', '1a');
+      expect(parkingPlace).toHaveProperty('Owner', 'joo.foo');
     });
   });
 });

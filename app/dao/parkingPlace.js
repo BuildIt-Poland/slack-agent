@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const { query, save } = require('../services/dbService.js');
 
 const { PARKING_PLACES_TABLE } = require('../../config/all');
@@ -25,14 +24,7 @@ const getParkingPlaces = async city => {
   return Items;
 };
 
-const getFreeParkingPlacesMap = async city =>
-  _.map(await getParkingPlaces(city), ({ PlaceID }) => ({
-    PlaceID,
-    Owner: 'free',
-  }));
-
 module.exports = {
   getParkingPlaces,
   addParkingPlace,
-  getFreeParkingPlacesMap,
 };
