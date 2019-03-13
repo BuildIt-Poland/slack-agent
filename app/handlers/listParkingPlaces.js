@@ -1,7 +1,8 @@
 const _ = require('lodash');
 const { isVerified } = require('../services/authService.js');
 const { getBooking } = require('../dao/bookings.js');
-const { getFreeParkingPlacesMap } = require('../dao/parkingPlace.js');
+const { getParkingPlaces } = require('../dao/parkingPlace.js');
+const { decorateParkingPlacesWithUser } = require('../services/parkingPlacesService.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const {
   generateResponseBody,
@@ -37,7 +38,8 @@ module.exports.list = async event => {
   let { Places: parkingPlaces } = await getBooking(dates[0], city);
 
   if (_.isEmpty(parkingPlaces)) {
-    parkingPlaces = await getFreeParkingPlacesMap;
+    const allParkingPlaces = await getParkingPlaces(city);
+    parkingPlaces = decorateParkingPlacesWithUser(allParkingPlaces, 'free');
   }
 
   return success(

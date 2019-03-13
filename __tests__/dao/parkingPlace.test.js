@@ -1,11 +1,7 @@
-const {
-  addParkingPlace,
-  getParkingPlaces,
-  getFreeParkingPlacesMap,
-} = require('../../app/dao/parkingPlace.js');
-const { save, query } = require('../../app/services/dbService');
-
 jest.mock('../../app/services/dbService.js');
+
+const { addParkingPlace, getParkingPlaces } = require('../../app/dao/parkingPlace.js');
+const { save, query } = require('../../app/services/dbService');
 
 const ParkingPlaceMock = {
   City: 'GDN',
@@ -35,17 +31,6 @@ describe.only('parkingPlace.test.js', () => {
       const parkingPlaces = await getParkingPlaces('GDN');
 
       expect(parkingPlaces).toEqual([]);
-    });
-  });
-  describe('Checks getFreeParkingPlacesMap method', () => {
-    it('returns free parking places with owner', async () => {
-      query.mockImplementation(() => ({
-        Items: [ParkingPlaceMock],
-      }));
-
-      const parkingPlaces = await getFreeParkingPlacesMap('GDN');
-
-      expect(parkingPlaces[0]).toHaveProperty('Owner', 'free');
     });
   });
 });
