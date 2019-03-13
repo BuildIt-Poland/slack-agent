@@ -80,6 +80,12 @@ functions:
       - http:
           path: slack/my
           method: post
+  freeParkingPlaces:
+    handler: app/handlers/freeParkingPlaces.free
+    events:
+      - http:
+          path: slack/free
+          method: post
 # Create our resources with separate CloudFormation templates
 resources:
   # DynamoDB
