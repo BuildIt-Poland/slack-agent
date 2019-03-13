@@ -198,7 +198,7 @@ describe.only('bookings.test.js', () => {
   describe('Checks getFutureBookings method', () => {
     beforeAll(() => {
       query.mockImplementation(() => ({
-        Items: [],
+        Items: ['futureBooking'],
       }));
       parseCurrentDate.mockImplementation(() => '2020/03/11');
     });
@@ -206,7 +206,7 @@ describe.only('bookings.test.js', () => {
     it('returns future bookings', async () => {
       const futureBookings = await getFutureBookings();
 
-      expect(futureBookings).toEqual([]);
+      expect(futureBookings).toEqual(['futureBooking', 'futureBooking']);
     });
   });
 });

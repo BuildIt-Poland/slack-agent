@@ -1,4 +1,8 @@
-const parkingPlacesService = require('../../app/services/parkingPlacesService.js');
+const {
+  decorateParkingPlacesWithUser,
+  getUserParkingPlacesForBookings,
+  getUserBookedParkingPlaces,
+} = require('../../app/services/parkingPlacesService.js');
 
 const bookingsMock = [
   {
@@ -18,59 +22,47 @@ describe.only('parkingPlacesService.test.js', () => {
     jest.restoreAllMocks();
   });
 
-  describe('Checks getParkingPlacesForBookings method', () => {
+  describe('Checks getUserParkingPlacesForBookings method', () => {
     it('returns all booked parking places for specific user', () => {
-      const mapParkingPlacesForUserMock = jest.spyOn(
-        parkingPlacesService,
-        'getParkingPlacesForUser',
-      );
-      mapParkingPlacesForUserMock.mockImplementation(() => []);
+      const [userParkingPlace] = getUserParkingPlacesForBookings(bookingsMock, 'foo.bar');
 
-      const userParkingPlaces = parkingPlacesService.getParkingPlacesForBookings(
-        bookingsMock,
-        'foo.bar',
-      );
+      expect(userParkingPlace).toHaveProperty('PlaceID', '1a');
+      expect(userParkingPlace).toHaveProperty('City', 'GDN');
+      expect(userParkingPlace).toHaveProperty('BookingDate', '2020/03/01');
+    });
+    it(`returns empty array when bookings don't exists for specific user`, () => {
+      const userParkingPlaces = getUserParkingPlacesForBookings(bookingsMock, 'foo');
 
       expect(userParkingPlaces).toEqual([]);
     });
   });
 
-  describe('Checks getParkingPlacesForUser method', () => {
-    const { Places, City, BookingDate } = bookingsMock[0];
-
-    it(`returns available parking places for user`, () => {
-      const [parkingPlace] = parkingPlacesService.getParkingPlacesForUser(Places, 'foo.bar', {
-        City,
-        BookingDate,
+  describe('Checks getUserBookedParkingPlaces method', () => {
+    it('returns booked user parking places with additional parameters', () => {
+      const [userParkingPlace] = getUserBookedParkingPlaces(bookingsMock[0].Places, 'foo.bar', {
+        City: 'GDN',
       });
 
-      expect(parkingPlace).toHaveProperty('PlaceID', '1a');
-      expect(parkingPlace).toHaveProperty('City', 'GDN');
-      expect(parkingPlace).toHaveProperty('BookingDate', '2020/03/01');
+      expect(userParkingPlace).toHaveProperty('City', 'GDN');
+      expect(userParkingPlace).toHaveProperty('PlaceID', '1a');
     });
 
-    it(`returns empty array when user did't book parking place`, () => {
-      const parkingPlaces = parkingPlacesService.getParkingPlacesForUser(Places, 'testUser', {
-        City,
-        BookingDate,
-      });
+    it('returns booked user parking places without additional parameters', () => {
+      const [userParkingPlace] = getUserBookedParkingPlaces(bookingsMock[0].Places, 'foo.bar');
 
-      expect(parkingPlaces).toEqual([]);
+      expect(userParkingPlace).toHaveProperty('PlaceID', '1a');
     });
   });
 
-  describe('Checks mapParkingPlacesWithUser method', () => {
-    it('returns maped parking places', () => {
+  describe('Checks decorateParkingPlacesWithUser method', () => {
+    it('return decorated parking places', () => {
       const parkingPlacesMock = [
         {
           PlaceID: '1a',
         },
       ];
 
-      const [parkingPlace] = parkingPlacesService.mapParkingPlacesWithUser(
-        parkingPlacesMock,
-        'joo.foo',
-      );
+      const [parkingPlace] = decorateParkingPlacesWithUser(parkingPlacesMock, 'joo.foo');
 
       expect(parkingPlace).toHaveProperty('PlaceID', '1a');
       expect(parkingPlace).toHaveProperty('Owner', 'joo.foo');

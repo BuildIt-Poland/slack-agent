@@ -1,37 +1,31 @@
-const _ = require('lodash');
+const { map, filter, flatten } = require('lodash');
 
-exports.mapParkingPlacesWithUser = (parkingPlaces, userName) =>
-  _.map(parkingPlaces, ({ PlaceID }) => ({
+const decorateParkingPlacesWithUser = (parkingPlaces, userName) =>
+  map(parkingPlaces, ({ PlaceID }) => ({
     PlaceID,
     Owner: userName,
   }));
 
-exports.getParkingPlacesForUser = (places, userName, additionalProperties = {}) => {
-  return _.reduce(
-    places,
-    (bookedParkingPlaces, { PlaceID, Owner }) =>
-      Owner === userName
-        ? [
-            ...bookedParkingPlaces,
-            {
-              PlaceID,
-              ...additionalProperties,
-            },
-          ]
-        : bookedParkingPlaces,
-    [],
-  );
+const getUserBookedParkingPlaces = (allParkingPlaces, userName, additionalProperties = {}) => {
+  const userParkingPlaces = filter(allParkingPlaces, ({ Owner }) => Owner === userName);
+  return map(userParkingPlaces, ({ PlaceID }) => ({
+    PlaceID,
+    ...additionalProperties,
+  }));
 };
 
-exports.getParkingPlacesForBookings = (futureBookings, userName) =>
-  _.reduce(
-    futureBookings,
-    (parkingPlaces, { Places, City, BookingDate }) => [
-      ...parkingPlaces,
-      ...this.getParkingPlacesForUser(Places, userName, {
+const getUserParkingPlacesForBookings = (bookings, userName) =>
+  flatten(
+    map(bookings, ({ Places, City, BookingDate }) =>
+      getUserBookedParkingPlaces(Places, userName, {
         City,
         BookingDate,
       }),
-    ],
-    [],
+    ),
   );
+
+module.exports = {
+  decorateParkingPlacesWithUser,
+  getUserBookedParkingPlaces,
+  getUserParkingPlacesForBookings,
+};

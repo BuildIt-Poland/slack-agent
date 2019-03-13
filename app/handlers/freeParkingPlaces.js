@@ -9,7 +9,7 @@ const {
   generateResponseBodyWithAttachments,
 } = require('../utilities/responseBody.js');
 const { isCity } = require('../utilities/requestValidator.js');
-const { getParkingPlacesForUser } = require('../services/parkingPlacesService.js');
+const { getUserBookedParkingPlaces } = require('../services/parkingPlacesService.js');
 
 module.exports.free = async event => {
   if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
@@ -37,7 +37,7 @@ module.exports.free = async event => {
 
   const { Places } = await getBooking(date, city);
 
-  const parkingPlaces = getParkingPlacesForUser(Places, 'free');
+  const parkingPlaces = getUserBookedParkingPlaces(Places, 'free');
 
   if (_.isEmpty(parkingPlaces)) {
     return success(generateResponseBody(`We don't have available places`));
