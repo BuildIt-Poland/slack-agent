@@ -14,7 +14,6 @@ const {
   getFutureBookings,
 } = require('../../app/dao/bookings.js');
 const { query, save, update } = require('../../app/services/dbService.js');
-const { parseCurrentDate } = require('../../app/services/dateService.js');
 
 const bookingDataMock = owner => ({
   Items: [
@@ -200,7 +199,6 @@ describe.only('bookings.test.js', () => {
       query.mockImplementation(() => ({
         Items: ['futureBooking'],
       }));
-      parseCurrentDate.mockImplementation(() => '2020/03/11');
     });
 
     it('returns future bookings', async () => {
