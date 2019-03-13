@@ -30,6 +30,7 @@ describe.only('parkingPlacesService.test.js', () => {
       expect(userParkingPlace).toHaveProperty('City', 'GDN');
       expect(userParkingPlace).toHaveProperty('BookingDate', '2020/03/01');
     });
+
     it(`returns empty array when bookings don't exists for specific user`, () => {
       const userParkingPlaces = getUserParkingPlacesForBookings(bookingsMock, 'foo');
 
