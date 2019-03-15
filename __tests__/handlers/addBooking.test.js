@@ -2,7 +2,11 @@ jest.mock('../../app/dao/bookings.js');
 jest.mock('../../app/services/authService.js');
 jest.mock('../../app/utilities/requestParser.js');
 
-const { isBookingAvailableForPeriod, createBooking } = require('../../app/dao/bookings.js');
+const {
+  isBookingAvailableForPeriod,
+  createBooking,
+  bookingExists,
+} = require('../../app/dao/bookings.js');
 const { isVerified } = require('../../app/services/authService.js');
 const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
 const { book } = require('../../app/handlers/addBooking.js');
@@ -76,6 +80,23 @@ describe('addBooking.test.js', () => {
   });
 
   it('returns success status and creates booking correctly', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    parseBodyToObject.mockImplementation(() => ({
+      message: {
+        dates: ['2020/02/21'],
+      },
+      isValid: true,
+    }));
+    isBookingAvailableForPeriod.mockImplementation(() => true);
+    createBooking.mockImplementation(() => Promise.resolve(true));
+    bookingExists.mockImplementation(() => Promise.resolve(true));
+
+    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+
+    expect(statusCode).toBe(200);
+  });
+
+  it('returns success status and update existing booking correctly', async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     parseBodyToObject.mockImplementation(() => ({
       message: {

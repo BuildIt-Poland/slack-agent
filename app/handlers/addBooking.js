@@ -27,6 +27,7 @@ module.exports.book = async event => {
       pattern: isCity,
       required: city => !!city,
     },
+    palceId: {},
     userName: {},
   });
 
@@ -36,17 +37,17 @@ module.exports.book = async event => {
 
   const { dates, city, userName } = message;
 
-  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city);
+  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, message.palceId);
+
   if (!isBookingAvailable) {
     return internalServerError(); // TODO raise proper response
   }
 
   const bookingPromises = _.map(dates, async bookingDate => {
     if (await bookingExists(bookingDate, city)) {
-      return bookParkingPlace(bookingDate, city, userName);
+      return bookParkingPlace(bookingDate, city, userName, message.palceId);
     }
-
-    return createBooking(bookingDate, city, userName);
+    return createBooking(bookingDate, city, userName, message.palceId);
   });
 
   return Promise.all(bookingPromises)

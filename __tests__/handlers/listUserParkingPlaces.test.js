@@ -3,7 +3,6 @@ jest.mock('../../app/utilities/requestParser.js');
 jest.mock('../../app/services/authService.js');
 jest.mock('../../app/services/parkingPlacesService.js');
 
-const { getFutureBookings } = require('../../app/dao/bookings.js');
 const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
 const { isVerified } = require('../../app/services/authService.js');
 const { my } = require('../../app/handlers/listUserParkingPlaces.js');
@@ -54,7 +53,6 @@ describe('listUserParkingPlaces.test.js', () => {
       },
       isValid: true,
     }));
-    getFutureBookings.mockImplementation(() => ['futureBooking']);
 
     const { statusCode } = await my({ body: 'text=user_name=john.doe' });
 
