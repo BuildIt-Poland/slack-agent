@@ -6,6 +6,7 @@ const {
   createBooking,
   isBookingAvailableForPeriod,
 } = require('../dao/bookings.js');
+const { parkingPlaceExists, cityExists } = require('../dao/parkingPlace.js');
 
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity } = require('../utilities/requestValidator.js');
@@ -36,6 +37,18 @@ module.exports.book = async event => {
   }
 
   const { dates, city, userName } = message;
+
+  if (!(await cityExists(city))) {
+    return internalServerError();
+  }
+
+  const doesParkingPlaceExisits = message.palceId
+    ? await parkingPlaceExists(message.palceId, city)
+    : true;
+
+  if (!doesParkingPlaceExisits) {
+    return internalServerError();
+  }
 
   const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, message.palceId);
 

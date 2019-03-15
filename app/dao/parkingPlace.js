@@ -1,3 +1,4 @@
+const { isEmpty } = require('lodash');
 const { query, save } = require('../services/dbService.js');
 
 const { PARKING_PLACES_TABLE } = require('../../config/all');
@@ -24,7 +25,25 @@ const getParkingPlaces = async city => {
   return Items;
 };
 
+const parkingPlaceExists = async (placeId, city) => {
+  const params = {
+    KeyConditionExpression: 'City=:city and PlaceID=:placeId',
+    ExpressionAttributeValues: {
+      ':city': city,
+      ':placeId': placeId,
+    },
+  };
+
+  const { Items } = await query(params, PARKING_PLACES_TABLE);
+
+  return !isEmpty(Items);
+};
+
+const cityExists = async city => !isEmpty(await getParkingPlaces(city));
+
 module.exports = {
+  cityExists,
+  parkingPlaceExists,
   getParkingPlaces,
   addParkingPlace,
 };
