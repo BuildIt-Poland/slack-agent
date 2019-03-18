@@ -37,7 +37,8 @@ const changeParkingPlaceOwner = (parkingPlaces, owner, placeId = null) => {
   }
 
   const parkingPlacesCopy = [...parkingPlaces];
-  parkingPlacesCopy[0].Owner = owner;
+
+  parkingPlacesCopy[0] = { ...parkingPlacesCopy[0], Owner: owner };
 
   return parkingPlacesCopy;
 };

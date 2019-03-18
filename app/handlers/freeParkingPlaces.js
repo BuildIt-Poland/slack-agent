@@ -40,13 +40,14 @@ module.exports.free = async event => {
     city,
   } = message;
 
-  const allParkingPlaces = await getParkingPlaces(city);
-
-  let parkingPlaces = decoratedParkingPlaces(allParkingPlaces, {});
+  let parkingPlaces;
 
   if (await bookingExists(date, city)) {
     const { Places } = await getBooking(date, city);
     parkingPlaces = getUserBookedParkingPlaces(Places, 'free');
+  } else {
+    const allParkingPlaces = await getParkingPlaces(city);
+    parkingPlaces = decoratedParkingPlaces(allParkingPlaces, {});
   }
 
   if (_.isEmpty(parkingPlaces)) {

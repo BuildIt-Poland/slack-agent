@@ -28,7 +28,7 @@ module.exports.book = async event => {
       pattern: isCity,
       required: city => !!city,
     },
-    palceId: {},
+    placeId: {},
     userName: {},
   });
 
@@ -36,21 +36,17 @@ module.exports.book = async event => {
     return success(generateResponseBody(message));
   }
 
-  const { dates, city, userName } = message;
+  const { dates, city, userName, placeId } = message;
 
   if (!(await cityExists(city))) {
     return internalServerError();
   }
 
-  const doesParkingPlaceExisits = message.palceId
-    ? await parkingPlaceExists(message.palceId, city)
-    : true;
-
-  if (!doesParkingPlaceExisits) {
+  if (placeId && !(await parkingPlaceExists(placeId, city))) {
     return internalServerError();
   }
 
-  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, message.palceId);
+  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, placeId);
 
   if (!isBookingAvailable) {
     return internalServerError(); // TODO raise proper response
@@ -58,9 +54,9 @@ module.exports.book = async event => {
 
   const bookingPromises = _.map(dates, async bookingDate => {
     if (await bookingExists(bookingDate, city)) {
-      return bookParkingPlace(bookingDate, city, userName, message.palceId);
+      return bookParkingPlace(bookingDate, city, userName, placeId);
     }
-    return createBooking(bookingDate, city, userName, message.palceId);
+    return createBooking(bookingDate, city, userName, placeId);
   });
 
   return Promise.all(bookingPromises)

@@ -71,6 +71,22 @@ describe('addBooking.test.js', () => {
     expect(statusCode).toBe(500);
   });
 
+  it('returns internal server error when place does not exist', async () => {
+    isVerified.mockImplementation(() => Promise.resolve(true));
+    cityExists.mockImplementation(() => Promise.resolve(true));
+    parkingPlaceExists.mockImplementation(() => Promise.resolve(false));
+    parseBodyToObject.mockImplementation(() => ({
+      message: {
+        palceId: '1',
+      },
+      isValid: true,
+    }));
+
+    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+
+    expect(statusCode).toBe(500);
+  });
+
   it('returns internal server error while error occured during booking', async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     cityExists.mockImplementation(() => Promise.resolve(true));
@@ -95,22 +111,6 @@ describe('addBooking.test.js', () => {
     parkingPlaceExists.mockImplementation(() => Promise.resolve(true));
     parseBodyToObject.mockImplementation(() => ({
       message: 'mocked message',
-      isValid: true,
-    }));
-
-    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-
-    expect(statusCode).toBe(500);
-  });
-
-  it('returns internal server error when place does not exist', async () => {
-    isVerified.mockImplementation(() => Promise.resolve(true));
-    cityExists.mockImplementation(() => Promise.resolve(true));
-    parkingPlaceExists.mockImplementation(() => Promise.resolve(false));
-    parseBodyToObject.mockImplementation(() => ({
-      message: {
-        palceId: '1',
-      },
       isValid: true,
     }));
 
