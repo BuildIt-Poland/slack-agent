@@ -2,10 +2,19 @@ const _ = require('lodash');
 const { getParkingPlaces } = require('./parkingPlace.js');
 const { query, save, update } = require('../services/dbService.js');
 const { parseCurrentDate } = require('../services/dateService.js');
+const {
+  decoratedParkingPlaces,
+  changeParkingPlaceOwner,
+  findParkingPlaceIndex,
+} = require('../services/parkingPlacesService.js');
+const {
+  isBookingAvailableForAnyPlace,
+  isBookingAvailableForSpecificPlace,
+} = require('../services/bookingsService.js');
 
 const { BOOKINGS_TABLE } = require('../../config/all.js');
 
-const isBookingAvailableForPeriod = async (bookingDates, city) => {
+const isBookingAvailableForPeriod = async (bookingDates, city, placeId) => {
   const params = {
     KeyConditionExpression: 'City = :city and BookingDate between :minDate and :maxDate',
     ExpressionAttributeValues: {
@@ -16,9 +25,12 @@ const isBookingAvailableForPeriod = async (bookingDates, city) => {
   };
 
   const { Items } = await query(params, BOOKINGS_TABLE);
-  return _.every(Items, booking =>
-    _.some(booking.Places, placeBooking => placeBooking.Owner === 'free'),
-  );
+
+  if (placeId) {
+    return isBookingAvailableForSpecificPlace(Items, placeId);
+  }
+
+  return isBookingAvailableForAnyPlace(Items);
 };
 
 const getBooking = async (bookingDate, city) => {
@@ -36,11 +48,12 @@ const getBooking = async (bookingDate, city) => {
 
 const bookingExists = async (bookingDate, city) => !_.isEmpty(await getBooking(bookingDate, city));
 
-const createBooking = async (bookingDate, city, userName) => {
-  const parkingPlaces = _.map(await getParkingPlaces(city), ({ PlaceID }, index) => ({
-    PlaceID,
-    Owner: index === 0 ? userName : 'free',
-  }));
+const createBooking = async (bookingDate, city, userName, placeId) => {
+  const allParkingPlaces = await getParkingPlaces(city);
+
+  const decoratedPlaces = decoratedParkingPlaces(allParkingPlaces, { Owner: 'free' });
+
+  const parkingPlaces = changeParkingPlaceOwner(decoratedPlaces, userName, placeId);
 
   return save(
     {
@@ -52,13 +65,16 @@ const createBooking = async (bookingDate, city, userName) => {
   );
 };
 
-const updateBookingWithOwner = async (bookingDate, city, currentOwner, newOwner) => {
+const updateBookingWithOwner = async (bookingDate, city, currentOwner, newOwner, placeId) => {
   const { Places: places } = await getBooking(bookingDate, city);
-  const freePlaceIndex = _.findIndex(places, { Owner: currentOwner });
-  if (freePlaceIndex === -1) {
+  const placeIndex = findParkingPlaceIndex(places, currentOwner, placeId);
+
+  if (placeIndex === -1) {
     return {};
   }
-  places[freePlaceIndex].Owner = newOwner;
+
+  places[placeIndex].Owner = newOwner;
+
   const params = {
     Key: {
       City: city,
@@ -74,8 +90,8 @@ const updateBookingWithOwner = async (bookingDate, city, currentOwner, newOwner)
   return update(params, BOOKINGS_TABLE);
 };
 
-const bookParkingPlace = async (bookingDate, city, userName) =>
-  updateBookingWithOwner(bookingDate, city, 'free', userName);
+const bookParkingPlace = async (bookingDate, city, userName, placeId) =>
+  updateBookingWithOwner(bookingDate, city, 'free', userName, placeId);
 
 const unbookParkingPlace = async (bookingDate, city, userName) =>
   updateBookingWithOwner(bookingDate, city, userName, 'free');
@@ -106,6 +122,5 @@ module.exports = {
   getBooking,
   isBookingAvailableForPeriod,
   unbookParkingPlace,
-  updateBookingWithOwner,
   getFutureBookings,
 };

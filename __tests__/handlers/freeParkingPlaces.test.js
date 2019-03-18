@@ -1,9 +1,10 @@
 jest.mock('../../app/dao/bookings.js');
+jest.mock('../../app/dao/parkingPlace.js');
 jest.mock('../../app/utilities/requestParser.js');
 jest.mock('../../app/services/authService.js');
-jest.mock('../../app/services/parkingPlacesService.js');
 
-const { getBooking } = require('../../app/dao/bookings.js');
+const { getBooking, bookingExists } = require('../../app/dao/bookings.js');
+const { getParkingPlaces } = require('../../app/dao/parkingPlace.js');
 const { parseBodyToObject } = require('../../app/utilities/requestParser.js');
 const { isVerified } = require('../../app/services/authService.js');
 const { free } = require('../../app/handlers/freeParkingPlaces.js');
@@ -28,7 +29,6 @@ describe('freeParkingPlaces.test.js', () => {
       },
       isValid: true,
     }));
-    getBooking.mockImplementation(() => []);
 
     const body = 'text=2020/02/21+Gdansk&user_name=john.doe';
     await free({ body });
@@ -58,7 +58,8 @@ describe('freeParkingPlaces.test.js', () => {
       },
       isValid: true,
     }));
-    getBooking.mockImplementation(() => []);
+    getParkingPlaces.mockImplementation(() => Promise.resolve([]));
+    bookingExists.mockImplementation(() => Promise.resolve(false));
 
     const { statusCode } = await free({ body: 'text=2020/02/21+GND&user_name=john.doe' });
 
@@ -73,9 +74,15 @@ describe('freeParkingPlaces.test.js', () => {
       },
       isValid: true,
     }));
-    getBooking.mockImplementation(() => ({
-      Places: [],
-    }));
+    getParkingPlaces.mockImplementation(() =>
+      Promise.resolve([{ PlaceID: '1a' }, { PlaceID: '1a' }]),
+    );
+    bookingExists.mockImplementation(() => Promise.resolve(true));
+    getBooking.mockImplementation(() =>
+      Promise.resolve({
+        Places: [{ PlaceID: '1a', Owner: 'free' }],
+      }),
+    );
 
     const { statusCode } = await free({ body: 'text=2020/02/21+GND&user_name=john.doe' });
 

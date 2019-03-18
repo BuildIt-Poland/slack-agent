@@ -1,9 +1,9 @@
-const { map, filter, flatten } = require('lodash');
+const { map, filter, flatten, isEmpty, findIndex } = require('lodash');
 
-const decorateParkingPlacesWithUser = (parkingPlaces, userName) =>
+const decoratedParkingPlaces = (parkingPlaces, decoratedProperties) =>
   map(parkingPlaces, ({ PlaceID }) => ({
     PlaceID,
-    Owner: userName,
+    ...decoratedProperties,
   }));
 
 const getUserBookedParkingPlaces = (allParkingPlaces, userName, additionalProperties = {}) => {
@@ -24,8 +24,39 @@ const getUserParkingPlacesForBookings = (bookings, userName) =>
     ),
   );
 
+const changeParkingPlaceOwner = (parkingPlaces, owner, placeId = null) => {
+  if (isEmpty(parkingPlaces)) {
+    return [];
+  }
+
+  if (placeId) {
+    return map(parkingPlaces, parkingPlace => ({
+      ...parkingPlace,
+      Owner: parkingPlace.PlaceID === placeId ? owner : 'free',
+    }));
+  }
+
+  const parkingPlacesCopy = [...parkingPlaces];
+
+  parkingPlacesCopy[0] = { ...parkingPlacesCopy[0], Owner: owner };
+
+  return parkingPlacesCopy;
+};
+
+const findParkingPlaceIndex = (parkingPlaces, currentOwner, placeId = null) => {
+  const findClause = { Owner: currentOwner };
+
+  if (placeId) {
+    findClause.PlaceID = placeId;
+  }
+
+  return findIndex(parkingPlaces, findClause);
+};
+
 module.exports = {
-  decorateParkingPlacesWithUser,
+  decoratedParkingPlaces,
   getUserBookedParkingPlaces,
   getUserParkingPlacesForBookings,
+  changeParkingPlaceOwner,
+  findParkingPlaceIndex,
 };

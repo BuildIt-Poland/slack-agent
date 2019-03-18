@@ -6,6 +6,7 @@ const {
   createBooking,
   isBookingAvailableForPeriod,
 } = require('../dao/bookings.js');
+const { parkingPlaceExists, cityExists } = require('../dao/parkingPlace.js');
 
 const { success, internalServerError, unauthorized } = require('../utilities/reponseBuilder.js');
 const { isCity } = require('../utilities/requestValidator.js');
@@ -27,6 +28,7 @@ module.exports.book = async event => {
       pattern: isCity,
       required: city => !!city,
     },
+    placeId: {},
     userName: {},
   });
 
@@ -34,19 +36,27 @@ module.exports.book = async event => {
     return success(generateResponseBody(message));
   }
 
-  const { dates, city, userName } = message;
+  const { dates, city, userName, placeId } = message;
 
-  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city);
+  if (!(await cityExists(city))) {
+    return internalServerError();
+  }
+
+  if (placeId && !(await parkingPlaceExists(placeId, city))) {
+    return internalServerError();
+  }
+
+  const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, placeId);
+
   if (!isBookingAvailable) {
     return internalServerError(); // TODO raise proper response
   }
 
   const bookingPromises = _.map(dates, async bookingDate => {
     if (await bookingExists(bookingDate, city)) {
-      return bookParkingPlace(bookingDate, city, userName);
+      return bookParkingPlace(bookingDate, city, userName, placeId);
     }
-
-    return createBooking(bookingDate, city, userName);
+    return createBooking(bookingDate, city, userName, placeId);
   });
 
   return Promise.all(bookingPromises)

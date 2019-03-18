@@ -1,6 +1,11 @@
 jest.mock('../../app/services/dbService.js');
 
-const { addParkingPlace, getParkingPlaces } = require('../../app/dao/parkingPlace.js');
+const {
+  addParkingPlace,
+  getParkingPlaces,
+  parkingPlaceExists,
+  cityExists,
+} = require('../../app/dao/parkingPlace.js');
 const { save, query } = require('../../app/services/dbService');
 
 const ParkingPlaceMock = {
@@ -31,6 +36,50 @@ describe.only('parkingPlace.test.js', () => {
       const parkingPlaces = await getParkingPlaces('GDN');
 
       expect(parkingPlaces).toEqual([]);
+    });
+  });
+
+  describe('Checks parkingPlaceExists method', () => {
+    it('returns true when parking place exists', async () => {
+      query.mockImplementation(() => ({
+        Items: ['parkingPlace'],
+      }));
+
+      const doesExists = await parkingPlaceExists('1a', 'GDN');
+
+      expect(doesExists).toBe(true);
+    });
+
+    it('returns false when parking place does not exists', async () => {
+      query.mockImplementation(() => ({
+        Items: [],
+      }));
+
+      const doesExists = await parkingPlaceExists('1a', 'GDN');
+
+      expect(doesExists).toBe(false);
+    });
+  });
+
+  describe('Checks cityExists method', () => {
+    it('returns true when city exists ', async () => {
+      query.mockImplementation(() => ({
+        Items: ['parkingPlace'],
+      }));
+
+      const doesExists = await cityExists('1a', 'GDN');
+
+      expect(doesExists).toBe(true);
+    });
+
+    it('returns false when city does not exists', async () => {
+      query.mockImplementation(() => ({
+        Items: ['parkingPlace'],
+      }));
+
+      const doesExists = await cityExists('1a', 'GDN');
+
+      expect(doesExists).toBe(true);
     });
   });
 });
