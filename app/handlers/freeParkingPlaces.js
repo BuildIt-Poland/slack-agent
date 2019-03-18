@@ -12,7 +12,7 @@ const {
 const { isCity } = require('../utilities/requestValidator.js');
 const {
   getUserBookedParkingPlaces,
-  decorateParkingPlaces,
+  decoratedParkingPlaces,
 } = require('../services/parkingPlacesService.js');
 
 module.exports.free = async event => {
@@ -42,7 +42,7 @@ module.exports.free = async event => {
 
   const allParkingPlaces = await getParkingPlaces(city);
 
-  let parkingPlaces = decorateParkingPlaces(allParkingPlaces, {});
+  let parkingPlaces = decoratedParkingPlaces(allParkingPlaces, {});
 
   if (await bookingExists(date, city)) {
     const { Places } = await getBooking(date, city);

@@ -3,13 +3,13 @@ const { getParkingPlaces } = require('./parkingPlace.js');
 const { query, save, update } = require('../services/dbService.js');
 const { parseCurrentDate } = require('../services/dateService.js');
 const {
-  decorateParkingPlaces,
+  decoratedParkingPlaces,
   changeParkingPlaceOwner,
   findParkingPlaceIndex,
 } = require('../services/parkingPlacesService.js');
 const {
-  isBookingAvailableForAnyPlaces,
-  isBookingAvailableForSpecyficPlaces,
+  isBookingAvailableForAnyPlace,
+  isBookingAvailableForSpecificPlace,
 } = require('../services/bookingsService.js');
 
 const { BOOKINGS_TABLE } = require('../../config/all.js');
@@ -27,10 +27,10 @@ const isBookingAvailableForPeriod = async (bookingDates, city, placeId) => {
   const { Items } = await query(params, BOOKINGS_TABLE);
 
   if (placeId) {
-    return isBookingAvailableForSpecyficPlaces(Items, placeId);
+    return isBookingAvailableForSpecificPlace(Items, placeId);
   }
 
-  return isBookingAvailableForAnyPlaces(Items);
+  return isBookingAvailableForAnyPlace(Items);
 };
 
 const getBooking = async (bookingDate, city) => {
@@ -51,9 +51,9 @@ const bookingExists = async (bookingDate, city) => !_.isEmpty(await getBooking(b
 const createBooking = async (bookingDate, city, userName, placeId) => {
   const allParkingPlaces = await getParkingPlaces(city);
 
-  const decoratedParkingPalces = decorateParkingPlaces(allParkingPlaces, { Owner: 'free' });
+  const decoratedPlaces = decoratedParkingPlaces(allParkingPlaces, { Owner: 'free' });
 
-  const parkingPlaces = changeParkingPlaceOwner(decoratedParkingPalces, userName, placeId);
+  const parkingPlaces = changeParkingPlaceOwner(decoratedPlaces, userName, placeId);
 
   return save(
     {

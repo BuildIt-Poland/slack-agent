@@ -1,5 +1,5 @@
 const {
-  decorateParkingPlaces,
+  decoratedParkingPlaces,
   getUserParkingPlacesForBookings,
   getUserBookedParkingPlaces,
   changeParkingPlaceOwner,
@@ -53,7 +53,7 @@ describe.only('parkingPlacesService.test.js', () => {
     });
   });
 
-  describe('Checks decorateParkingPlaces method', () => {
+  describe('Checks decoratedParkingPlaces method', () => {
     it('returns decorated parking places', () => {
       const parkingPlacesMock = [
         {
@@ -61,7 +61,7 @@ describe.only('parkingPlacesService.test.js', () => {
         },
       ];
 
-      const [parkingPlace] = decorateParkingPlaces(parkingPlacesMock, { Owner: 'joo.foo' });
+      const [parkingPlace] = decoratedParkingPlaces(parkingPlacesMock, { Owner: 'joo.foo' });
 
       expect(parkingPlace).toHaveProperty('PlaceID', '1a');
       expect(parkingPlace).toHaveProperty('Owner', 'joo.foo');
@@ -87,7 +87,6 @@ describe.only('parkingPlacesService.test.js', () => {
         'joo.foo',
         '1a',
       );
-
       expect(parkingPlace).toHaveProperty('Owner', 'joo.foo');
     });
   });

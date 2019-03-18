@@ -1,6 +1,6 @@
 const {
-  isBookingAvailableForAnyPlaces,
-  isBookingAvailableForSpecyficPlaces,
+  isBookingAvailableForAnyPlace,
+  isBookingAvailableForSpecificPlace,
 } = require('../../app/services/bookingsService.js');
 
 const bookingsMock = owner => [
@@ -15,29 +15,29 @@ const bookingsMock = owner => [
 ];
 
 describe.only('bookingsService.test.js', () => {
-  describe('Checks isBookingAvailableForAnyPlaces method', () => {
+  describe('Checks isBookingAvailableForAnyPlace method', () => {
     it('returns true when booking is available for any place', () => {
-      const isBookingAvailable = isBookingAvailableForAnyPlaces(bookingsMock('free'));
+      const isBookingAvailable = isBookingAvailableForAnyPlace(bookingsMock('free'));
 
       expect(isBookingAvailable).toEqual(true);
     });
 
     it('returns false when booking is unavailable for any place', () => {
-      const isBookingAvailable = isBookingAvailableForAnyPlaces(bookingsMock('joo.foo'));
+      const isBookingAvailable = isBookingAvailableForAnyPlace(bookingsMock('joo.foo'));
 
       expect(isBookingAvailable).toEqual(false);
     });
   });
 
-  describe('Checks isBookingAvailableForSpecyficPlaces method', () => {
+  describe('Checks isBookingAvailableForSpecificPlace method', () => {
     it('returns true when booking is available for specific place', () => {
-      const isBookingAvailable = isBookingAvailableForSpecyficPlaces(bookingsMock('free'), '1a');
+      const isBookingAvailable = isBookingAvailableForSpecificPlace(bookingsMock('free'), '1a');
 
       expect(isBookingAvailable).toEqual(true);
     });
 
     it('returns false when booking is unavailable for specific place', () => {
-      const isBookingAvailable = isBookingAvailableForSpecyficPlaces(bookingsMock('joo.foo'), '1a');
+      const isBookingAvailable = isBookingAvailableForSpecificPlace(bookingsMock('joo.foo'), '1a');
 
       expect(isBookingAvailable).toEqual(false);
     });

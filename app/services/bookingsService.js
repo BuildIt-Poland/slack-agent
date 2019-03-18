@@ -1,17 +1,14 @@
 const { every, some } = require('lodash');
 
-const isBookingAvailableForAnyPlaces = bookings =>
-  every(bookings, booking => some(booking.Places, placeBooking => placeBooking.Owner === 'free'));
+const isBookingAvailableForAnyPlace = bookings =>
+  every(bookings, ({ Places }) => some(Places, ({ Owner }) => Owner === 'free'));
 
-const isBookingAvailableForSpecyficPlaces = (bookings, placeId) =>
-  every(bookings, booking =>
-    some(
-      booking.Places,
-      placeBooking => placeBooking.Owner === 'free' && placeBooking.PlaceID === placeId,
-    ),
+const isBookingAvailableForSpecificPlace = (bookings, placeId) =>
+  every(bookings, ({ Places }) =>
+    some(Places, ({ Owner, PlaceID }) => Owner === 'free' && PlaceID === placeId),
   );
 
 module.exports = {
-  isBookingAvailableForAnyPlaces,
-  isBookingAvailableForSpecyficPlaces,
+  isBookingAvailableForAnyPlace,
+  isBookingAvailableForSpecificPlace,
 };
