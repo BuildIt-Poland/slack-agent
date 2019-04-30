@@ -5,7 +5,7 @@ const { getAllLocationsWithPlaces } = require('../../app/dao/parkingPlace.js');
 const { isVerified } = require('../../app/services/authService.js');
 const { locations } = require('../../app/handlers/locationsWithParkingPlaces.js');
 
-describe('locations.test.js', () => {
+describe('locationsWithParkingPlaces.test.js', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
