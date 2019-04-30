@@ -33,7 +33,7 @@ describe('requestParser.test.js', () => {
       });
 
       expect(isValid).toBe(false);
-      expect(message).toBe('Invalid command');
+      expect(message).toContain('Sorry, I didn’t quite get that');
     });
   });
 });

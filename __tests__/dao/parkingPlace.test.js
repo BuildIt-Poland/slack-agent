@@ -5,8 +5,9 @@ const {
   getParkingPlaces,
   parkingPlaceExists,
   cityExists,
+  getAllLocationsWithPlaces
 } = require('../../app/dao/parkingPlace.js');
-const { save, query } = require('../../app/services/dbService');
+const { save, query, scan } = require('../../app/services/dbService');
 
 const ParkingPlaceMock = {
   City: 'GDN',
@@ -80,6 +81,18 @@ describe.only('parkingPlace.test.js', () => {
       const doesExists = await cityExists('1a', 'GDN');
 
       expect(doesExists).toBe(true);
+    });
+  });
+
+  describe('Checks getAllLocationsWithPlaces method', () => {
+    it('returns all parking places', async () => {
+      scan.mockImplementation(() => ({
+        Items: ['parkingPlace'],
+      }));
+
+      const [parkingPlace] = await getAllLocationsWithPlaces();
+
+      expect(parkingPlace).toEqual('parkingPlace');
     });
   });
 });
