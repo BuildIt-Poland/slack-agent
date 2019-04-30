@@ -85,7 +85,7 @@ describe.only('parkingPlace.test.js', () => {
   });
 
   describe('Checks getAllLocationsWithPlaces method', () => {
-    it('returns all parking places', async () => {
+    it('returns all parking places for locations', async () => {
       scan.mockImplementation(() => ({
         Items: ['parkingPlace'],
       }));
