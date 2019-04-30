@@ -3,7 +3,7 @@ jest.mock('../../app/services/authService.js');
 
 const { getAllLocationsWithPlaces } = require('../../app/dao/parkingPlace.js');
 const { isVerified } = require('../../app/services/authService.js');
-const { locations } = require('../../app/handlers/locations.js');
+const { locations } = require('../../app/handlers/locationsWithParkingPlaces.js');
 
 describe('addBooking.test.js', () => {
   afterEach(() => {

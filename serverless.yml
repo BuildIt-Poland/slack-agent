@@ -86,8 +86,8 @@ functions:
       - http:
           path: slack/free
           method: post
-  locations:
-    handler: app/handlers/locations.locations
+  locationsWithParkingPlaces:
+    handler: app/handlers/locationsWithParkingPlaces.locations
     events:
       - http:
           path: slack/locations
