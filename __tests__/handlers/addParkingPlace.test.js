@@ -2,7 +2,7 @@ jest.mock('../../app/dao/parkingPlace.js');
 jest.mock('../../app/services/authService.js');
 
 const parkingPlace = require('../../app/dao/parkingPlace.js');
-const { isVerified }= require('../../app/services/authService.js');
+const { isVerified } = require('../../app/services/authService.js');
 const { add } = require('../../app/handlers/addParkingPlace.js');
 
 describe('addParkingPlace.test.js', () => {
@@ -21,13 +21,13 @@ describe('addParkingPlace.test.js', () => {
     );
   });
 
-  it('returns 200 and `Invalid Command` message for authorized user and parser error', async () => {
+  it('returns 200 and `Sorry, I didn’t quite get that` message for authorized user and parser error', async () => {
     parkingPlace.addParkingPlace.mockImplementation(() => Promise.resolve(true));
     isVerified.mockImplementation(() => Promise.resolve(true));
     const response = await add({ body: 'text=30' });
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toBe('{"text": "Invalid command"}');
+    expect(response.body).toContain('Sorry, I didn’t quite get that');
   });
 
   it('return 401 for unauthorized user', async () => {

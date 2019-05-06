@@ -86,6 +86,12 @@ functions:
       - http:
           path: slack/free
           method: post
+  locationsWithParkingPlaces:
+    handler: app/handlers/locationsWithParkingPlaces.locations
+    events:
+      - http:
+          path: slack/locations
+          method: post
 # Create our resources with separate CloudFormation templates
 resources:
   # DynamoDB
