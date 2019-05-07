@@ -110,7 +110,7 @@ const getFutureBookingsByCity = async city => {
 };
 
 const getFutureBookings = async () => {
-  const futureBookingsPromises = _.map(['GDN', 'WAW'], city => getFutureBookingsByCity(city));
+  const futureBookingsPromises = _.map(['Gdansk', 'Warszawa'], city => getFutureBookingsByCity(city));
   const futureBookings = await Promise.all(futureBookingsPromises);
   return _.flatten(futureBookings);
 };
