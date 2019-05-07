@@ -3,8 +3,8 @@ const queryString = require('query-string');
 const { isDateValid, getDatesInRange, parseDate } = require('../services/dateService.js');
 
 const FAILURE_MESSAGE = `Sorry, I didn’t quite get that :disappointed: I’m easily confused. Perhaps if you put
-  the words in a different order? :brain:\n\nExamples:\n• /agentlocations → to list available locations\n•
-  /agentbook 2030/05/24 GDN → to book a random place\n• /agentbook 2030/05/24 GDN 44 → to book a specific place`
+  the words in a different order? :brain:\n\nExamples:\n• /agentlocations → to list available locations
+  •/agentbook 2030/05/24 GDN → to book a random place\n• /agentbook 2030/05/24 GDN 44 → to book a specific place`
 
 const isParamValid = (inputParam, paramValidators) =>
   _.every(_.values(paramValidators), (validate) => validate(inputParam));
