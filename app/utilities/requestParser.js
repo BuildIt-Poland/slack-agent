@@ -4,7 +4,7 @@ const { isDateValid, getDatesInRange, parseDate } = require('../services/dateSer
 
 const FAILURE_MESSAGE = `Sorry, I didn’t quite get that :disappointed: I’m easily confused. Perhaps if you put
   the words in a different order? :brain:\n\nExamples:\n• /agentlocations → to list available locations
-  •/agentbook 2030/05/24 GDN → to book a random place\n• /agentbook 2030/05/24 GDN 44 → to book a specific place`
+  •/agentbook YYY/MM/DD City → to book a random place\n• /agentbook YYY/MM/DD City Place → to book a specific place`
 
 const isParamValid = (inputParam, paramValidators) =>
   _.every(_.values(paramValidators), (validate) => validate(inputParam));

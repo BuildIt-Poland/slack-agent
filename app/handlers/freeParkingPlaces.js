@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { isVerified } = require('../services/authService.js');
 const { getBooking, bookingExists } = require('../dao/bookings.js');
-const { getParkingPlaces } = require('../dao/parkingPlace.js');
+const { getParkingPlaces, cityExists } = require('../dao/parkingPlace.js');
 const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
@@ -40,6 +40,10 @@ module.exports.free = async event => {
     city,
   } = message;
 
+  if (!(await cityExists(city))) {
+    return success(generateResponseBody(`City ${city} doesn’t exist`))
+  }
+
   let parkingPlaces;
 
   if (await bookingExists(date, city)) {
@@ -51,7 +55,7 @@ module.exports.free = async event => {
   }
 
   if (_.isEmpty(parkingPlaces)) {
-    return success(generateResponseBody(`We don't have available places`));
+    return success(generateResponseBody(`All places booked`));
   }
 
   return success(generateResponseBodyWithAttachments('Available places:', parkingPlaces));
