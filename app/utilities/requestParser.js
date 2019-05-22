@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const queryString = require('query-string');
-const { isDateValid, getDatesInRange, parseDate } = require('../services/dateService.js');
+const { isDateValid, getDatesInRange, parseDate, parseTextToDate } = require('../services/dateService.js');
 
 const FAILURE_MESSAGE = `Sorry, I didn’t quite get that :disappointed: I’m easily confused. Perhaps if you put
   the words in a different order? :brain:\n\nExamples:\n• /agentlocations → to list available locations
@@ -36,7 +36,9 @@ exports.parseBodyToObject = (body, inputFormat) => {
   );
 
   if (_.has(inputParams, 'dates')) {
-    inputParams.dates = parseDatesToArray(inputParams.dates);
+    const dates = parseTextToDate(inputParams.dates);
+
+    inputParams.dates = parseDatesToArray(dates);
   }
 
   if (_.has(inputFormat, 'userName')) {

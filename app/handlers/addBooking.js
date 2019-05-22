@@ -3,7 +3,7 @@ const { isVerified } = require('../services/authService');
 const {
   bookingExists,
   bookParkingPlace,
-  createBooking,
+  createBookingAndBookParkingPlace,
   isBookingAvailableForPeriod,
 } = require('../dao/bookings.js');
 const { parkingPlaceExists, cityExists } = require('../dao/parkingPlace.js');
@@ -39,29 +39,29 @@ module.exports.book = async event => {
   const { dates, city, userName, placeId } = message;
 
   if (!(await cityExists(city))) {
-    return internalServerError();
+    return success(generateResponseBody(`City ${city} doesn’t exist`))
   }
 
   if (placeId && !(await parkingPlaceExists(placeId, city))) {
-    return internalServerError();
+    return success(generateResponseBody(`Parking place ${placeId} doesn't exist`));
   }
 
   const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, placeId);
 
   if (!isBookingAvailable) {
-    return internalServerError(); // TODO raise proper response
+    return success(generateResponseBody(`Parking palce ${placeId} isn't available`)); // TODO raise proper response
   }
 
   const bookingPromises = _.map(dates, async bookingDate => {
     if (await bookingExists(bookingDate, city)) {
       return bookParkingPlace(bookingDate, city, userName, placeId);
     }
-    return createBooking(bookingDate, city, userName, placeId);
+    return createBookingAndBookParkingPlace(bookingDate, city, userName, placeId);
   });
 
   return Promise.all(bookingPromises)
-    .then(() => {
-      return success(generateResponseBody(`You booked a parking place in ${city} on ${dates}`));
+    .then(({ placeID }) => {
+      return success(generateResponseBody(`You booked a parking place ${placeID} in ${city} on ${dates}`));
     })
     .catch(() => {
       return internalServerError();

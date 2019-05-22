@@ -48,14 +48,14 @@ const getBooking = async (bookingDate, city) => {
 
 const bookingExists = async (bookingDate, city) => !_.isEmpty(await getBooking(bookingDate, city));
 
-const createBooking = async (bookingDate, city, userName, placeId) => {
+const createBookingAndBookParkingPlace = async (bookingDate, city, userName, placeId) => {
   const allParkingPlaces = await getParkingPlaces(city);
 
   const decoratedPlaces = decoratedParkingPlaces(allParkingPlaces, { Owner: 'free' });
 
   const parkingPlaces = changeParkingPlaceOwner(decoratedPlaces, userName, placeId);
 
-  return save(
+  await save(
     {
       City: city,
       BookingDate: bookingDate,
@@ -63,9 +63,11 @@ const createBooking = async (bookingDate, city, userName, placeId) => {
     },
     BOOKINGS_TABLE,
   );
+
+  return placeId ? { PlaceID: placeId } : parkingPlaces[0];
 };
 
-const updateBookingWithOwner = async (bookingDate, city, currentOwner, newOwner, placeId) => {
+const updateParkingPlaceInBooking = async (bookingDate, city, currentOwner, newOwner, placeId) => {
   const { Places: places } = await getBooking(bookingDate, city);
   const placeIndex = findParkingPlaceIndex(places, currentOwner, placeId);
 
@@ -87,14 +89,16 @@ const updateBookingWithOwner = async (bookingDate, city, currentOwner, newOwner,
     ReturnValues: 'UPDATED_NEW',
   };
 
-  return update(params, BOOKINGS_TABLE);
+  await update(params, BOOKINGS_TABLE);
+
+  return places[placeIndex];
 };
 
 const bookParkingPlace = async (bookingDate, city, userName, placeId) =>
-  updateBookingWithOwner(bookingDate, city, 'free', userName, placeId);
+  updateParkingPlaceInBooking(bookingDate, city, 'free', userName, placeId);
 
 const unbookParkingPlace = async (bookingDate, city, userName) =>
-  updateBookingWithOwner(bookingDate, city, userName, 'free');
+  updateParkingPlaceInBooking(bookingDate, city, userName, 'free');
 
 const getFutureBookingsByCity = async city => {
   const params = {
@@ -118,7 +122,7 @@ const getFutureBookings = async () => {
 module.exports = {
   bookingExists,
   bookParkingPlace,
-  createBooking,
+  createBookingAndBookParkingPlace,
   getBooking,
   isBookingAvailableForPeriod,
   unbookParkingPlace,
