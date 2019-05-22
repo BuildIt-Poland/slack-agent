@@ -63,10 +63,10 @@ functions:
           path: slack/book
           method: post
   listParkingPlaces:
-    handler: app/handlers/listParkingPlaces.list
+    handler: app/handlers/listParkingPlaces.places
     events:
       - http:
-          path: slack/list
+          path: slack/places
           method: post
   deleteBooking:
     handler: app/handlers/deleteBooking.unbook

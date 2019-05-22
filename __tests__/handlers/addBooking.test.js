@@ -5,7 +5,7 @@ jest.mock('../../app/utilities/requestParser.js');
 
 const {
   isBookingAvailableForPeriod,
-  createBooking,
+  createBookingAndBookParkingPlace,
   bookingExists,
 } = require('../../app/dao/bookings.js');
 const { cityExists, parkingPlaceExists } = require('../../app/dao/parkingPlace.js');
@@ -55,7 +55,7 @@ describe('addBooking.test.js', () => {
     expect(body).toBe('{"text": "Body invalid"}');
   });
 
-  it('returns internal server error while booking is unavailable for period', async () => {
+  it(`returns message 'Parking palce undefined isn't available' while booking is unavailable for period`, async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     cityExists.mockImplementation(() => Promise.resolve(true));
     parkingPlaceExists.mockImplementation(() => Promise.resolve(true));
@@ -67,11 +67,11 @@ describe('addBooking.test.js', () => {
     }));
     isBookingAvailableForPeriod.mockImplementation(() => false);
 
-    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-    expect(statusCode).toBe(500);
+    const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    expect(body).toEqual('{"text": "Parking palce undefined isn\'t available"}');
   });
 
-  it('returns internal server error when place does not exist', async () => {
+  it(`returns message 'Parking palce isn't available' while booking is unavailable`, async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     cityExists.mockImplementation(() => Promise.resolve(true));
     parkingPlaceExists.mockImplementation(() => Promise.resolve(false));
@@ -82,9 +82,8 @@ describe('addBooking.test.js', () => {
       isValid: true,
     }));
 
-    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-
-    expect(statusCode).toBe(500);
+    const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    expect(body).toEqual(`{"text": "Parking palce undefined isn't available"}`);
   });
 
   it('returns internal server error while error occured during booking', async () => {
@@ -98,14 +97,14 @@ describe('addBooking.test.js', () => {
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => true);
-    createBooking.mockImplementation(() => Promise.reject(new Error()));
+    createBookingAndBookParkingPlace.mockImplementation(() => Promise.reject(new Error()));
 
     const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
     expect(statusCode).toBe(500);
   });
 
-  it('returns internal server error when city does not exist', async () => {
+  it(`returns message 'City doesn't exist' when city doesn't exist`, async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     cityExists.mockImplementation(() => Promise.resolve(false));
     parkingPlaceExists.mockImplementation(() => Promise.resolve(true));
@@ -114,9 +113,8 @@ describe('addBooking.test.js', () => {
       isValid: true,
     }));
 
-    const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-
-    expect(statusCode).toBe(500);
+    const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
+    expect(body).toEqual('{"text": "City undefined doesn’t exist"}');
   });
 
   it('returns success status and creates booking correctly', async () => {
@@ -130,7 +128,7 @@ describe('addBooking.test.js', () => {
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => true);
-    createBooking.mockImplementation(() => Promise.resolve(true));
+    createBookingAndBookParkingPlace.mockImplementation(() => Promise.resolve(true));
     bookingExists.mockImplementation(() => Promise.resolve(true));
 
     const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
@@ -149,7 +147,7 @@ describe('addBooking.test.js', () => {
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => true);
-    createBooking.mockImplementation(() => Promise.resolve(true));
+    createBookingAndBookParkingPlace.mockImplementation(() => Promise.resolve(true));
 
     const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 

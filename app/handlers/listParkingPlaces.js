@@ -13,7 +13,7 @@ const { parseBodyToObject } = require('../utilities/requestParser.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
-module.exports.list = async event => {
+module.exports.places = async event => {
   if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
     return unauthorized();
   }

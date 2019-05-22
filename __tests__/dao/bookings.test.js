@@ -7,7 +7,7 @@ const {
   isBookingAvailableForPeriod,
   getBooking,
   bookingExists,
-  createBooking,
+  createBookingAndBookParkingPlace,
   bookParkingPlace,
   unbookParkingPlace,
   getFutureBookings,
@@ -109,9 +109,9 @@ describe.only('bookings.test.js', () => {
     });
   });
 
-  describe('Checks createBooking method', () => {
-    it('returns true when booking created with reservation of any available place', async () => {
-      save.mockImplementation(() => true);
+  describe('Checks createBookingAndBookParkingPlace method', () => {
+    it('returns placeId when booking created with reservation of any available place', async () => {
+      save.mockImplementation(() => Promise.resolve(true));
       getParkingPlaces.mockImplementation(() => [
         {
           PlaceID: '1a',
@@ -121,13 +121,13 @@ describe.only('bookings.test.js', () => {
         },
       ]);
 
-      const booking = await createBooking('2020/03/01', 'WAW', 'joo.foo');
+      const { PlaceID } = await createBookingAndBookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
 
-      expect(booking).toEqual(true);
+      expect(PlaceID).toEqual('1a');
     });
 
-    it('returns true when booking created with reservation of specific place', async () => {
-      save.mockImplementation(() => true);
+    it('returns placeId when booking created with reservation of specific place', async () => {
+      save.mockImplementation(() => Promise.resolve(true));
       getParkingPlaces.mockImplementation(() => [
         {
           PlaceID: '1a',
@@ -137,69 +137,61 @@ describe.only('bookings.test.js', () => {
         },
       ]);
 
-      const booking = await createBooking('2020/03/01', 'WAW', 'joo.foo', '1b');
+      const { PlaceID } = await createBookingAndBookParkingPlace('2020/03/01', 'WAW', 'joo.foo', '1b');
 
-      expect(booking).toEqual(true);
+      expect(PlaceID).toEqual('1b');
     });
   });
 
   describe('Checks bookParkingPlace method', () => {
     beforeAll(() => {
-      update.mockImplementation(() => 'updated booking');
+      update.mockImplementation(() => Promise.resolve(true));
     });
 
-    it('returns updated booking with of any available place', async () => {
+    it('returns placeID of any available place', async () => {
       query.mockImplementation(() => bookingDataMock('free', '1a'));
 
-      const updatedBooking = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+      const { PlaceID } = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
 
-      expect(updatedBooking).toEqual('updated booking');
+      expect(PlaceID).toEqual('1a');
     });
 
-    it('returns updated booking with reservation of specific place', async () => {
+    it('returns placeID with reservation of specific place', async () => {
       query.mockImplementation(() => bookingDataMock('free', '1a'));
 
-      const updatedBooking = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo', '1a');
+      const { PlaceID } = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo', '1a');
 
-      expect(updatedBooking).toEqual('updated booking');
+      expect(PlaceID).toEqual('1a');
     });
 
     it('returns empty object when reservation of any place is unavailable', async () => {
       query.mockImplementation(() => bookingDataMock('joo.foo', '1a'));
 
-      const updatedBooking = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+      const parkingPlace = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
 
-      expect(updatedBooking).toEqual({});
+      expect(parkingPlace).toEqual({});
     });
 
     it('returns empty object when reservation of specific place is unavailable', async () => {
       query.mockImplementation(() => bookingDataMock('joo.foo', '1a'));
 
-      const updatedBooking = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo', '1a');
+      const parkingPlace = await bookParkingPlace('2020/03/01', 'WAW', 'joo.foo', '1a');
 
-      expect(updatedBooking).toEqual({});
+      expect(parkingPlace).toEqual({});
     });
   });
 
   describe('Checks unbookParkingPlace method', () => {
     beforeAll(() => {
-      update.mockImplementation(() => 'updated booking');
+      update.mockImplementation(() => Promise.resolve(true));
     });
 
-    it('returns updated booking without booking place', async () => {
+    it('returns placeId when reservation deleted', async () => {
       query.mockImplementation(() => bookingDataMock('joo.foo', '1a'));
 
-      const updatedBooking = await unbookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
+      const { PlaceID } = await unbookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
 
-      expect(updatedBooking).toEqual('updated booking');
-    });
-
-    it(`returns empty object when reservation doesn't exist`, async () => {
-      query.mockImplementation(() => bookingDataMock('free', '1a'));
-
-      const updatedBooking = await unbookParkingPlace('2020/03/01', 'WAW', 'joo.foo');
-
-      expect(updatedBooking).toEqual({});
+      expect(PlaceID).toEqual('1a');
     });
   });
 
