@@ -7,6 +7,7 @@ const {
   isBookingAvailableForPeriod,
   createBookingAndBookParkingPlace,
   bookingExists,
+  bookParkingPlace
 } = require('../../app/dao/bookings.js');
 const { cityExists, parkingPlaceExists } = require('../../app/dao/parkingPlace.js');
 const { isVerified } = require('../../app/services/authService.js');
@@ -128,8 +129,9 @@ describe('addBooking.test.js', () => {
       isValid: true,
     }));
     isBookingAvailableForPeriod.mockImplementation(() => true);
-    createBookingAndBookParkingPlace.mockImplementation(() => Promise.resolve(true));
-    bookingExists.mockImplementation(() => Promise.resolve(true));
+    bookingExists.mockImplementation(() => Promise.resolve(false));
+    createBookingAndBookParkingPlace.mockImplementation(() => Promise.resolve([{ PlaceID: '1a' }]));
+
 
     const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
@@ -146,8 +148,8 @@ describe('addBooking.test.js', () => {
       },
       isValid: true,
     }));
-    isBookingAvailableForPeriod.mockImplementation(() => true);
-    createBookingAndBookParkingPlace.mockImplementation(() => Promise.resolve(true));
+    isBookingAvailableForPeriod.mockImplementation(() => Promise.resolve(true));
+    bookParkingPlace.mockImplementation(() => Promise.resolve([{ PlaceID: '1a' }]));
 
     const { statusCode } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
 
