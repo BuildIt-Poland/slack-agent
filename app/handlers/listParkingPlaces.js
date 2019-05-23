@@ -44,6 +44,6 @@ module.exports.places = async event => {
   }
 
   return success(
-    generateResponseBodyWithAttachments(LIST_OF_RESERVATIONS(parkingPlaces)),
+    generateResponseBodyWithAttachments(LIST_OF_RESERVATIONS, parkingPlaces),
   );
 };

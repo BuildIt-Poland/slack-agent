@@ -13,5 +13,5 @@ module.exports.locations = async event => {
 
   const locationsWithPlaces = await getAllLocationsWithPlaces();
 
-  return success(generateResponseBodyWithAttachments(LOCATIONS(locationsWithPlaces)));
+  return success(generateResponseBodyWithAttachments(LOCATIONS, locationsWithPlaces));
 };

@@ -60,5 +60,5 @@ module.exports.free = async event => {
     return success(generateResponseBody(ALL_PLACES_BOOKED));
   }
 
-  return success(generateResponseBodyWithAttachments(AVAILABLE_PLACES(parkingPlaces)));
+  return success(generateResponseBodyWithAttachments(AVAILABLE_PLACES, parkingPlaces));
 };

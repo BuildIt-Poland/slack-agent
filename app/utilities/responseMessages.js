@@ -13,15 +13,15 @@ const DELETE_RESERVATION = `Reservation deleted`;
 
 const ALL_PLACES_BOOKED = `All parking places booked`;
 
+const LOCATIONS = `Locations:`;
+
+const MY_RESERVATIONS = `My reservations:`;
+
+const LIST_OF_RESERVATIONS = `List of reservations with available places:`;
+
+const AVAILABLE_PLACES = `Available places:`;
+
 const PARKING_PLACE_IS_NOT_AVAILABLE = (placeId) => `Parking palce ${placeId || ''} isn't available`;
-
-const LOCATIONS = (locationsWithPlaces) => `Locations: ${locationsWithPlaces}`;
-
-const MY_RESERVATIONS = (parkingPlaces) => `My reservations: ${parkingPlaces}`;
-
-const LIST_OF_RESERVATIONS = (parkingPlaces) => `List of reservations with available places: ${parkingPlaces}`;
-
-const AVAILABLE_PLACES = (parkingPlaces) => `Available places: ${parkingPlaces}`;
 
 const ADD_PARKING_PLACE = (city, placeId) => `You added a parking place.\n *City:* ${city}\n *Place:* ${placeId}`;
 
