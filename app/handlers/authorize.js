@@ -2,6 +2,7 @@ const _ = require('lodash');
 const { oAuthRedirectUrl, authorize } = require('../services/authService.js');
 const { success, redirect } = require('../utilities/reponseBuilder.js');
 
+const { AUTHORIZE } = require('../utilities/responseMessages.js');
 const { CLIENT_ID, CLIENT_SECRET, CLIENT_SCOPES, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.authorize = async (event) => {
@@ -27,5 +28,5 @@ module.exports.authorize = async (event) => {
     stage: ENV_STAGE
   });
 
-  return success('Authorized');
+  return success(AUTHORIZE);
 };

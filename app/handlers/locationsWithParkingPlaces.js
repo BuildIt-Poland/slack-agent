@@ -4,6 +4,8 @@ const { success, unauthorized } = require('../utilities/reponseBuilder.js');
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 const { generateResponseBodyWithAttachments } = require('../utilities/responseBody.js');
 
+const { LOCATIONS } = require('../utilities/responseMessages.js');
+
 module.exports.locations = async event => {
   if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
     return unauthorized();
@@ -11,5 +13,5 @@ module.exports.locations = async event => {
 
   const locationsWithPlaces = await getAllLocationsWithPlaces();
 
-  return success(generateResponseBodyWithAttachments('Locations:', locationsWithPlaces));
+  return success(generateResponseBodyWithAttachments(LOCATIONS(locationsWithPlaces)));
 };

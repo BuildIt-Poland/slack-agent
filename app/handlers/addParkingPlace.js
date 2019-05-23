@@ -5,6 +5,7 @@ const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
+const { CAN_NOT_ADD_PARKING_PLACE, ADD_PARKING_PLACE } = require('../utilities/responseMessages.js');
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.add = async (event) => {
@@ -27,12 +28,12 @@ module.exports.add = async (event) => {
   }
 
   await addParkingPlace(message).catch(() => {
-    return success(generateResponseBody(`You can't add parking place`));
+    return success(generateResponseBody(CAN_NOT_ADD_PARKING_PLACE));
   });
 
+  const { city, placeId } = message;
+
   return success(
-    generateResponseBody(
-      `You added a parking place.\n *City:* ${message.city}\n *Place:* ${message.placeId}`
-    )
+    generateResponseBody(ADD_PARKING_PLACE(city, placeId))
   );
 };

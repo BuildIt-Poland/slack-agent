@@ -15,6 +15,8 @@ const {
   decoratedParkingPlaces,
 } = require('../services/parkingPlacesService.js');
 
+const { CITY_DO_NOT_EXIST, ALL_PLACES_BOOKED, AVAILABLE_PLACES } = require('../utilities/responseMessages.js');
+
 module.exports.free = async event => {
   if (!(await isVerified(event, SIGNING_SECRET, ENV_STAGE))) {
     return unauthorized();
@@ -41,7 +43,7 @@ module.exports.free = async event => {
   } = message;
 
   if (!(await cityExists(city))) {
-    return success(generateResponseBody(`City ${city} doesn’t exist`))
+    return success(generateResponseBody(CITY_DO_NOT_EXIST(city)))
   }
 
   let parkingPlaces;
@@ -55,8 +57,8 @@ module.exports.free = async event => {
   }
 
   if (_.isEmpty(parkingPlaces)) {
-    return success(generateResponseBody(`All places booked`));
+    return success(generateResponseBody(ALL_PLACES_BOOKED));
   }
 
-  return success(generateResponseBodyWithAttachments('Available places:', parkingPlaces));
+  return success(generateResponseBodyWithAttachments(AVAILABLE_PLACES(parkingPlaces)));
 };

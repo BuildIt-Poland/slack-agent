@@ -11,6 +11,7 @@ const {
 const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 
+const { LIST_OF_RESERVATIONS } = require('../utilities/responseMessages.js');
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
 module.exports.places = async event => {
@@ -43,9 +44,6 @@ module.exports.places = async event => {
   }
 
   return success(
-    generateResponseBodyWithAttachments(
-      'List of reservations with available places:',
-      parkingPlaces,
-    ),
+    generateResponseBodyWithAttachments(LIST_OF_RESERVATIONS(parkingPlaces)),
   );
 };
