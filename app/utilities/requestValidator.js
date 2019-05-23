@@ -1,1 +1,1 @@
-exports.isCity = (city) => /^[a-zA-Z]+$/.test(city);
+exports.isCity = (city) => /^[a-zA-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż]+$/.test(city);

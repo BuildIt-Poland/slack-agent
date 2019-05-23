@@ -1,12 +1,7 @@
 const _ = require('lodash');
 const queryString = require('query-string');
 const { isDateValid, getDatesInRange, parseDate, parseTextToDate } = require('../services/dateService.js');
-
-const FAILURE_MESSAGE = 'Sorry, I didn’t quite get that :disappointed: I’m easily confused. Perhaps if you put the ' +
-  'words in a different order? :brain:\n\nHow to use this bot in examples:\n1. Check available locations\n' +
-  '/agentlocations\n\n2. Book a place\n /agentbook 2030/01/30 Gotham → to book a random place\n/agentbook ' +
-  'today Gotham 111 → to book a specific place\n\n3. Check your bookings:\n/agentmy\n\n' +
-  '4. Unbook if not needed:\n/agentunbook tomorrow Gotham';
+const { FAILURE } = require('../utilities/responseMessages.js');
 
 const isParamValid = (inputParam, paramValidators) =>
   _.every(_.values(paramValidators), (validate) => validate(inputParam));
@@ -50,6 +45,6 @@ exports.parseBodyToObject = (body, inputFormat) => {
   const isValid = validateInputParams(inputParams, inputFormat);
   return {
     isValid,
-    message: isValid ? inputParams : FAILURE_MESSAGE
+    message: isValid ? inputParams : FAILURE
   };
 };
