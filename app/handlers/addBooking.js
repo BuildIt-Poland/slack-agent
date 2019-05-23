@@ -60,8 +60,8 @@ module.exports.book = async event => {
   });
 
   return Promise.all(bookingPromises)
-    .then(({ placeID }) => {
-      return success(generateResponseBody(`You booked a parking place ${placeID} in ${city} on ${dates}`));
+    .then(([{ PlaceID }]) => {
+      return success(generateResponseBody(`You booked a parking place ${PlaceID} in ${city} on ${dates}`));
     })
     .catch(() => {
       return internalServerError();
