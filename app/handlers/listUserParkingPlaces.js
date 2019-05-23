@@ -28,5 +28,5 @@ module.exports.my = async event => {
 
   const parkingPlaces = getUserParkingPlacesForBookings(futureBookings, message.userName);
 
-  return success(generateResponseBodyWithAttachments(MY_RESERVATIONS(parkingPlaces)));
+  return success(generateResponseBodyWithAttachments(MY_RESERVATIONS, parkingPlaces));
 };
