@@ -92,6 +92,12 @@ functions:
       - http:
           path: slack/locations
           method: post
+  helper:
+    handler: app/handlers/helper.help
+    events:
+      - http:
+          path: slack/help
+          method: post
 # Create our resources with separate CloudFormation templates
 resources:
   # DynamoDB
