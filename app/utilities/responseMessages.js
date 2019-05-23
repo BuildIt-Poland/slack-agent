@@ -5,7 +5,46 @@ const HELP = '1. Check available locations\n`/agentlocations`\n\n2. Book a place
 const FAILURE = `${'Sorry, I didn’t quite get that :disappointed: I’m easily confused. Perhaps if you put the ' +
   'words in a different order? :brain:\n\nHow to use this bot in examples:\n'}${HELP}`;
 
+const CAN_NOT_ADD_PARKING_PLACE = `You can't add parking place`;
+
+const AUTHORIZE = `Authorized`;
+
+const DELETE_RESERVATION = `Reservation deleted`;
+
+const ALL_PLACES_BOOKED = `All parking places booked`;
+
+const PARKING_PLACE_IS_NOT_AVAILABLE = (placeId) => `Parking palce ${placeId || ''} isn't available`;
+
+const LOCATIONS = (locationsWithPlaces) => `Locations: ${locationsWithPlaces}`;
+
+const MY_RESERVATIONS = (parkingPlaces) => `My reservations: ${parkingPlaces}`;
+
+const LIST_OF_RESERVATIONS = (parkingPlaces) => `List of reservations with available places: ${parkingPlaces}`;
+
+const AVAILABLE_PLACES = (parkingPlaces) => `Available places: ${parkingPlaces}`;
+
+const ADD_PARKING_PLACE = (city, placeId) => `You added a parking place.\n *City:* ${city}\n *Place:* ${placeId}`;
+
+const CITY_DO_NOT_EXIST = (city) => `City ${city} doesn’t exist`;
+
+const PARKING_PLACE_DO_NOT_EXIST = (placeId) => `Parking place ${placeId} doesn't exist`;
+
+const BOOK_PARKING_PLACE = (placeId, city, dates) => `You booked a parking place ${placeId} in ${city} on ${dates}`;
+
 module.exports = {
   HELP,
-  FAILURE
+  FAILURE,
+  CITY_DO_NOT_EXIST,
+  PARKING_PLACE_DO_NOT_EXIST,
+  PARKING_PLACE_IS_NOT_AVAILABLE,
+  BOOK_PARKING_PLACE,
+  CAN_NOT_ADD_PARKING_PLACE,
+  ADD_PARKING_PLACE,
+  AUTHORIZE,
+  DELETE_RESERVATION,
+  ALL_PLACES_BOOKED,
+  AVAILABLE_PLACES,
+  LIST_OF_RESERVATIONS,
+  MY_RESERVATIONS,
+  LOCATIONS
 };

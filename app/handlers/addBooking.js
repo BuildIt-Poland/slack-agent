@@ -12,6 +12,7 @@ const { success, internalServerError, unauthorized } = require('../utilities/rep
 const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
+const { PARKING_PLACE_DO_NOT_EXIST, CITY_DO_NOT_EXIST, PARKING_PLACE_IS_NOT_AVAILABLE, BOOK_PARKING_PLACE } = require('../utilities/responseMessages.js');
 
 const { ENV_STAGE, SIGNING_SECRET } = require('../../config/all.js');
 
@@ -39,17 +40,17 @@ module.exports.book = async event => {
   const { dates, city, userName, placeId } = message;
 
   if (!(await cityExists(city))) {
-    return success(generateResponseBody(`City ${city} doesn’t exist`))
+    return success(generateResponseBody(CITY_DO_NOT_EXIST(city)))
   }
 
   if (placeId && !(await parkingPlaceExists(placeId, city))) {
-    return success(generateResponseBody(`Parking place ${placeId} doesn't exist`));
+    return success(generateResponseBody(PARKING_PLACE_DO_NOT_EXIST(placeId)));
   }
 
   const isBookingAvailable = await isBookingAvailableForPeriod(dates, city, placeId);
 
   if (!isBookingAvailable) {
-    return success(generateResponseBody(`Parking palce ${placeId} isn't available`)); // TODO raise proper response
+    return success(generateResponseBody(PARKING_PLACE_IS_NOT_AVAILABLE(placeId))); // TODO raise proper response
   }
 
   const bookingPromises = _.map(dates, async bookingDate => {
@@ -61,7 +62,7 @@ module.exports.book = async event => {
 
   return Promise.all(bookingPromises)
     .then(([{ PlaceID }]) => {
-      return success(generateResponseBody(`You booked a parking place ${PlaceID} in ${city} on ${dates}`));
+      return success(generateResponseBody(BOOK_PARKING_PLACE(PlaceID, city, dates)));
     })
     .catch(() => {
       return internalServerError();

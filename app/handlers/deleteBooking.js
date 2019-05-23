@@ -6,6 +6,7 @@ const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
+const { DELETE_RESERVATION } = require('../utilities/responseMessages.js');
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.unbook = async event => {
@@ -38,5 +39,5 @@ module.exports.unbook = async event => {
     return internalServerError();
   });
 
-  return success(generateResponseBody(`Reservation deleted`));
+  return success(generateResponseBody(DELETE_RESERVATION));
 };

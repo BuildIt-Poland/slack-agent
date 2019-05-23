@@ -69,7 +69,7 @@ describe('addBooking.test.js', () => {
     isBookingAvailableForPeriod.mockImplementation(() => false);
 
     const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-    expect(body).toEqual('{"text": "Parking palce undefined isn\'t available"}');
+    expect(body).toEqual(`{"text": "Parking palce  isn't available"}`);
   });
 
   it(`returns message 'Parking palce isn't available' while booking is unavailable`, async () => {
@@ -84,7 +84,7 @@ describe('addBooking.test.js', () => {
     }));
 
     const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-    expect(body).toEqual(`{"text": "Parking palce undefined isn't available"}`);
+    expect(body).toEqual(`{"text": "Parking palce  isn't available"}`);
   });
 
   it('returns internal server error while error occured during booking', async () => {
