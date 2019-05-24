@@ -56,7 +56,7 @@ describe('addBooking.test.js', () => {
     expect(body).toBe('{"text": "Body invalid"}');
   });
 
-  it(`returns message 'Parking palce undefined isn't available' while booking is unavailable for period`, async () => {
+  it(`returns message 'Parking place undefined isn't available' while booking is unavailable for period`, async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     cityExists.mockImplementation(() => Promise.resolve(true));
     parkingPlaceExists.mockImplementation(() => Promise.resolve(true));
@@ -69,10 +69,10 @@ describe('addBooking.test.js', () => {
     isBookingAvailableForPeriod.mockImplementation(() => false);
 
     const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-    expect(body).toEqual(`{"text": "Parking palce  isn't available"}`);
+    expect(body).toEqual(`{"text": "Parking place  isn't available"}`);
   });
 
-  it(`returns message 'Parking palce isn't available' while booking is unavailable`, async () => {
+  it(`returns message 'Parking place isn't available' while booking is unavailable`, async () => {
     isVerified.mockImplementation(() => Promise.resolve(true));
     cityExists.mockImplementation(() => Promise.resolve(true));
     parkingPlaceExists.mockImplementation(() => Promise.resolve(false));
@@ -84,7 +84,7 @@ describe('addBooking.test.js', () => {
     }));
 
     const { body } = await book({ body: 'text=2020/02/21+Gdansk&user_name=john.doe' });
-    expect(body).toEqual(`{"text": "Parking palce  isn't available"}`);
+    expect(body).toEqual(`{"text": "Parking place  isn't available"}`);
   });
 
   it('returns internal server error while error occured during booking', async () => {
