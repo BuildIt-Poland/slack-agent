@@ -21,7 +21,7 @@ const LIST_OF_RESERVATIONS = `List of reservations with available places:`;
 
 const AVAILABLE_PLACES = `Available places:`;
 
-const PARKING_PLACE_IS_NOT_AVAILABLE = (placeId) => `Parking palce ${placeId || ''} isn't available`;
+const PARKING_PLACE_IS_NOT_AVAILABLE = (placeId) => `Parking place ${placeId || ''} isn't available`;
 
 const ADD_PARKING_PLACE = (city, placeId) => `You added a parking place.\n *City:* ${city}\n *Place:* ${placeId}`;
 
