@@ -6,7 +6,7 @@ const { isCity } = require('../utilities/requestValidator.js');
 const { parseBodyToObject } = require('../utilities/requestParser.js');
 const { generateResponseBody } = require('../utilities/responseBody.js');
 
-const { DELETE_RESERVATION } = require('../utilities/responseMessages.js');
+const { DELETE_RESERVATION, NO_RESERVATIONS } = require('../utilities/responseMessages.js');
 const { SIGNING_SECRET, ENV_STAGE } = require('../../config/all.js');
 
 module.exports.unbook = async event => {
@@ -35,9 +35,13 @@ module.exports.unbook = async event => {
     return unbookParkingPlace(bookingDate, city, userName);
   });
 
-  await Promise.all(bookingPromises).catch(() => {
-    return internalServerError();
-  });
+  return Promise.all(bookingPromises)
+    .then(([parkingPlace]) => {
+      if (_.isEmpty(parkingPlace)) {
+        return success(generateResponseBody(NO_RESERVATIONS));
+      }
 
-  return success(generateResponseBody(DELETE_RESERVATION));
+      return success(generateResponseBody(DELETE_RESERVATION));
+    })
+    .catch(internalServerError);
 };

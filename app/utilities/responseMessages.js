@@ -21,6 +21,8 @@ const LIST_OF_RESERVATIONS = `List of reservations with available places:`;
 
 const AVAILABLE_PLACES = `Available places:`;
 
+const NO_RESERVATIONS = `You don't have any reservation`;
+
 const PARKING_PLACE_IS_NOT_AVAILABLE = (placeId) => `Parking place ${placeId || ''} isn't available`;
 
 const ADD_PARKING_PLACE = (city, placeId) => `You added a parking place.\n *City:* ${city}\n *Place:* ${placeId}`;
@@ -46,5 +48,6 @@ module.exports = {
   AVAILABLE_PLACES,
   LIST_OF_RESERVATIONS,
   MY_RESERVATIONS,
-  LOCATIONS
+  LOCATIONS,
+  NO_RESERVATIONS
 };
