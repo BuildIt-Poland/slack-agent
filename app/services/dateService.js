@@ -35,8 +35,8 @@ const parseDate = date => moment(date, DATE_FORMAT).format(DATE_FORMAT);
 const parseCurrentDate = () => moment(moment(), DATE_FORMAT).format(DATE_FORMAT);
 
 const parseTextToDate = (text) => ({
-  'tomorrow': moment(moment(), DATE_FORMAT).add(1, 'days').format(DATE_FORMAT),
-  'today': parseCurrentDate()
+  'Tomorrow': moment(moment(), DATE_FORMAT).add(1, 'days').format(DATE_FORMAT),
+  'Today': parseCurrentDate()
 })[text] || text;
 
 module.exports = {
