@@ -2,6 +2,7 @@ const _ = require('lodash');
 const queryString = require('query-string');
 const { isDateValid, getDatesInRange, parseDate, parseTextToDate } = require('../services/dateService.js');
 const { FAILURE } = require('../utilities/responseMessages.js');
+const { stringUnify } = require('../utilities/stringUnify.js');
 
 const isParamValid = (inputParam, paramValidators) =>
   _.every(_.values(paramValidators), (validate) => validate(inputParam));
@@ -28,7 +29,7 @@ exports.parseBodyToObject = (body, inputFormat) => {
 
   const inputParams = _.reduce(
     _.keys(inputFormat),
-    (params, paramName, index) => ({ ...params, [paramName]: inputParamsList[index] }),
+    (params, paramName, index) => ({ ...params, [paramName]: stringUnify(inputParamsList[index]) }),
     {},
   );
 
